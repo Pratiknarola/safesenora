@@ -180,6 +180,7 @@ class _girlHomeScreenState extends State<girlHomeScreen>
                   print(
                       "Current center is ${_center.latitude} and ${_center.longitude}");
                   latlng.add(_center);
+                  if (latlng.length > 100) latlng.removeAt(0);
                   print("lat and lng");
                   _onAddMarkerButtonPressed();
                 });
@@ -219,7 +220,7 @@ class _girlHomeScreenState extends State<girlHomeScreen>
   }
 
   //bool setting = await location.changeSettings(accuracy: LocationAccuracy.NAVIGATION);
-  LocationServices(k) {
+  LocationServices() {
     location.requestPermission().then((granted) {
       if (granted) {
         location.onLocationChanged().listen((locationData) {
@@ -253,149 +254,145 @@ class _girlHomeScreenState extends State<girlHomeScreen>
     //_center = LatLng(lat, lng);
     //print("Lat: ${_center.latitude} and Lng: ${_center.longitude}");
     return Scaffold(
-        drawer: getDrawer(user, 'girl').getdrawer(context),
-        appBar: AppBar(
-          title: Text("Girl screen"),
-        ),
-        body: Column(
-          children: <Widget>[
-            Container(
-              height: MediaQuery.of(context).size.height * 0.33,
-              width: MediaQuery.of(context).size.width,
-              child: Column(
-                children: [
-                  Visibility(
-                    visible: !_isvisible,
-                    child: RaisedButton(
-                      child: Text('Show MapView'),
-                      onPressed: showToast,
-                    ),
+      drawer: getDrawer(user, 'girl').getdrawer(context),
+      appBar: AppBar(
+        title: Text("Girl screen"),
+      ),
+      body: Column(
+        children: <Widget>[
+          Container(
+            height: MediaQuery.of(context).size.height * 0.33,
+            width: MediaQuery.of(context).size.width,
+            child: Column(
+              children: [
+                Visibility(
+                  visible: !_isvisible,
+                  child: RaisedButton(
+                    child: Text('Show MapView'),
+                    onPressed: showToast,
                   ),
-                  Visibility(
-                      visible: _isvisible,
-                      child: Container(
-                        height: MediaQuery.of(context).size.height * 0.25,
-                        child: GoogleMap(
-                          polylines: _polyline,
-                          onMapCreated: _onMapCreated,
-                          myLocationEnabled: true,
-                          initialCameraPosition: CameraPosition(
-                              target: _center == null ? LatLng(0, 0) : _center,
-                              zoom: 11.5),
-                          compassEnabled: true,
-                          //markers:
-                        ),
-                      )),
-                  Visibility(
-                      visible: _isvisible,
-                      child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            CupertinoButton(
-                              child: Text("Open in maps"),
-                              onPressed: () {
-                                openMap(lat, lng);
-                              },
-                            ),
-                            CupertinoButton(
-                              child: Text("add marker"),
-                              onPressed: _onAddMarkerButtonPressed,
-                            ),
-                            RaisedButton(
-                              child: Text('hide map'),
-                              onPressed: showToast,
-                            ),
-                          ])),
-                ],
-              ),
-            ),
-            Container(
-              height: MediaQuery.of(context).size.height * 0.54,
-              width: MediaQuery.of(context).size.width,
-              child: ListView(
-                //crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  Padding(
-                    padding: EdgeInsets.all(5),
-                    child: Text(
-                      _center == null
-                          ? "loading"
-                          : "Lat: ${_center.latitude} and Lng: ${_center.longitude}",
-                      style: TextStyle(fontSize: 18),
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.all(5),
-                    child: Text(
-                      "Link: $link",
-                      style: TextStyle(fontSize: 18),
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.all(5),
-                    child: Text(
-                      "distance walked: $distance",
-                      style: TextStyle(fontSize: 18),),
-                  ),
-                  Container(
-                    height: MediaQuery.of(context).size.height * 0.54,
-                    width: MediaQuery.of(context).size.width,
-                    child: ListView(
-                      //crossAxisAlignment: CrossAxisAlignment.center,
-                      children: <Widget>[
-                        Padding(
-                          padding: EdgeInsets.all(10),
-                          child: Text(
-                            "Lat: ${_center.latitude} and Lng: ${_center.longitude}",
-                            style: TextStyle(fontSize: 20),
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.all(10),
-                          child: Text(
-                            "Link: $link",
-                            style: TextStyle(fontSize: 20),
-                          ),
-                        ),
-                        RaisedButton(
-                          child: Text("Level 1"),
-                          onPressed: () {
-                            Firestore.instance
-                                .collection('girl_user')
-                                .document(user.uid)
-                                .collection('level_info')
-                                .document(user.uid)
-                                .setData({'level1': true}, merge: true);
-                          },
-                        ),
-                        RaisedButton(
-                          child: Text("Level 2"),
-                          onPressed: () {
-                            Firestore.instance
-                                .collection('girl_user')
-                                .document(user.uid)
-                                .collection('level_info')
-                                .document(user.uid)
-                                .setData({'level2': true}, merge: true);
-                          },
-                        ),
-                        RaisedButton(
-                            child: Text("Level 3"),
+                ),
+                Visibility(
+                    visible: _isvisible,
+                    child: Container(
+                      height: MediaQuery.of(context).size.height * 0.25,
+                      child: GoogleMap(
+                        polylines: _polyline,
+                        onMapCreated: _onMapCreated,
+                        myLocationEnabled: true,
+                        initialCameraPosition: CameraPosition(
+                            target: _center == null ? LatLng(0, 0) : _center,
+                            zoom: 11.5),
+                        compassEnabled: true,
+                        //markers:
+                      ),
+                    )),
+                Visibility(
+                    visible: _isvisible,
+                    child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          CupertinoButton(
+                            child: Text("Open in maps"),
                             onPressed: () {
-                              Firestore.instance
-                                  .collection('girl_user')
-                                  .document(user.uid)
-                                  .collection('level_info')
-                                  .document(user.uid)
-                                  .setData({'level3': true}, merge: true);
-                            }),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+                              openMap(lat, lng);
+                            },
+                          ),
+                          CupertinoButton(
+                            child: Text("add marker"),
+                            onPressed: _onAddMarkerButtonPressed,
+                          ),
+                          RaisedButton(
+                            child: Text('hide map'),
+                            onPressed: showToast,
+                          ),
+                        ])),
+              ],
             ),
-          ],
-        ));
+          ),
+          Container(
+            height: MediaQuery.of(context).size.height * 0.54,
+            width: MediaQuery.of(context).size.width,
+            child: ListView(
+              //crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                Padding(
+                  padding: EdgeInsets.all(10),
+                  child: Text(
+                    _center == null
+                        ? "loading"
+                        : "Lat: ${_center.latitude} and Lng: ${_center.longitude}",
+                    style: TextStyle(fontSize: 20),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.all(10),
+                  child: Text(
+                    "Link: $link",
+                    style: TextStyle(fontSize: 20),
+                  ),
+                ),
+                RaisedButton(
+                  child: Text("Reload"),
+                  onPressed: (){
+                    setState(() {
+                      if(lat != null && lng != null){
+                        _center = LatLng(lat, lng);
+                      }
+                      else{
+                        LocationServices();
+                      }
+                    });
+                  },
+                ),
+                RaisedButton(
+                  child: Text("Reset Levels"),
+                  onPressed: (){
+                    Firestore.instance
+                        .collection('girl_user')
+                        .document(user.uid)
+                        .collection('level_info')
+                        .document(user.uid)
+                        .setData({'level1': false, 'level2': false, 'level3': false}, merge: true);
+                  },
+                ),
+                RaisedButton(
+                  child: Text("Level 1"),
+                  onPressed: () {
+                    Firestore.instance
+                        .collection('girl_user')
+                        .document(user.uid)
+                        .collection('level_info')
+                        .document(user.uid)
+                        .setData({'level1': true}, merge: true);
+                  },
+                ),
+                RaisedButton(
+                  child: Text("Level 2"),
+                  onPressed: () {
+                    Firestore.instance
+                        .collection('girl_user')
+                        .document(user.uid)
+                        .collection('level_info')
+                        .document(user.uid)
+                        .setData({'level2': true}, merge: true);
+                  },
+                ),
+                RaisedButton(
+                    child: Text("Level 3"),
+                    onPressed: () {
+                      Firestore.instance
+                          .collection('girl_user')
+                          .document(user.uid)
+                          .collection('level_info')
+                          .document(user.uid)
+                          .setData({'level3': true}, merge: true);
+                    }),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
