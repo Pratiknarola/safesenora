@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "387570502896",
+    "firebase_url": "https://safesenora.firebaseio.com",
+    "project_id": "safesenora",
+    "storage_bucket": "safesenora.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:387570502896:android:9a77c1840f4ef503e2c635",
+        "android_client_info": {
+          "package_name": "com.example.safesenora"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "387570502896-9j8cigp32qrc4kl7gfm1dm7qcprdlh97.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB4eA0ibrkAQPLpEtb-3xkBj8N0-sTFf6I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "387570502896-9j8cigp32qrc4kl7gfm1dm7qcprdlh97.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
