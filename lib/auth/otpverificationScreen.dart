@@ -61,11 +61,11 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreenState>
     fontWeight: FontWeight.bold,
   );
 
-  @override
+  /* @override
   void dispose() {
     super.dispose();
     _teOtpDigitOne.dispose();
-  }
+  }*/
 
   @override
   void initState() {
@@ -117,7 +117,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreenState>
         showAlert("Please enter valid OTP!");
       }
     } catch (e) {
-      showAlert("Please enter valid OTP!");
+      showAlert("error occured OTP!");
     }
   }
 
@@ -355,6 +355,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreenState>
 
   @override
   verificationCodeSent(int forceResendingToken) {}
+
   @override
   void moveUserDashboardScreen(FirebaseUser currentUser) async {
     //phoneTabEnable();

@@ -4,6 +4,7 @@ import 'package:prototype/screens/ProfilePage.dart';
 import 'package:prototype/screens/girl_home_screen.dart';
 import 'package:prototype/screens/protector_home_screen.dart';
 import 'package:prototype/screens/settings.dart';
+import 'package:prototype/screens/trusted_member.dart';
 
 class getDrawer {
   FirebaseUser user;
@@ -61,7 +62,7 @@ class getDrawer {
             leading: Icon(Icons.person_outline),
             onTap: () {
               Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (context) => ProfilePage()));
+                  MaterialPageRoute(builder: (context) => ProfilePage(role)));
             },
           ),
           ListTile(
@@ -76,7 +77,10 @@ class getDrawer {
               ? ListTile(
                   title: Text("Trusted members"),
                   leading: Icon(Icons.check_circle_outline),
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.of(context).pushReplacement(MaterialPageRoute(
+                        builder: (_) => trustedMemberPage(user)));
+                  },
                 )
               : Container(),
           ListTile(

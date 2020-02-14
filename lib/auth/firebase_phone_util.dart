@@ -1,15 +1,12 @@
 import 'dart:async';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:rflutter_alert/rflutter_alert.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+
 import 'firebase_listenter.dart';
 
 class FirebasePhoneUtil {
   static final FirebasePhoneUtil _instance = new FirebasePhoneUtil.internal();
-
 
   FirebasePhoneUtil.internal();
 
@@ -31,8 +28,8 @@ class FirebasePhoneUtil {
   Future<void> verifyPhoneNumber(String phoneNumber, String code) async {
     final PhoneVerificationCompleted verificationCompleted =
         (AuthCredential credential) {
-          print("loggin success ${credential.providerId}");
-        };
+      print("loggin success ${credential.providerId}");
+    };
 
     final PhoneVerificationFailed verificationFailed =
         (AuthException authException) {
@@ -60,30 +57,27 @@ class FirebasePhoneUtil {
         codeAutoRetrievalTimeout: codeAutoRetrievalTimeout);
   }
 
-  verifyOtp(String smsCode) async  {
+  verifyOtp(String smsCode) async {
     try {
       AuthCredential credential = PhoneAuthProvider.getCredential(
           verificationId: verificationId, smsCode: smsCode);
-      final FirebaseUser user = (await _auth.signInWithCredential(credential))
-          .user;
+      final FirebaseUser user =
+          (await _auth.signInWithCredential(credential)).user;
 
-      final FirebaseUser currentUser = await _auth.currentUser();
-      if (!identical(user.uid, currentUser.uid)) {
-        onLoginUserVerified(currentUser);
-      }
-    }catch (e){
+      // final FirebaseUser currentUser = await _auth.currentUser();
+      // if (!identical(user.uid, currentUser.uid)) {
+      onLoginUserVerified(user);
+      // }
+    } catch (e) {
       return FlutterError(e.message);
     }
   }
 
-
-
   void onLoginUserVerified(FirebaseUser currentUser) {
-
     _view.onLoginUserVerified(currentUser);
   }
 
   onTokenError(String string) {
-    print("libs "+string);
+    print("libs " + string);
   }
 }

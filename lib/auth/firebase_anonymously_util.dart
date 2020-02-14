@@ -1,11 +1,12 @@
 import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
+
 import 'firebase_listenter.dart';
 
 class FirebaseAnonymouslyUtil {
   static final FirebaseAnonymouslyUtil _instance =
-  new FirebaseAnonymouslyUtil.internal();
+      new FirebaseAnonymouslyUtil.internal();
 
   FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   FirebaseAuthListener _view;
@@ -21,19 +22,19 @@ class FirebaseAnonymouslyUtil {
   }
 
   Future<FirebaseUser> signIn(String email, String password) async {
-
     FirebaseUser user = (await _firebaseAuth.signInWithEmailAndPassword(
-        email: email, password: password)).user;
+            email: email, password: password))
+        .user;
 
     return user;
   }
 
-  Future<String> createUser(String email, String password) async {
-    AuthResult result = await _firebaseAuth.createUserWithEmailAndPassword(email: email, password: password);
+  Future<FirebaseUser> createUser(String email, String password) async {
+    AuthResult result = await _firebaseAuth.createUserWithEmailAndPassword(
+        email: email, password: password);
     FirebaseUser user = result.user;
 
-
-    return user.uid;
+    return user;
   }
 
   Future<String> currentUser() async {

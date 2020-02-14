@@ -104,6 +104,8 @@ class LoginScreenState extends State<LoginPage>
   @override
   void moveUserDashboardScreen(FirebaseUser currentUser) async {
     //phoneTabEnable();
+    //TODO make collecton userlist
+    String uid = currentUser.uid;
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setBool('Loggedin', true);
@@ -122,6 +124,10 @@ class LoginScreenState extends State<LoginPage>
         if (snap.documentID == currentUser.uid) {
           debugPrint("I am girl user");
           girl = true;
+          Firestore.instance
+              .collection('user_list')
+              .document('${currentUser.email}')
+              .setData({'uid': uid, 'type': 'girl_user'}, merge: true);
           closeLoader();
           Navigator.pushReplacement(
               context,
@@ -142,6 +148,10 @@ class LoginScreenState extends State<LoginPage>
         if (snap.documentID == currentUser.uid) {
           debugPrint("I am protector user");
           proteector = true;
+          Firestore.instance
+              .collection('user_list')
+              .document('${currentUser.email}')
+              .setData({'uid': uid, 'type': 'protector'}, merge: true);
           closeLoader();
           Navigator.pushReplacement(
               context,
@@ -157,11 +167,6 @@ class LoginScreenState extends State<LoginPage>
       }
     });
   }
-
-  //TODO search in database for user role.
-  //TODO if role => girl -> send to girlHomeScreen
-  //TODO if role => protector -> send to protectorHomeScreen
-  //TODO if no role selected or no entry found -> send to setUserRole
 
   var _isHidden = true;
 
@@ -345,6 +350,7 @@ class LoginScreenState extends State<LoginPage>
           margin: EdgeInsets.fromLTRB(10.0, 5.0, 10.0, 0.0),
           padding: EdgeInsets.fromLTRB(10.0, 20.0, 10.0, 10.0),
           decoration: new BoxDecoration(
+            //color: Colors.white60,
             color: const Color.fromRGBO(255, 255, 255, 1.0),
             border: Border.all(color: const Color(0x33A6A6A6)),
             borderRadius: new BorderRadius.all(const Radius.circular(6.0)),
@@ -448,7 +454,7 @@ class LoginScreenState extends State<LoginPage>
                     gradientBegin: Alignment.bottomLeft,
                     gradientEnd: Alignment.topRight,
                   ),
-                  waveAmplitude: 0,
+                  waveAmplitude: 7,
                   size: Size(
                     double.infinity,
                     double.infinity,
@@ -581,8 +587,9 @@ class LoginScreenState extends State<LoginPage>
         _isLoading = true;
         firebaseAnonymouslyUtil
             .createUser(_teMobileEmail.text, _tePassword.text)
-            .then((String user) => login(_teMobileEmail.text, _tePassword.text))
-            .catchError((e) => loginError(e));
+            .then((FirebaseUser user) {
+          login(_teMobileEmail.text, _tePassword.text);
+        }).catchError((e) => loginError(e));
       }
     });
   }

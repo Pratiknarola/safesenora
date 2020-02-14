@@ -34,13 +34,16 @@ class _setScreenState extends State<setScreen> {
         Navigator.of(context).pushReplacement(
             new MaterialPageRoute(builder: (context) => new LoginPage()));
       } else {
+        print("going to girl");
         FirebaseAuth.instance.currentUser().then((FirebaseUser currentUser) {
           Firestore.instance
               .collection('girl_user')
               .getDocuments()
               .then((QuerySnapshot qs_girl) {
             qs_girl.documents.forEach((DocumentSnapshot snap) {
+              print("got in girl");
               if (snap.documentID == currentUser.uid) {
+                print("making girl true");
                 girl = true;
                 Navigator.pushReplacement(
                     context,
@@ -49,6 +52,7 @@ class _setScreenState extends State<setScreen> {
               }
             });
           });
+          print("after girl girl: $girl and prot $protector");
           Firestore.instance
               .collection('protector')
               .getDocuments()
@@ -63,7 +67,7 @@ class _setScreenState extends State<setScreen> {
                             protectorHomeScreen(currentUser)));
               }
             });
-
+            print("after prot girl $girl and prot $protector");
             if (!girl && !protector) {
               Navigator.pushReplacement(
                   context,
