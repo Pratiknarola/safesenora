@@ -1,19 +1,24 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import '../screens/first_screen.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:prototype/auth/getUserRole.dart';
+import 'package:prototype/screens/ProfilePage.dart';
+import 'package:prototype/screens/first_screen.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wave/config.dart';
 import 'package:wave/wave.dart';
+
+import '../screens/ProfilePage1.dart';
 import 'app_util.dart';
 import 'firebase_anonymously_util.dart';
 import 'firebase_google_util.dart';
 import 'firebase_listenter.dart';
 import 'firebase_phone_util.dart';
-import 'progresshud.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-
 import 'otpverificationScreen.dart';
-
+import 'progresshud.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -91,11 +96,14 @@ class _LoginScreenState extends State<LoginPage>
   }
 
   @override
-  void moveUserDashboardScreen(FirebaseUser currentUser) {
+  void moveUserDashboardScreen(FirebaseUser currentUser) async {
     phoneTabEnable();
     closeLoader();
-    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => FirstScreen(currentUser)));
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('Loggedin', true);
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ProfilePage1()));
   }
+
   var _isHidden = true;
   @override
   Widget build(BuildContext context) {
@@ -164,7 +172,7 @@ class _LoginScreenState extends State<LoginPage>
             new Expanded(
               child: new TextFormField(
                 initialValue: _countryCode,
-                onChanged: (value){
+                onChanged: (value) {
                   _countryCode = value;
                 },
                 //controller: _teCountryCode,
@@ -230,14 +238,15 @@ class _LoginScreenState extends State<LoginPage>
               fillColor: new Color(0xFF2CB044),
               prefixIcon: new Icon(Icons.keyboard_hide),
               suffixIcon: GestureDetector(
-                child: _isHidden ? Icon(Icons.visibility) : Icon(Icons.visibility_off),
-                onTap: (){
+                child: _isHidden
+                    ? Icon(Icons.visibility)
+                    : Icon(Icons.visibility_off),
+                onTap: () {
                   setState(() {
                     _isHidden = !_isHidden;
                   });
                 },
-              )
-          ),
+              )),
         ),
         new SizedBox(
           height: 20.0,
@@ -286,31 +295,31 @@ class _LoginScreenState extends State<LoginPage>
                 children: <Widget>[
                   _isEmailAuthEnable
                       ? new GestureDetector(
-                    onTap: () {
-                      _signUp();
-                    },
-                    child: new Container(
-                      margin: EdgeInsets.only(top: 40.0,right: 40.0),
-                      padding: EdgeInsets.all(15.0),
-                      alignment: FractionalOffset.center,
-                      decoration: new BoxDecoration(
-                        color: new Color(0xFF2CB044),
-                        borderRadius: new BorderRadius.all(
-                            const Radius.circular(6.0)),
-                      ),
-                      child: Text(
-                        _isEmailAuthEnable ? "SIGN-UP" : "",
-                        style: new TextStyle(
-                            color: const Color(0xFFFFFFFF),
-                            fontSize: 15.0,
-                            fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  )
+                          onTap: () {
+                            _signUp();
+                          },
+                          child: new Container(
+                            margin: EdgeInsets.only(top: 40.0, right: 40.0),
+                            padding: EdgeInsets.all(15.0),
+                            alignment: FractionalOffset.center,
+                            decoration: new BoxDecoration(
+                              color: new Color(0xFF2CB044),
+                              borderRadius: new BorderRadius.all(
+                                  const Radius.circular(6.0)),
+                            ),
+                            child: Text(
+                              _isEmailAuthEnable ? "SIGN-UP" : "",
+                              style: new TextStyle(
+                                  color: const Color(0xFFFFFFFF),
+                                  fontSize: 15.0,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        )
                       : new SizedBox(
-                    width: 0.0,
-                    height: 0.0,
-                  ),
+                          width: 0.0,
+                          height: 0.0,
+                        ),
                   new GestureDetector(
                     onTap: () {
                       _submit();
@@ -322,7 +331,7 @@ class _LoginScreenState extends State<LoginPage>
                       decoration: new BoxDecoration(
                         color: new Color(0xFF2CB044),
                         borderRadius:
-                        new BorderRadius.all(const Radius.circular(6.0)),
+                            new BorderRadius.all(const Radius.circular(6.0)),
                       ),
                       child: Text(
                         _isEmailAuthEnable ? "LOGIN" : "SUBMIT",
@@ -388,8 +397,7 @@ class _LoginScreenState extends State<LoginPage>
               opacity: 0.0,
             ),
           ],
-        )
-    );
+        ));
   }
 
   @override
@@ -405,7 +413,23 @@ class _LoginScreenState extends State<LoginPage>
   @override
   void showAlert(String msg) {
     setState(() {
-      AppUtil().showAlert(msg);
+      //AppUtil().showAlert(msg);
+      Alert(
+        context: context,
+        type: AlertType.error,
+        title: "Error",
+        desc: msg,
+        buttons: [
+          DialogButton(
+            child: Text(
+              "Done",
+              style: TextStyle(color: Colors.white, fontSize: 20),
+            ),
+            onPressed: () => Navigator.pop(context),
+            width: 120,
+          )
+        ],
+      ).show();
     });
   }
 
@@ -437,7 +461,7 @@ class _LoginScreenState extends State<LoginPage>
       _isPhoneAuthEnable = true;
       _isEmailAuthEnable = false;
       _isGoogleAuthEnable = false;
-      _teMobileEmail.text="";
+      _teMobileEmail.text = "";
     });
   }
 
@@ -446,14 +470,14 @@ class _LoginScreenState extends State<LoginPage>
       _isPhoneAuthEnable = false;
       _isEmailAuthEnable = false;
       _isGoogleAuthEnable = true;
-      _teMobileEmail.text="";
+      _teMobileEmail.text = "";
       firebaseGoogleUtil.signInWithGoogle();
     });
   }
 
   void eMailTabEnable() {
     setState(() {
-      _teMobileEmail.text="";
+      _teMobileEmail.text = "";
       _isPhoneAuthEnable = false;
       _isEmailAuthEnable = true;
       _isGoogleAuthEnable = false;
@@ -462,15 +486,22 @@ class _LoginScreenState extends State<LoginPage>
 
   loginError(e) {
     setState(() {
-      AppUtil().showAlert(e.message);
+      //AppUtil().showAlert(e.message);
+      //showAlert("Problem Loggin In. Check Email and Password");
+      Flushbar(
+        backgroundColor: Colors.white,
+        titleText: Text("Sign In Error", style: TextStyle(color: Colors.red, fontSize: 20),),
+        messageText: Text("Problem Loggin In. Check Email and Password", style: TextStyle(color: Colors.black, fontSize: 18),),
+        duration: Duration(seconds: 5),
+      )..show(context);
       _isLoading = false;
     });
   }
 
   void moveOtpVerificationScreen() {
     closeLoader();
-    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => OtpVerificationScreen()));
-
+    Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => OtpVerificationScreen()));
   }
 
   void _signUp() {
@@ -486,9 +517,37 @@ class _LoginScreenState extends State<LoginPage>
   }
 
   login(String email, String pass) {
-    firebaseAnonymouslyUtil
-        .signIn(_teMobileEmail.text, _tePassword.text)
-        .then((FirebaseUser user) => moveUserDashboardScreen(user))
-        .catchError((e) => loginError(e));
+    firebaseAnonymouslyUtil.signIn(_teMobileEmail.text, _tePassword.text).then((FirebaseUser user){
+      if(user.isEmailVerified){
+        moveUserDashboardScreen(user);
+      }
+      else{
+        user.sendEmailVerification();
+        setState(() {
+          //AppUtil().showAlert(msg);
+          Alert(
+            context: context,
+            type: AlertType.success,
+            title: "Attention",
+            desc: "Account created. Please verify your account using link sent to your email id and login using your credentials",
+            buttons: [
+              DialogButton(
+                child: Text(
+                  "Done",
+                  style: TextStyle(color: Colors.white, fontSize: 20),
+                ),
+                onPressed: () => Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => getUserRole(user))),
+                width: 120,
+              )
+            ],
+          ).show();
+        });
+        phoneTabEnable();
+        closeLoader();
+
+      }
+
+
+    }).catchError((e) => loginError(e));
   }
 }

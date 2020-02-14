@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 import 'firebase_listenter.dart';
 
 class FirebasePhoneUtil {
@@ -32,7 +34,8 @@ class FirebasePhoneUtil {
 
     final PhoneVerificationFailed verificationFailed =
         (AuthException authException) {
-      _view.onError(authException.message);
+      //_view.onError(authException.message);
+      _view.onError("Problem Loggin in. Check Mobile number and OTP again");
     };
 
     final PhoneCodeSent codeSent =
@@ -55,13 +58,19 @@ class FirebasePhoneUtil {
         codeAutoRetrievalTimeout: codeAutoRetrievalTimeout);
   }
 
-  verifyOtp(String smsCode) async {
-    AuthCredential credential = PhoneAuthProvider.getCredential(verificationId: verificationId, smsCode: smsCode);
-    final FirebaseUser user = (await _auth.signInWithCredential(credential)).user;
+  verifyOtp(String smsCode) async  {
+    try {
+      AuthCredential credential = PhoneAuthProvider.getCredential(
+          verificationId: verificationId, smsCode: smsCode);
+      final FirebaseUser user = (await _auth.signInWithCredential(credential))
+          .user;
 
-    final FirebaseUser currentUser = await _auth.currentUser();
-    if (!identical(user.uid, currentUser.uid)) {
-      onLoginUserVerified(currentUser);
+      final FirebaseUser currentUser = await _auth.currentUser();
+      if (!identical(user.uid, currentUser.uid)) {
+        onLoginUserVerified(currentUser);
+      }
+    }catch (e){
+      return FlutterError(e.message);
     }
   }
 

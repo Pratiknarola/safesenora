@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../auth/login.dart';
+import 'package:prototype/auth/login.dart';
+import 'package:prototype/screens/ProfilePage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'intro.dart';
@@ -19,10 +20,16 @@ class _setScreenState extends State<setScreen> {
   Future checkFirstSeen() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     bool _seen = (prefs.getBool('seen') ?? false);
+    bool loggedin = (prefs.getBool("Loggedin") ?? false);
 
     if (_seen) {
-      Navigator.of(context).pushReplacement(
-          new MaterialPageRoute(builder: (context) => new LoginPage()));
+      if(!loggedin) {
+        Navigator.of(context).pushReplacement(
+            new MaterialPageRoute(builder: (context) => new LoginPage()));
+      }
+      else{
+        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => new ProfilePage()));
+      }
     } else {
       Navigator.of(context).pushReplacement(
           new MaterialPageRoute(builder: (context) => new IntroScreen(prefs)));

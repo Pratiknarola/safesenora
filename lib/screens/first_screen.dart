@@ -1,20 +1,17 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import '../auth/login.dart';
+import 'package:prototype/auth/login.dart';
 
 import '../auth/auth.dart';
 
 class FirstScreen extends StatefulWidget {
-  FirebaseUser user;
-  FirstScreen(this.user);
   final Auth auth = new Auth();
   @override
-  _FirstScreenState createState() => _FirstScreenState(user);
+  _FirstScreenState createState() => _FirstScreenState();
 }
 
 class _FirstScreenState extends State<FirstScreen> {
   FirebaseUser user;
-  _FirstScreenState(this.user);
   @override
   void initState() {
     super.initState();
@@ -28,7 +25,7 @@ class _FirstScreenState extends State<FirstScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("safesenora")),
+      appBar: AppBar(title: Text("Prototype")),
       body: ListView(
         children: <Widget>[
           Text("User email ${user.uid}"),
@@ -61,5 +58,4 @@ class _FirstScreenState extends State<FirstScreen> {
     FirebaseAuth.instance.signOut();
     Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => LoginPage()));
   }
-
 }

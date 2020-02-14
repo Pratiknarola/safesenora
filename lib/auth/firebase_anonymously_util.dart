@@ -24,6 +24,7 @@ class FirebaseAnonymouslyUtil {
 
     FirebaseUser user = (await _firebaseAuth.signInWithEmailAndPassword(
         email: email, password: password)).user;
+
     return user;
   }
 

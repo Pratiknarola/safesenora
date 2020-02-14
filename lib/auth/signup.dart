@@ -221,7 +221,7 @@ class _SignupPageState extends State<SignupPage> {
       assert(user != null);
       assert(await user.getIdToken() != null);
       Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => FirstScreen(user)));
+          MaterialPageRoute(builder: (context) => FirstScreen()));
     } catch (e) {
       print(e.message);
       return null;

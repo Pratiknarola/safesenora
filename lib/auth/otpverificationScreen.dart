@@ -1,6 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:prototype/screens/ProfilePage.dart';
+import 'package:prototype/screens/ProfilePage1.dart';
 import 'package:prototype/screens/first_screen.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 import 'app_util.dart';
 import 'countdown_base.dart';
 import 'firebase_listenter.dart';
@@ -99,17 +104,17 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreenState>
 
   void _submit() {
     try{
-    if (_isMobileNumberEnter) {
-      showLoader();
-      presenter.verifyOtp(_teOtpDigitOne.text +
-          _teOtpDigitTwo.text +
-          _teOtpDigitThree.text +
-          _teOtpDigitFour.text +
-          _teOtpDigitFive.text +
-          _teOtpDigitSix.text);
-    } else {
-      showAlert("Please enter valid OTP!");
-    }
+      if (_isMobileNumberEnter) {
+        showLoader();
+        presenter.verifyOtp(_teOtpDigitOne.text +
+            _teOtpDigitTwo.text +
+            _teOtpDigitThree.text +
+            _teOtpDigitFour.text +
+            _teOtpDigitFive.text +
+            _teOtpDigitSix.text);
+      } else {
+        showAlert("Please enter valid OTP!");
+      }
     }catch(e){
       showAlert("Please enter valid OTP!");
 
@@ -287,7 +292,23 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreenState>
   @override
   void showAlert(String msg) {
     setState(() {
-      AppUtil().showAlert(msg);
+      //AppUtil().showAlert(msg);
+      Alert(
+        context: context,
+        type: AlertType.error,
+        title: "ALERT",
+        desc: msg,
+        buttons: [
+          DialogButton(
+            child: Text(
+              "Done",
+              style: TextStyle(color: Colors.white, fontSize: 20),
+            ),
+            onPressed: () => Navigator.pop(context),
+            width: 120,
+          )
+        ],
+      ).show();
     });
   }
 
@@ -298,7 +319,26 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreenState>
 
   @override
   onError(String msg) {
-    showAlert(msg);
+    setState(() {
+      debugPrint(msg);
+      //AppUtil().showAlert(msg);
+      Alert(
+        context: context,
+        type: AlertType.error,
+        title: "ALERT",
+        desc: "Check your OTP again",
+        buttons: [
+          DialogButton(
+            child: Text(
+              "Done",
+              style: TextStyle(color: Colors.white, fontSize: 20),
+            ),
+            onPressed: () => Navigator.pop(context),
+            width: 120,
+          )
+        ],
+      ).show();
+    });
     closeLoader();
   }
 
@@ -317,11 +357,8 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreenState>
 
   @override
   onLoginUserVerified(FirebaseUser currentUser) async {
-    Navigator.of(context).pushReplacement(MaterialPageRoute(
-        builder: (context) => FirstScreen(currentUser),
-      ),
-    ).then((result) => setState(() {
-//      _result = result;
-    }));
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('Loggedin', true);
+    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => ProfilePage1(),));
   }
 }

@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -46,7 +47,6 @@ class _SelectProfilPictureState extends State<SelectProfilPicture> {
   }
 
   uploadImage() async {
-
     FirebaseUser user = await FirebaseAuth.instance.currentUser();
     final StorageReference firebaseStorageRef =
         FirebaseStorage.instance.ref().child('${user.uid}/profilePic/.jpg');
@@ -58,7 +58,6 @@ class _SelectProfilPictureState extends State<SelectProfilPicture> {
     }
     var downloadUrl = await (await task.onComplete).ref.getDownloadURL();
     var url = downloadUrl.toString();
-
     updateProfilPicture(url, user.uid);
     setState(() {
       _isLoading = false;
