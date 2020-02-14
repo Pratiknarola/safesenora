@@ -7,7 +7,7 @@ import 'package:prototype/auth/progresshud.dart';
 import 'package:prototype/auth/setUserRole.dart';
 import 'package:prototype/screens/protector_home_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:location/location.dart' as location_plugin;
 import 'girl_home_screen.dart';
 import 'intro.dart';
 
@@ -109,6 +109,10 @@ class _setScreenState extends State<setScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var location = location_plugin.Location();
+    location.changeSettings(
+        accuracy: location_plugin.LocationAccuracy.NAVIGATION);
+    location.requestPermission();
     return ProgressHUD(
       child: Container(),
       inAsyncCall: true,

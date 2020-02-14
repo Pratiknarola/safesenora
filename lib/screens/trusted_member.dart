@@ -176,13 +176,13 @@ class _trustedMemberPageState extends State<trustedMemberPage> {
                                 style: TextStyle(color: Color(0xff18352B)),
                               ),
                               onPressed: () {
-                                print("hello inside on pressed $mem_id");
+                                //print("hello inside on pressed $mem_id");
                                 if (_formKey.currentState.validate()) {
-                                  print("form validated");
+                                  //print("form validated");
                                   _formKey.currentState.save();
-                                  print("current name is $mem_name");
-                                  print("current id is $mem_id");
-                                  print("current surname is $mem_surname");
+                                  //print("current name is $mem_name");
+                                  //print("current id is $mem_id");
+                                  //print("current surname is $mem_surname");
                                   Navigator.pop(context);
                                 }
                               },
