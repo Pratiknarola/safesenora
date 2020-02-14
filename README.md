@@ -1,16 +1,20 @@
-# safesenora
+# prototype
+This is the practice repository in which we are going to code most of our app
 
-A new Flutter project.
+I am going to make first screen and layout in first 4 to 5 commits and then I will divide features to implement...   
 
-## Getting Started
+You are going to create a separate branch for your feature and when feature is implemented then merge that branch with master.
 
-This project is a starting point for a Flutter application.
+Watch 
+https://www.youtube.com/watch?v=JTE2Fn_sCZs  ( 6:37 min video)
 
-A few resources to get you started if this is your first Flutter project:
+https://www.youtube.com/watch?v=sgzkY5vFKQQ  ( 12:43 min video)
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+https://www.youtube.com/watch?v=oFYyTZwMyAg  ( 11:21 min video)
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+
+these 3 videos will help you to go through this. 
+
+do not share this link or anything with anyone. 
+
+keep in mind that we are not allowed to code earlier.
