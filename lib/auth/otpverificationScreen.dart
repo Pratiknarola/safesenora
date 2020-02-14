@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:prototype/auth/login.dart';
 import 'package:prototype/auth/setUserRole.dart';
@@ -365,12 +366,12 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreenState>
     print('passed the login shared preferencess ${currentUser.uid}');
     bool girl = false, protector = false;
 
-    (() async {
+    /*(() async {
       var query =
           await Firestore.instance.collection("girl_user").getDocuments();
       var list = query.documents;
       print('the await sentence length came ${list.length}');
-    })();
+    })();*/
 
     Firestore.instance
         .collection('girl_user')
@@ -384,6 +385,15 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreenState>
         if (snap.documentID == currentUser.uid) {
           debugPrint("I am girl user");
           girl = true;
+          //TODO add token in girl user collection
+          final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+          _firebaseMessaging.getToken().then((token) {
+            print(token);
+            Firestore.instance
+                .collection('girl_user')
+                .document(currentUser.uid)
+                .setData({'NotifyToken': token}, merge: true);
+          });
           Navigator.pushReplacement(
               context,
               MaterialPageRoute(
@@ -403,6 +413,15 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreenState>
         if (snap.documentID == currentUser.uid) {
           debugPrint("I am protector user");
           protector = true;
+          //TODO add token in protector user collection
+          final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+          _firebaseMessaging.getToken().then((token) {
+            print(token);
+            Firestore.instance
+                .collection('protector')
+                .document(currentUser.uid)
+                .setData({'NotifyToken': token}, merge: true);
+          });
           Navigator.pushReplacement(
               context,
               MaterialPageRoute(

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:prototype/auth/login.dart';
@@ -81,11 +82,21 @@ class _setUserRoleState extends State<setUserRole> {
                                   TextStyle(fontSize: 20, color: Colors.white)),
                           color: Colors.grey.shade400,
                           onPressed: () {
-                            //TODO add role in database
+                            //TODO add token parallel to this datetime thingy in girl
                             Firestore.instance
                                 .collection('girl_user')
                                 .document(user.uid)
                                 .setData({'time': DateTime.now()});
+
+                            final FirebaseMessaging _firebaseMessaging =
+                                FirebaseMessaging();
+                            _firebaseMessaging.getToken().then((token) {
+                              print(token);
+                              Firestore.instance
+                                  .collection('girl_user')
+                                  .document(user.uid)
+                                  .setData({'NotifyToken': token}, merge: true);
+                            });
 
                             Firestore.instance
                                 .collection('girl_user')
@@ -101,6 +112,17 @@ class _setUserRoleState extends State<setUserRole> {
                               'phone': 'girl_user',
                               'birth': '',
                             });
+                            Firestore.instance
+                                .collection('girl_user')
+                                .document(user.uid)
+                                .collection('level_info')
+                                .document(user.uid)
+                                .setData({
+                              'level1': false,
+                              'level2': false,
+                              'level3': false
+                            });
+
                             //TODO send on girl screen
                             if (user.isEmailVerified)
                               Navigator.pushReplacement(
@@ -134,10 +156,21 @@ class _setUserRoleState extends State<setUserRole> {
                                   TextStyle(fontSize: 20, color: Colors.white)),
                           color: Colors.grey.shade400,
                           onPressed: () {
+                            //TODO add token parallel to datetime thingy in protector
                             Firestore.instance
                                 .collection('protector')
                                 .document(user.uid)
                                 .setData({'time': DateTime.now()});
+
+                            final FirebaseMessaging _firebaseMessaging =
+                                FirebaseMessaging();
+                            _firebaseMessaging.getToken().then((token) {
+                              print(token);
+                              Firestore.instance
+                                  .collection('protector')
+                                  .document(user.uid)
+                                  .setData({'NotifyToken': token}, merge: true);
+                            });
 
                             Firestore.instance
                                 .collection('protector')
@@ -153,6 +186,7 @@ class _setUserRoleState extends State<setUserRole> {
                               'phone': 'Protector',
                               'birth': '',
                             });
+
                             //TODO send on protector screen
                             if (user.isEmailVerified)
                               Navigator.pushReplacement(

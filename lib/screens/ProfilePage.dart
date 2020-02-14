@@ -442,8 +442,7 @@ class ProfilePageState extends State<ProfilePage> {
 
     return Scaffold(
       backgroundColor: Colors.grey.shade300,
-      drawer: getDrawer(current_user, '$role')
-          .getdrawer(context), //TODO send according to role
+      drawer: getDrawer(current_user, '$role').getdrawer(context),
       body: SingleChildScrollView(
         child: Stack(
           children: <Widget>[
@@ -591,6 +590,11 @@ class ProfilePageState extends State<ProfilePage> {
                                 SharedPreferences prefs =
                                     await SharedPreferences.getInstance();
                                 await prefs.setBool('Loggedin', false);
+                                Firestore.instance
+                                    .collection(collectionname)
+                                    .document(userId)
+                                    .setData({'NotifyToken': 'null'},
+                                        merge: true);
                                 Navigator.of(context).pushReplacement(
                                     MaterialPageRoute(
                                         builder: (context) => LoginPage()));

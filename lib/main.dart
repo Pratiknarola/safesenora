@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:prototype/screens/pushNotificationTest.dart';
+import 'package:prototype/screens/setScreen.dart';
 
 void main() => runApp(MyApp());
 
@@ -13,7 +13,7 @@ class MyApp extends StatelessWidget {
           appBar: AppBar(
             title: Text("Prototype"),
           ),
-          body: pushNotification(),
+          body: setScreen(),
         ));
   }
 }

@@ -19,7 +19,6 @@ class pushNotificationState extends State<pushNotification> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     getMessage();
   }
@@ -60,7 +59,6 @@ class pushNotificationState extends State<pushNotification> {
   @override
   Widget build(BuildContext context) {
     print("the message as $_message");
-    // TODO: implement build
     return MaterialApp(
       home: Scaffold(
         body: Center(
