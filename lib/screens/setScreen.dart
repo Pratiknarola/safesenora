@@ -25,9 +25,8 @@ class _setScreenState extends State<setScreen> {
       Navigator.of(context).pushReplacement(
           new MaterialPageRoute(builder: (context) => new FirstScreen()));
     } else {
-      await prefs.setBool('seen', true);
       Navigator.of(context).pushReplacement(
-          new MaterialPageRoute(builder: (context) => new IntroScreen()));
+          new MaterialPageRoute(builder: (context) => new IntroScreen(prefs)));
     }
   }
 
