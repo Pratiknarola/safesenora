@@ -1,11 +1,13 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:prototype/auth/getUserRole.dart';
+import 'package:prototype/auth/setUserRole.dart';
 import 'package:prototype/screens/ProfilePage.dart';
 import 'package:prototype/screens/first_screen.dart';
+import 'package:prototype/screens/girlHomeScreen.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wave/config.dart';
@@ -95,16 +97,81 @@ class _LoginScreenState extends State<LoginPage>
     }
   }
 
+  Future<String> getRole() async {
+    FirebaseUser user = await FirebaseAuth.instance.currentUser();
+    bool girl_user, protector;
+    QuerySnapshot qs_girl =
+        await Firestore.instance.collection('girl_user').getDocuments();
+    qs_girl.documents.forEach((DocumentSnapshot snap) {
+      if (snap.documentID == user.uid) return 'girl';
+    });
+
+    QuerySnapshot qs_protect =
+        await Firestore.instance.collection('protector').getDocuments();
+    qs_protect.documents.forEach((DocumentSnapshot snap) {
+      if (snap.documentID == user.uid) return 'protector';
+    });
+  }
+
   @override
   void moveUserDashboardScreen(FirebaseUser currentUser) async {
     phoneTabEnable();
     closeLoader();
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setBool('Loggedin', true);
-    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ProfilePage1()));
-  }
+
+    print('passed the login shared preferencess ${currentUser.uid}');
+    bool girl=false,proteector=false;
+    Firestore.instance
+        .collection('girl_user')
+        .getDocuments()
+        .then((QuerySnapshot qs_girl) {
+      qs_girl.documents.forEach((DocumentSnapshot snap) {
+        print("Current snp is ${snap.documentID}");
+        print("current user id is ${currentUser.uid}");
+        if (snap.documentID == currentUser.uid) {
+
+          debugPrint("I am girl user");
+          girl=true;
+          Navigator.pushReplacement(
+              context, MaterialPageRoute(builder: (context) => ProfilePage1()));
+        }
+      });
+    });
+    Firestore.instance
+        .collection('protector')
+        .getDocuments()
+        .then((QuerySnapshot qs_protector) {
+          List<DocumentSnapshot> doc = qs_protector.documents;
+          print(doc.length);
+      qs_protector.documents.forEach((DocumentSnapshot snap) {
+        print("Current snp is ${snap.documentID}");
+        print("current user id is ${currentUser.uid}");
+        if (snap.documentID == currentUser.uid) {
+          debugPrint("I am protector user");
+          proteector=true;
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (context) => girlHomeScreen()));
+        }
+
+     });
+     if((!girl)&&(!proteector)){
+       print('i got insidde regisering as a role');
+       Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) => setUserRole(currentUser)));}
+    });
+    }
+
+
+
+  //TODO search in database for user role.
+  //TODO if role => girl -> send to girlHomeScreen
+  //TODO if role => protector -> send to protectorHomeScreen
+  //TODO if no role selected or no entry found -> send to setUserRole
+  //Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ProfilePage1()));
 
   var _isHidden = true;
+
   @override
   Widget build(BuildContext context) {
     var tabs = new Row(
@@ -490,8 +557,14 @@ class _LoginScreenState extends State<LoginPage>
       //showAlert("Problem Loggin In. Check Email and Password");
       Flushbar(
         backgroundColor: Colors.white,
-        titleText: Text("Sign In Error", style: TextStyle(color: Colors.red, fontSize: 20),),
-        messageText: Text("Problem Loggin In. Check Email and Password", style: TextStyle(color: Colors.black, fontSize: 18),),
+        titleText: Text(
+          "Sign In Error",
+          style: TextStyle(color: Colors.red, fontSize: 20),
+        ),
+        messageText: Text(
+          "Problem Loggin In. Check Email and Password",
+          style: TextStyle(color: Colors.black, fontSize: 18),
+        ),
         duration: Duration(seconds: 5),
       )..show(context);
       _isLoading = false;
@@ -517,11 +590,13 @@ class _LoginScreenState extends State<LoginPage>
   }
 
   login(String email, String pass) {
-    firebaseAnonymouslyUtil.signIn(_teMobileEmail.text, _tePassword.text).then((FirebaseUser user){
-      if(user.isEmailVerified){
+    firebaseAnonymouslyUtil
+        .signIn(_teMobileEmail.text, _tePassword.text)
+        .then((FirebaseUser user) {
+      if (user.isEmailVerified) {
+        print('moved user oto dashboard screen');
         moveUserDashboardScreen(user);
-      }
-      else{
+      } else {
         user.sendEmailVerification();
         setState(() {
           //AppUtil().showAlert(msg);
@@ -529,14 +604,16 @@ class _LoginScreenState extends State<LoginPage>
             context: context,
             type: AlertType.success,
             title: "Attention",
-            desc: "Account created. Please verify your account using link sent to your email id and login using your credentials",
+            desc:
+                "Account created. Please verify your account using link sent to your email id and login using your credentials",
             buttons: [
               DialogButton(
                 child: Text(
                   "Done",
                   style: TextStyle(color: Colors.white, fontSize: 20),
                 ),
-                onPressed: () => Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => getUserRole(user))),
+                onPressed: () => Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(builder: (context) => setUserRole(user))),
                 width: 120,
               )
             ],
@@ -544,10 +621,7 @@ class _LoginScreenState extends State<LoginPage>
         });
         phoneTabEnable();
         closeLoader();
-
       }
-
-
     }).catchError((e) => loginError(e));
   }
 }

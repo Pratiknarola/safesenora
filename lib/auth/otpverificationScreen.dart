@@ -1,8 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:prototype/screens/ProfilePage.dart';
-import 'package:prototype/screens/ProfilePage1.dart';
-import 'package:prototype/screens/first_screen.dart';
+import '../screens/ProfilePage1.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -104,17 +102,17 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreenState>
 
   void _submit() {
     try{
-      if (_isMobileNumberEnter) {
-        showLoader();
-        presenter.verifyOtp(_teOtpDigitOne.text +
-            _teOtpDigitTwo.text +
-            _teOtpDigitThree.text +
-            _teOtpDigitFour.text +
-            _teOtpDigitFive.text +
-            _teOtpDigitSix.text);
-      } else {
-        showAlert("Please enter valid OTP!");
-      }
+    if (_isMobileNumberEnter) {
+      showLoader();
+      presenter.verifyOtp(_teOtpDigitOne.text +
+          _teOtpDigitTwo.text +
+          _teOtpDigitThree.text +
+          _teOtpDigitFour.text +
+          _teOtpDigitFive.text +
+          _teOtpDigitSix.text);
+    } else {
+      showAlert("Please enter valid OTP!");
+    }
     }catch(e){
       showAlert("Please enter valid OTP!");
 
@@ -230,7 +228,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreenState>
                     decoration: new BoxDecoration(
                       color: new Color(0xFF2CB044),
                       borderRadius:
-                      new BorderRadius.all(const Radius.circular(6.0)),
+                          new BorderRadius.all(const Radius.circular(6.0)),
                     ),
                     child: Text(
                       "Verify OTP",

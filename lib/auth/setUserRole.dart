@@ -2,10 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:prototype/auth/login.dart';
 import 'package:prototype/screens/ProfilePage1.dart';
 import 'package:prototype/screens/girlHomeScreen.dart';
-import 'package:prototype/screens/protector_home_screen.dart';
 
 class setUserRole extends StatefulWidget {
   BuildContext context;
@@ -13,6 +11,7 @@ class setUserRole extends StatefulWidget {
 
   setUserRole(@required this.user);
 
+  @override
   _setUserRoleState createState() => _setUserRoleState(context, this.user);
 }
 
@@ -82,12 +81,6 @@ class _setUserRoleState extends State<setUserRole> {
                                   TextStyle(fontSize: 20, color: Colors.white)),
                           color: Colors.grey.shade400,
                           onPressed: () {
-                            //TODO add role in database
-                            Firestore.instance
-                                .collection('girl_user')
-                                .document(user.uid)
-                                .setData({'time': DateTime.now()});
-
                             Firestore.instance
                                 .collection('girl_user')
                                 .document(user.uid)
@@ -103,15 +96,12 @@ class _setUserRoleState extends State<setUserRole> {
                               'birth': '',
                             });
                             //TODO send on girl screen
-                            if(user.isEmailVerified)
                             Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => girlHomeScreen()));
-                            else{
-                                user.sendEmailVerification();
-                                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage()));
-                              }
+                                    builder: (context) => ProfilePage1()));
+                            //TODO add role in database
+                            //TODO send on girl screen
                           },
                         ),
                       )),
@@ -134,32 +124,21 @@ class _setUserRoleState extends State<setUserRole> {
                             Firestore.instance
                                 .collection('protector')
                                 .document(user.uid)
-                                .setData({'time': DateTime.now()});
-
-                            Firestore.instance
-                                .collection('protector')
-                                .document(user.uid)
                                 .collection('user_info')
                                 .document(user.uid)
                                 .setData({
                               'name': '',
                               'picture':
-                                  'http://knowafest.com/files/uploads/hack-2017112501.jpeg',
+                              'http://knowafest.com/files/uploads/hack-2017112501.jpeg',
                               'email': '',
                               'surname': '',
                               'phone': 'Protector',
                               'birth': '',
                             });
                             //TODO send on protector screen
-                            if(user.isEmailVerified)
-                              Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => protectorHomeScreen()));
-                            else{
-                              user.sendEmailVerification();
-                              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage()));
-                            }
+                            Navigator.of(context).pushReplacement(
+                                MaterialPageRoute(
+                                    builder: (context) => girlHomeScreen()));
                           },
                         ),
                       )),

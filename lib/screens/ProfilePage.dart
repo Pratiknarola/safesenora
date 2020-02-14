@@ -28,7 +28,6 @@ class ProfilePage extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
-    // TODO: implement createState
     return ProfilePageState();
   }
 }
@@ -51,6 +50,12 @@ class ProfilePageState extends State<ProfilePage> {
       setState(() {
         userId = user.uid;
         debugPrint("called setstate method");
+        Firestore.instance
+            .collection('girl_user')
+            .document(userId)
+            .collection('user_info')
+            .document(userId)
+            .setData({'name': 'kallu'});
       });
       print('userrrrrrrrrrrrrr $userId');
     });

@@ -2,6 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+import 'package:prototype/auth/login.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'SelectProfilePic.dart';
 
@@ -20,6 +24,7 @@ class ProfilePage1State extends State<ProfilePage1> {
   String _phoneNumber;
   String _name;
   String _surname;
+  String dob;
   final _formKey = GlobalKey<FormState>();
 
   Future<String> getUid() {
@@ -29,8 +34,9 @@ class ProfilePage1State extends State<ProfilePage1> {
       setState(() {
         userId = user.uid;
         debugPrint("called setstate method");
+
+        print('userrrrrrrrrrrrrr $userId');
       });
-      print('userrrrrrrrrrrrrr $userId');
     });
   }
 
@@ -288,7 +294,9 @@ class ProfilePage1State extends State<ProfilePage1> {
         ),
         title: Text(
           "Number",
-          style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w500),
+          style: TextStyle(
+            fontSize: 18.0,
+          ),
         ),
         trailing: IconButton(
           icon: Icon(Icons.edit, color: Color(0xff18352B)),
@@ -370,9 +378,9 @@ class ProfilePage1State extends State<ProfilePage1> {
         title: Text(
           'Mail',
           style: TextStyle(
-              color: Color(0xff18352B),
-              fontSize: 18.0,
-              fontWeight: FontWeight.w500),
+            color: Color(0xff18352B),
+            fontSize: 18.0,
+          ),
         ),
         subtitle: Text(
           userMail,
@@ -392,8 +400,29 @@ class ProfilePage1State extends State<ProfilePage1> {
           "Date of Birth",
           style: TextStyle(color: Colors.black, fontSize: 18.0),
         ),
+        trailing: IconButton(
+          icon: Icon(Icons.edit, color: Color(0xff18352B)),
+          onPressed: () {
+            DatePicker.showDatePicker(context,
+                theme: DatePickerTheme(
+                  containerHeight: 210.0,
+                ),
+                showTitleActions: true,
+                minTime: DateTime(1900, 1, 1),
+                maxTime: DateTime.now(), onConfirm: (date) {
+              print('confirm $dob');
+              dob = '${date.day} - ${date.month} - ${date.year}';
+              Firestore.instance
+                  .collection('girl_user')
+                  .document(userId)
+                  .collection('user_info')
+                  .document(userId)
+                  .setData({'birth': dob}, merge: true);
+            }, currentTime: DateTime.now(), locale: LocaleType.en);
+          },
+        ),
         subtitle: Text(
-          "birthText",
+          userData[0]['birth'],
           //DateFormat('dd/MM/yyyy').format(userData['DOB'].toDate())
           style: TextStyle(fontSize: 15.0, color: Color(0xff18352B)),
         ),
@@ -422,6 +451,16 @@ class ProfilePage1State extends State<ProfilePage1> {
                         padding: EdgeInsets.all(16.0),
                         margin: EdgeInsets.only(top: 16.0),
                         decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: [
+                                  Color(0xffA8A8A4),
+                                  Color(0xffACFBDF)
+                                  //Color(0xffB6C8BC)
+                                  //Color.fromRGBO(212, 63, 141, 1),
+                                  //Color.fromRGBO(2, 80, 197, 1)
+                                ]),
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(5.0)),
                         child: Column(
@@ -483,12 +522,12 @@ class ProfilePage1State extends State<ProfilePage1> {
                         width: 80,
                         child: GestureDetector(
                             onTap: () {
-                              Navigator.push(
+                              /*Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) =>
-                                          SelectProfilPicture()));
-                              // _openModalBottomSheet(context);
+                                          SelectProfilPicture()));*/
+                              _openModalBottomSheet(context);
                             },
                             child: ClipRRect(
                               borderRadius: new BorderRadius.circular(10.0),
@@ -503,6 +542,16 @@ class ProfilePage1State extends State<ProfilePage1> {
                   SizedBox(height: 20.0),
                   Container(
                     decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            Color(0xffA8A8A4),
+                            Color(0xffACFBDF),
+                            //Color(0xffB6C8BC)
+                            //Color.fromRGBO(212, 63, 141, 1),
+                            //Color.fromRGBO(2, 80, 197, 1)
+                          ]),
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(5.0),
                     ),
@@ -523,9 +572,15 @@ class ProfilePage1State extends State<ProfilePage1> {
                           width: double.infinity,
                           child: CupertinoButton(
                               // color: Color(0xff93E7AE),
-                              onPressed: () {
+                              onPressed: () async {
                                 // widget._signOut();
-                                Navigator.pushReplacementNamed(context, '/');
+
+                                SharedPreferences prefs =
+                                    await SharedPreferences.getInstance();
+                                await prefs.setBool('Loggedin', false);
+                                Navigator.of(context).pushReplacement(
+                                    MaterialPageRoute(
+                                        builder: (context) => LoginPage()));
                               },
                               child: Text("Sign Out")),
                         )
