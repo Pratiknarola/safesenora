@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import './screens/first_screen.dart';
+import 'package:prototype/screens/first_screen.dart';
+import 'package:prototype/screens/intro.dart';
+import 'package:prototype/screens/setScreen.dart';
 
 void main() => runApp(MyApp());
-
 
 class MyApp extends StatelessWidget{
   @override
@@ -13,7 +14,7 @@ class MyApp extends StatelessWidget{
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(title: Text("Prototype"),),
-        body: FirstScreen(),
+        body: setScreen(),
       )
     );
   }
