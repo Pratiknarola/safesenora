@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:safesenora/first_screen.dart';
+import 'package:safesenora/screens/first_screen.dart';
 
 void main() => runApp(MyApp());
 
