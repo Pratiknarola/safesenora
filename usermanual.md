@@ -6,7 +6,7 @@ Download the App from the Playstore on release: SafeSenora
 Hello User SafeSenora 
 <ul>Steps To use the App:
 <li>1.)Login the App by filling the details.</li>
-<li>2.)Fill the details of your family menbers in trusted members.</li>
+<li>2.)Fill the details of your family members in trusted members.</li>
 </ul>
 
 The App is basically divided into three levels:
