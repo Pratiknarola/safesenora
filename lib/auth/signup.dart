@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:safesenora/auth/login.dart';
-import 'package:safeseno/screens/first_screen.dart';
+import 'login.dart';
+import '../screens/first_screen.dart';
 import 'package:wave/config.dart';
 import 'package:wave/wave.dart';
 

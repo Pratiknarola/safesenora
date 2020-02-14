@@ -1,7 +1,13 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:safesenora/auth/login.dart';
+import 'package:prototype/auth/login.dart';
+import 'package:prototype/auth/progresshud.dart';
+import 'package:prototype/auth/setUserRole.dart';
+import 'package:prototype/screens/protector_home_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'girl_home_screen.dart';
 import 'intro.dart';
 
 class setScreen extends StatefulWidget {
@@ -19,10 +25,58 @@ class _setScreenState extends State<setScreen> {
   Future checkFirstSeen() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     bool _seen = (prefs.getBool('seen') ?? false);
+    bool loggedin = (prefs.getBool("Loggedin") ?? false);
+    bool girl;
+    bool protector;
 
     if (_seen) {
-      Navigator.of(context).pushReplacement(
-          new MaterialPageRoute(builder: (context) => new LoginPage()));
+      if (!loggedin) {
+        Navigator.of(context).pushReplacement(
+            new MaterialPageRoute(builder: (context) => new LoginPage()));
+      } else {
+        print("going to girl");
+        FirebaseAuth.instance.currentUser().then((FirebaseUser currentUser) {
+          Firestore.instance
+              .collection('girl_user')
+              .getDocuments()
+              .then((QuerySnapshot qs_girl) {
+            qs_girl.documents.forEach((DocumentSnapshot snap) {
+              print("got in girl");
+              if (snap.documentID == currentUser.uid) {
+                print("making girl true");
+                girl = true;
+                Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => girlHomeScreen(currentUser)));
+              }
+            });
+          });
+          print("after girl girl: $girl and prot $protector");
+          Firestore.instance
+              .collection('protector')
+              .getDocuments()
+              .then((QuerySnapshot qs_protector) {
+            qs_protector.documents.forEach((DocumentSnapshot snap) {
+              if (snap.documentID == currentUser.uid) {
+                protector = true;
+                Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            protectorHomeScreen(currentUser)));
+              }
+            });
+            print("after prot girl $girl and prot $protector");
+            if (!girl && !protector) {
+              Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => setUserRole(currentUser)));
+            }
+          });
+        });
+      }
     } else {
       Navigator.of(context).pushReplacement(
           new MaterialPageRoute(builder: (context) => new IntroScreen(prefs)));
@@ -31,6 +85,10 @@ class _setScreenState extends State<setScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return ProgressHUD(
+      child: Container(),
+      inAsyncCall: true,
+      opacity: 0.0,
+    );
   }
 }

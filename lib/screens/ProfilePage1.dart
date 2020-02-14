@@ -5,28 +5,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:prototype/auth/login.dart';
-import 'package:prototype/util/getDrawer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'SelectProfilePic.dart';
 
-class ProfilePage extends StatefulWidget {
-  String role;
-
-  ProfilePage(this.role);
-
+class ProfilePage1 extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    return ProfilePageState(role);
+    return ProfilePage1State();
   }
 }
 
-class ProfilePageState extends State<ProfilePage> {
+class ProfilePage1State extends State<ProfilePage1> {
   String userId;
-  String role;
-  String collectionname;
-  ProfilePageState(this.role); // CrudMethods crudObj = new CrudMethods();
-  FirebaseUser current_user;
+
+  // CrudMethods crudObj = new CrudMethods();
   String userMail = 'userMail';
   String _phoneNumber;
   String _name;
@@ -37,10 +30,11 @@ class ProfilePageState extends State<ProfilePage> {
   Future<String> getUid() {
     FirebaseAuth.instance.currentUser().then((user) {
       //Future.delayed(Duration(seconds: 2));
-      current_user = user;
+
       setState(() {
         userId = user.uid;
         debugPrint("called setstate method");
+
         print('userrrrrrrrrrrrrr $userId');
       });
     });
@@ -49,11 +43,6 @@ class ProfilePageState extends State<ProfilePage> {
   @override
   void initState() {
     getUid();
-    if (role == 'girl') {
-      collectionname = 'girl_user';
-    } else {
-      collectionname = 'protector';
-    }
   }
 
   String validateEmail(String value) {
@@ -110,7 +99,7 @@ class ProfilePageState extends State<ProfilePage> {
         ? CircularProgressIndicator()
         : StreamBuilder<QuerySnapshot>(
             stream: Firestore.instance
-                .collection('$collectionname')
+                .collection('girl_user')
                 .document('$userId')
                 .collection('user_info')
                 .snapshots(),
@@ -185,7 +174,7 @@ class ProfilePageState extends State<ProfilePage> {
                                 if (_formKey.currentState.validate()) {
                                   _formKey.currentState.save();
                                   Firestore.instance
-                                      .collection('$collectionname')
+                                      .collection('girl_user')
                                       .document(userId)
                                       .collection('user_info')
                                       .document(userId)
@@ -267,7 +256,7 @@ class ProfilePageState extends State<ProfilePage> {
                                   _formKey.currentState.save();
 
                                   Firestore.instance
-                                      .collection('$collectionname')
+                                      .collection('girl_user')
                                       .document(userId)
                                       .collection('user_info')
                                       .document(userId)
@@ -348,7 +337,7 @@ class ProfilePageState extends State<ProfilePage> {
                                 if (_formKey.currentState.validate()) {
                                   _formKey.currentState.save();
                                   Firestore.instance
-                                      .collection('$collectionname')
+                                      .collection('girl_user')
                                       .document(userId)
                                       .collection('user_info')
                                       .document(userId)
@@ -424,7 +413,7 @@ class ProfilePageState extends State<ProfilePage> {
               print('confirm $dob');
               dob = '${date.day} - ${date.month} - ${date.year}';
               Firestore.instance
-                  .collection('$collectionname')
+                  .collection('girl_user')
                   .document(userId)
                   .collection('user_info')
                   .document(userId)
@@ -442,8 +431,6 @@ class ProfilePageState extends State<ProfilePage> {
 
     return Scaffold(
       backgroundColor: Colors.grey.shade300,
-      drawer: getDrawer(current_user, '$role')
-          .getdrawer(context), //TODO send according to role
       body: SingleChildScrollView(
         child: Stack(
           children: <Widget>[

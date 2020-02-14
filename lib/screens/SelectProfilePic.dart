@@ -9,7 +9,6 @@ import 'package:image_picker/image_picker.dart';
 class SelectProfilPicture extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    // TODO: implement createState
     return _SelectProfilPictureState();
   }
 }
