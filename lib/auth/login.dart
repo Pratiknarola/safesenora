@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:prototype/screens/first_screen.dart';
+import '../screens/first_screen.dart';
 import 'package:wave/config.dart';
 import 'package:wave/wave.dart';
 import 'app_util.dart';
@@ -225,18 +225,18 @@ class _LoginScreenState extends State<LoginPage>
           controller: _tePassword,
           focusNode: _focusNodePassword,
           decoration: InputDecoration(
-            labelText: "Password",
-            hintText: "Passwrod",
-            fillColor: new Color(0xFF2CB044),
-            prefixIcon: new Icon(Icons.keyboard_hide),
-            suffixIcon: GestureDetector(
-              child: _isHidden ? Icon(Icons.visibility) : Icon(Icons.visibility_off),
-              onTap: (){
-                setState(() {
-                  _isHidden = !_isHidden;
-                });
-              },
-            )
+              labelText: "Password",
+              hintText: "Passwrod",
+              fillColor: new Color(0xFF2CB044),
+              prefixIcon: new Icon(Icons.keyboard_hide),
+              suffixIcon: GestureDetector(
+                child: _isHidden ? Icon(Icons.visibility) : Icon(Icons.visibility_off),
+                onTap: (){
+                  setState(() {
+                    _isHidden = !_isHidden;
+                  });
+                },
+              )
           ),
         ),
         new SizedBox(
@@ -353,42 +353,42 @@ class _LoginScreenState extends State<LoginPage>
     );
 
     return new Scaffold(
-      backgroundColor: const Color(0xFF2B2B2B),
-      appBar: null,
-      key: _scaffoldKey,
-      body: Stack(
-        children: <Widget>[
-          Container(
-            height: 800,
-            child: RotatedBox(
-              quarterTurns: 2,
-              child: WaveWidget(
-                config: CustomConfig(
-                  gradients: [
-                    [Colors.deepPurple, Colors.deepPurple.shade200],
-                    [Colors.indigo.shade200, Colors.purple.shade200],
-                  ],
-                  durations: [19000, 11000],
-                  heightPercentages: [0.20, 0.25],
-                  blur: MaskFilter.blur(BlurStyle.solid, 10),
-                  gradientBegin: Alignment.bottomLeft,
-                  gradientEnd: Alignment.topRight,
-                ),
-                waveAmplitude: 0,
-                size: Size(
-                  double.infinity,
-                  double.infinity,
+        backgroundColor: const Color(0xFF2B2B2B),
+        appBar: null,
+        key: _scaffoldKey,
+        body: Stack(
+          children: <Widget>[
+            Container(
+              height: 800,
+              child: RotatedBox(
+                quarterTurns: 2,
+                child: WaveWidget(
+                  config: CustomConfig(
+                    gradients: [
+                      [Colors.deepPurple, Colors.deepPurple.shade200],
+                      [Colors.indigo.shade200, Colors.purple.shade200],
+                    ],
+                    durations: [19000, 11000],
+                    heightPercentages: [0.20, 0.25],
+                    blur: MaskFilter.blur(BlurStyle.solid, 10),
+                    gradientBegin: Alignment.bottomLeft,
+                    gradientEnd: Alignment.topRight,
+                  ),
+                  waveAmplitude: 0,
+                  size: Size(
+                    double.infinity,
+                    double.infinity,
+                  ),
                 ),
               ),
             ),
-          ),
-          ProgressHUD(
-            child: screenRoot,
-            inAsyncCall: _isLoading,
-            opacity: 0.0,
-          ),
-        ],
-      )
+            ProgressHUD(
+              child: screenRoot,
+              inAsyncCall: _isLoading,
+              opacity: 0.0,
+            ),
+          ],
+        )
     );
   }
 

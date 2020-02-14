@@ -1,5 +1,6 @@
 import 'dart:io';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -17,9 +18,17 @@ class _SelectProfilPictureState extends State<SelectProfilPicture> {
   File newProfilPic;
   // CrudMethods crudObj = new CrudMethods();
 
-  updateProfilPicture(picUrl) {
+  updateProfilPicture(picUrl, uid) {
     Map<String, dynamic> userMap = {'picture': picUrl};
-    // crudObj.createOrUpdateUserData(userMap);
+    Firestore.instance
+        .collection('girl_user')
+        .document('$uid')
+        .collection('user_info')
+        .document(uid)
+        .updateData(userMap)
+        .catchError((e) {
+      print(e);
+    });
   }
 
   Future getImageFromGallery() async {
@@ -37,9 +46,10 @@ class _SelectProfilPictureState extends State<SelectProfilPicture> {
   }
 
   uploadImage() async {
-    //FirebaseUser user = await FirebaseAuth.instance.currentUser();
+
+    FirebaseUser user = await FirebaseAuth.instance.currentUser();
     final StorageReference firebaseStorageRef =
-        FirebaseStorage.instance.ref().child('profilePics/.jpg');
+        FirebaseStorage.instance.ref().child('${user.uid}/profilePic/.jpg');
     final StorageUploadTask task = firebaseStorageRef.putFile(newProfilPic);
     if (task.isInProgress) {
       setState(() {
@@ -48,7 +58,8 @@ class _SelectProfilPictureState extends State<SelectProfilPicture> {
     }
     var downloadUrl = await (await task.onComplete).ref.getDownloadURL();
     var url = downloadUrl.toString();
-    updateProfilPicture(url);
+
+    updateProfilPicture(url, user.uid);
     setState(() {
       _isLoading = false;
     });

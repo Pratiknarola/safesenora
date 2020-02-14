@@ -218,7 +218,7 @@ class ProfilePageState extends State<ProfilePage> {
                               color: Theme.of(context).accentColor,
                               shape: RoundedRectangleBorder(
                                   borderRadius:
-                                      BorderRadius.all(Radius.circular(20.0))),
+                                  BorderRadius.all(Radius.circular(20.0))),
                               child: Text(
                                 "Save",
                                 style: TextStyle(color: Colors.white),
@@ -279,7 +279,7 @@ class ProfilePageState extends State<ProfilePage> {
                             padding: EdgeInsets.all(8.0),
                             child: TextFormField(
                               decoration:
-                                  InputDecoration(hintText: 'Last Name'),
+                              InputDecoration(hintText: 'Last Name'),
                               onSaved: (value) => _surname = value,
                             ),
                           ),
@@ -289,7 +289,7 @@ class ProfilePageState extends State<ProfilePage> {
                               color: Theme.of(context).accentColor,
                               shape: RoundedRectangleBorder(
                                   borderRadius:
-                                      BorderRadius.all(Radius.circular(20.0))),
+                                  BorderRadius.all(Radius.circular(20.0))),
                               child: Text(
                                 "Save",
                                 style: TextStyle(color: Colors.white),
@@ -366,7 +366,7 @@ class ProfilePageState extends State<ProfilePage> {
                             child: TextFormField(
                               validator: validatePhone,
                               decoration:
-                                  InputDecoration(hintText: 'Mobile Number'),
+                              InputDecoration(hintText: 'Mobile Number'),
                               keyboardType: TextInputType.number,
                               onSaved: (value) => _phoneNumber = value,
                             ),
@@ -377,7 +377,7 @@ class ProfilePageState extends State<ProfilePage> {
                               color: Theme.of(context).accentColor,
                               shape: RoundedRectangleBorder(
                                   borderRadius:
-                                      BorderRadius.all(Radius.circular(20.0))),
+                                  BorderRadius.all(Radius.circular(20.0))),
                               child: Text(
                                 "Save",
                                 style: TextStyle(color: Colors.white),
@@ -529,7 +529,7 @@ class ProfilePageState extends State<ProfilePage> {
                                   Color.fromRGBO(2, 80, 197, 1)
                                 ]),
                             borderRadius:
-                                BorderRadius.all(Radius.circular(20.0)),
+                            BorderRadius.all(Radius.circular(20.0)),
                             boxShadow: [
                               BoxShadow(
                                 color: Colors.grey,
@@ -595,10 +595,10 @@ class ProfilePageState extends State<ProfilePage> {
               title: userData['name'] == ""
                   ? Text(userMail)
                   : Text(
-                      userData['name'] + ' ' + userData['surname'],
-                      style: TextStyle(
-                          fontSize: 30, color: Theme.of(context).primaryColor),
-                    ),
+                userData['name'] + ' ' + userData['surname'],
+                style: TextStyle(
+                    fontSize: 30, color: Theme.of(context).primaryColor),
+              ),
             ),
           ),
           SliverList(
