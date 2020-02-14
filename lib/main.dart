@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import './screens/setScreen.dart';
+import 'package:safesenora/screens/first_screen.dart';
+import 'package:safesenora/screens/intro.dart';
+import 'package:safesenora/screens/setScreen.dart';
 
 void main() => runApp(MyApp());
 
@@ -8,10 +10,10 @@ class MyApp extends StatelessWidget{
   Widget build(BuildContext context) {
     // TODO: implement build
     return MaterialApp(
-      title: "Prototype",
+      title: "safesenora",
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        appBar: AppBar(title: Text("Prototype"),),
+        appBar: AppBar(title: Text("safesenora"),),
         body: setScreen(),
       )
     );

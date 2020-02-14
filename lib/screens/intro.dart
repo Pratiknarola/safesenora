@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intro_slider/intro_slider.dart';
 import 'package:intro_slider/slide_object.dart';
-import 'first_screen.dart';
+import 'package:safesenora/auth/login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:io';
 
 class IntroScreen extends StatefulWidget {
   SharedPreferences prefs;
@@ -25,36 +24,54 @@ class _IntroScreenState extends State<IntroScreen> {
     slides.add(
       new Slide(
         title: "Level 1",
-        styleTitle:
-        TextStyle(color: Color(0xff4DC133), fontSize: 30.0, fontWeight: FontWeight.bold, /*fontFamily: 'RobotoMono'*/ ),
-        description: "Just precuation. Location will be shared live with trusted members",
-        styleDescription:
-        TextStyle(color: Colors.black, fontSize: 20.0, fontStyle: FontStyle.italic, /*fontFamily: 'Raleway'*/),
-        pathImage: "images/photo_school.png",
+        styleTitle: TextStyle(
+          color: Color(0xff4DC133),
+          fontSize: 30.0,
+          fontWeight: FontWeight.bold, /*fontFamily: 'RobotoMono'*/
+        ),
+        description:
+            "Allow miles wound place the leave had. To sitting subject no improve studied limited",
+        styleDescription: TextStyle(
+          color: Colors.black,
+          fontSize: 20.0,
+          fontStyle: FontStyle.italic, /*fontFamily: 'Raleway'*/
+        ),
         backgroundColor: Color(0xFFFFDEAD),
       ),
     );
     slides.add(
       new Slide(
         title: "Level 2",
-        styleTitle:
-        TextStyle(color: Color(0xffFA9020), fontSize: 30.0, fontWeight: FontWeight.bold, /*fontFamily: 'RobotoMono'*/ ),
-        description: "Bad area or more afraid or doubt that someone might be following her",
-        styleDescription:
-        TextStyle(color: Colors.black, fontSize: 20.0, fontStyle: FontStyle.italic, /*fontFamily: 'Raleway'*/),
-        pathImage: "images/photo_school.png",
+        styleTitle: TextStyle(
+          color: Color(0xffFA9020),
+          fontSize: 30.0,
+          fontWeight: FontWeight.bold, /*fontFamily: 'RobotoMono'*/
+        ),
+        description:
+            "Allow miles wound place the leave had. To sitting subject no improve studied limited",
+        styleDescription: TextStyle(
+          color: Colors.black,
+          fontSize: 20.0,
+          fontStyle: FontStyle.italic, /*fontFamily: 'Raleway'*/
+        ),
         backgroundColor: Color(0xFFFFDEAD),
       ),
     );
     slides.add(
       new Slide(
         title: "Level 3",
-        styleTitle:
-        TextStyle(color: Colors.red, fontSize: 30.0, fontWeight: FontWeight.bold, /*fontFamily: 'RobotoMono'*/ ),
-        description: "EMERGENCY",
-        styleDescription:
-        TextStyle(color: Colors.black, fontSize: 20.0, fontStyle: FontStyle.italic, /*fontFamily: 'Raleway'*/),
-        pathImage: "images/photo_school.png",
+        styleTitle: TextStyle(
+          color: Colors.red,
+          fontSize: 30.0,
+          fontWeight: FontWeight.bold, /*fontFamily: 'RobotoMono'*/
+        ),
+        description:
+            "Allow miles wound place the leave had. To sitting subject no improve studied limited",
+        styleDescription: TextStyle(
+          color: Colors.black,
+          fontSize: 20.0,
+          fontStyle: FontStyle.italic, /*fontFamily: 'Raleway'*/
+        ),
         backgroundColor: Color(0xFFFFDEAD),
       ),
     );
@@ -62,13 +79,13 @@ class _IntroScreenState extends State<IntroScreen> {
 
   void onDonePress() async {
     await prefs.setBool('seen', true);
-    Route route = MaterialPageRoute(builder: (context) => FirstScreen());
+    Route route = MaterialPageRoute(builder: (context) => LoginPage());
     Navigator.pushReplacement(context, route);
   }
 
   void onSkipPress() async {
     await prefs.setBool('seen', true);
-    Route route = MaterialPageRoute(builder: (context) => FirstScreen());
+    Route route = MaterialPageRoute(builder: (context) => LoginPage());
     Navigator.pushReplacement(context, route);
   }
 
