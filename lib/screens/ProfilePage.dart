@@ -590,6 +590,7 @@ class ProfilePageState extends State<ProfilePage> {
                                 SharedPreferences prefs =
                                     await SharedPreferences.getInstance();
                                 await prefs.setBool('Loggedin', false);
+
                                 Firestore.instance
                                     .collection(collectionname)
                                     .document(userId)
