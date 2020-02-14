@@ -11,7 +11,10 @@ class MyApp extends StatelessWidget{
     return MaterialApp(
       title: "Prototype",
       debugShowCheckedModeBanner: false,
-      home: FirstScreen(),
+      home: Scaffold(
+        appBar: AppBar(title: Text("Prototype"),),
+        body: FirstScreen(),
+      )
     );
   }
 
