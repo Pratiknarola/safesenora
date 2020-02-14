@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intro_slider/intro_slider.dart';
 import 'package:intro_slider/slide_object.dart';
-import 'package:prototype/screens/first_screen.dart';
+import 'first_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io';
 

@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:prototype/screens/first_screen.dart';
-import 'package:prototype/screens/intro.dart';
-import 'package:prototype/screens/setScreen.dart';
+import './screens/setScreen.dart';
 
 void main() => runApp(MyApp());
 
