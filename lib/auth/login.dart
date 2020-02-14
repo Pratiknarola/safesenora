@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -104,7 +105,6 @@ class LoginScreenState extends State<LoginPage>
   @override
   void moveUserDashboardScreen(FirebaseUser currentUser) async {
     //phoneTabEnable();
-    //TODO make collecton userlist
     String uid = currentUser.uid;
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -128,6 +128,16 @@ class LoginScreenState extends State<LoginPage>
               .collection('user_list')
               .document('${currentUser.email}')
               .setData({'uid': uid, 'type': 'girl_user'}, merge: true);
+          //TODO add token in girl user collection
+          final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+          _firebaseMessaging.getToken().then((token) {
+            print(token);
+            Firestore.instance
+                .collection('girl_user')
+                .document(currentUser.uid)
+                .setData({'NotifyToken': token}, merge: true);
+          });
+
           closeLoader();
           Navigator.pushReplacement(
               context,
@@ -152,6 +162,18 @@ class LoginScreenState extends State<LoginPage>
               .collection('user_list')
               .document('${currentUser.email}')
               .setData({'uid': uid, 'type': 'protector'}, merge: true);
+
+          //TODO add token in protector collection
+
+          final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+          _firebaseMessaging.getToken().then((token) {
+            print(token);
+            Firestore.instance
+                .collection('protector')
+                .document(currentUser.uid)
+                .setData({'NotifyToken': token}, merge: true);
+          });
+
           closeLoader();
           Navigator.pushReplacement(
               context,

@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:async_loader/async_loader.dart';
+import 'package:battery/battery.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -30,6 +32,10 @@ class _visible extends State {
   }
 }*/
 
+// Import package
+
+// Be informed when the state (full, charging, discharging) changes
+
 class girlHomeScreen extends StatefulWidget {
   FirebaseUser user;
 
@@ -55,6 +61,8 @@ class _girlHomeScreenState extends State<girlHomeScreen>
   String link;
   FirebaseUser user;
   final Geolocator geolocator = Geolocator()..forceAndroidLocationManager;
+  var battery;
+  var pastBatteryLevel;
 
   _girlHomeScreenState(this.user);
 
@@ -73,6 +81,39 @@ class _girlHomeScreenState extends State<girlHomeScreen>
   @override
   void initState() {
     super.initState();
+
+    /*****************Battery part *******************/
+    battery = Battery();
+    () async {
+      pastBatteryLevel = await battery.batteryLevel;
+      print('in init state with battery $pastBatteryLevel');
+    }();
+
+    battery.onBatteryStateChanged.listen((BatteryState state) async {
+      if (state == BatteryState.discharging) {
+        var currentBatteryLevel = await battery.batteryLevel;
+        if (currentBatteryLevel >= 50 &&
+            (pastBatteryLevel - currentBatteryLevel > 2)) {
+          pastBatteryLevel = currentBatteryLevel;
+          Firestore.instance
+              .collection('girl_user')
+              .document(user.uid)
+              .collection('level_info')
+              .document(user.uid)
+              .setData({'battery': '$currentBatteryLevel'}, merge: true);
+        } else if (currentBatteryLevel < 50) {
+          pastBatteryLevel = currentBatteryLevel;
+          Firestore.instance
+              .collection('girl_user')
+              .document(user.uid)
+              .collection('level_info')
+              .document(user.uid)
+              .setData({'battery': '$currentBatteryLevel'}, merge: true);
+        }
+      }
+    });
+
+    /************************************************/
     uid = user.uid;
     location = location_plugin.Location();
     location.changeSettings(
@@ -298,13 +339,36 @@ class _girlHomeScreenState extends State<girlHomeScreen>
                         ),
                         RaisedButton(
                           child: Text("Level 1"),
-                          onPressed: () {},
+                          onPressed: () {
+                            Firestore.instance
+                                .collection('girl_user')
+                                .document(user.uid)
+                                .collection('level_info')
+                                .document(user.uid)
+                                .setData({'level1': true}, merge: true);
+                          },
                         ),
                         RaisedButton(
                           child: Text("Level 2"),
-                          onPressed: () {},
+                          onPressed: () {
+                            Firestore.instance
+                                .collection('girl_user')
+                                .document(user.uid)
+                                .collection('level_info')
+                                .document(user.uid)
+                                .setData({'level2': true}, merge: true);
+                          },
                         ),
-                        RaisedButton(child: Text("Level 3"), onPressed: () {}),
+                        RaisedButton(
+                            child: Text("Level 3"),
+                            onPressed: () {
+                              Firestore.instance
+                                  .collection('girl_user')
+                                  .document(user.uid)
+                                  .collection('level_info')
+                                  .document(user.uid)
+                                  .setData({'level3': true}, merge: true);
+                            }),
                       ],
                     ),
                   ),

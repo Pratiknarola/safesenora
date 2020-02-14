@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:prototype/auth/login.dart';
 import 'package:prototype/auth/progresshud.dart';
@@ -45,6 +46,18 @@ class _setScreenState extends State<setScreen> {
               if (snap.documentID == currentUser.uid) {
                 print("making girl true");
                 girl = true;
+                //TODO sending user to girl screen so add token in girl_user collection user
+
+                final FirebaseMessaging _firebaseMessaging =
+                    FirebaseMessaging();
+                _firebaseMessaging.getToken().then((token) {
+                  print(token);
+                  Firestore.instance
+                      .collection('girl_user')
+                      .document(currentUser.uid)
+                      .setData({'NotifyToken': token}, merge: true);
+                });
+
                 Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
@@ -60,6 +73,16 @@ class _setScreenState extends State<setScreen> {
             qs_protector.documents.forEach((DocumentSnapshot snap) {
               if (snap.documentID == currentUser.uid) {
                 protector = true;
+                //TODO add new token in user in protector collection
+                final FirebaseMessaging _firebaseMessaging =
+                    FirebaseMessaging();
+                _firebaseMessaging.getToken().then((token) {
+                  print(token);
+                  Firestore.instance
+                      .collection('protector')
+                      .document(currentUser.uid)
+                      .setData({'NotifyToken': token}, merge: true);
+                });
                 Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
@@ -69,6 +92,7 @@ class _setScreenState extends State<setScreen> {
             });
             print("after prot girl $girl and prot $protector");
             if (!girl && !protector) {
+              //after selecting role user will be sent to their own screen so
               Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(

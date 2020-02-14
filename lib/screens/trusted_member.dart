@@ -80,17 +80,6 @@ class _trustedMemberPageState extends State<trustedMemberPage> {
     updateGirlTrustedListNames();
   }
 
-  Widget getUserTile(BuildContext context, int index) {
-    return ListTile(
-      title:
-          Text("Sample member"), // TODO get name of trusted member using index
-      leading: CircleAvatar(), // TODO here we can use member's profile photo
-      onTap: () {
-        //TODO on tap girl user can see trusted member's profile and can remove him if want
-      },
-    );
-  }
-
   void setMemField(String memid, String value) {
     print("inside pratik memid $memid");
     Firestore.instance
