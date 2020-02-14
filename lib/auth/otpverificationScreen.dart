@@ -1,10 +1,13 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import '../screens/ProfilePage1.dart';
+import 'package:prototype/auth/login.dart';
+import 'package:prototype/auth/setUserRole.dart';
+import 'package:prototype/screens/girl_home_screen.dart';
+import 'package:prototype/screens/protector_home_screen.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'app_util.dart';
 import 'countdown_base.dart';
 import 'firebase_listenter.dart';
 import 'firebase_phone_util.dart';
@@ -101,21 +104,20 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreenState>
   }
 
   void _submit() {
-    try{
-    if (_isMobileNumberEnter) {
-      showLoader();
-      presenter.verifyOtp(_teOtpDigitOne.text +
-          _teOtpDigitTwo.text +
-          _teOtpDigitThree.text +
-          _teOtpDigitFour.text +
-          _teOtpDigitFive.text +
-          _teOtpDigitSix.text);
-    } else {
+    try {
+      if (_isMobileNumberEnter) {
+        showLoader();
+        presenter.verifyOtp(_teOtpDigitOne.text +
+            _teOtpDigitTwo.text +
+            _teOtpDigitThree.text +
+            _teOtpDigitFour.text +
+            _teOtpDigitFive.text +
+            _teOtpDigitSix.text);
+      } else {
+        showAlert("Please enter valid OTP!");
+      }
+    } catch (e) {
       showAlert("Please enter valid OTP!");
-    }
-    }catch(e){
-      showAlert("Please enter valid OTP!");
-
     }
   }
 
@@ -331,7 +333,8 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreenState>
               "Done",
               style: TextStyle(color: Colors.white, fontSize: 20),
             ),
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => Navigator.pushReplacement(
+                context, MaterialPageRoute(builder: (context) => LoginPage())),
             width: 120,
           )
         ],
@@ -352,11 +355,72 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreenState>
 
   @override
   verificationCodeSent(int forceResendingToken) {}
+  @override
+  void moveUserDashboardScreen(FirebaseUser currentUser) async {
+    //phoneTabEnable();
+    closeLoader();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('Loggedin', true);
+    print('passed the login shared preferencess ${currentUser.uid}');
+    bool girl = false, protector = false;
+
+    (() async {
+      var query =
+          await Firestore.instance.collection("girl_user").getDocuments();
+      var list = query.documents;
+      print('the await sentence length came ${list.length}');
+    })();
+
+    Firestore.instance
+        .collection('girl_user')
+        .getDocuments()
+        .then((QuerySnapshot qs_girl) {
+      List<DocumentSnapshot> doc = qs_girl.documents;
+      print('girl user length ${doc.length}');
+      qs_girl.documents.forEach((DocumentSnapshot snap) {
+        print("Current snp is ${snap.documentID}");
+        print("current user id is ${currentUser.uid}");
+        if (snap.documentID == currentUser.uid) {
+          debugPrint("I am girl user");
+          girl = true;
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => girlHomeScreen(currentUser)));
+        }
+      });
+    });
+    Firestore.instance
+        .collection('protector')
+        .getDocuments()
+        .then((QuerySnapshot qs_protector) {
+      List<DocumentSnapshot> doc = qs_protector.documents;
+      print('protector user length ${doc.length}');
+      qs_protector.documents.forEach((DocumentSnapshot snap) {
+        print("Current snp is ${snap.documentID}");
+        print("current user id is ${currentUser.uid}");
+        if (snap.documentID == currentUser.uid) {
+          debugPrint("I am protector user");
+          protector = true;
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => protectorHomeScreen(currentUser)));
+        }
+      });
+      if ((!girl) && (!protector)) {
+        print('i got insidde regisering as a role');
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) => setUserRole(currentUser)));
+      }
+    });
+  }
 
   @override
   onLoginUserVerified(FirebaseUser currentUser) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setBool('Loggedin', true);
-    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => ProfilePage1(),));
+
+    //Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => ProfilePage1(),),);
   }
 }

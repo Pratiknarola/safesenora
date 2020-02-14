@@ -41,7 +41,7 @@ dependencies:
   #google_maps_flutter: ^0.5.21+15
   #permission_handler: ^4.2.0+hotfix.1
   #device_info: ^0.4.1+4
-  #geolocator: ^5.2.0
+  geolocator: ^5.2.0
   #location: ^2.3.5
   #local_auth: ^0.6.1
   provider: ^4.0.2
@@ -80,10 +80,13 @@ flutter:
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   # example:
-  # fonts:
-  #   - family: Schyler
-  #     fonts:
-  #       - asset: fonts/Schyler-Regular.ttf
+  fonts:
+    - family: Montserrat
+      fonts:
+        - asset: assets/fonts/Montserrat-Black.ttf
+        - asset: assets/fonts/Montserrat-Bold.ttf
+        - asset: assets/fonts/Montserrat-Medium.ttf
+        - asset: assets/fonts/Montserrat-Regular.ttf
   #       - asset: fonts/Schyler-Italic.ttf
   #         style: italic
   #   - family: Trajan Pro

@@ -5,15 +5,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:prototype/auth/setUserRole.dart';
-import 'package:prototype/screens/ProfilePage.dart';
-import 'package:prototype/screens/first_screen.dart';
-import 'package:prototype/screens/girlHomeScreen.dart';
+import 'package:prototype/screens/girl_home_screen.dart';
+import 'package:prototype/screens/protector_home_screen.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wave/config.dart';
 import 'package:wave/wave.dart';
 
-import '../screens/ProfilePage1.dart';
 import 'app_util.dart';
 import 'firebase_anonymously_util.dart';
 import 'firebase_google_util.dart';
@@ -24,10 +22,10 @@ import 'progresshud.dart';
 
 class LoginPage extends StatefulWidget {
   @override
-  _LoginScreenState createState() => new _LoginScreenState();
+  LoginScreenState createState() => new LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginPage>
+class LoginScreenState extends State<LoginPage>
     implements FirebaseAuthListener {
   bool _isPhoneAuthEnable = true;
   bool _isGoogleAuthEnable = false;
@@ -60,6 +58,12 @@ class _LoginScreenState extends State<LoginPage>
 
     firebaseAnonymouslyUtil = FirebaseAnonymouslyUtil();
     firebaseAnonymouslyUtil.setScreenListener(this);
+  }
+
+  _fieldFocusChange(
+      BuildContext context, FocusNode currentFocus, FocusNode nextFocus) {
+    currentFocus.unfocus();
+    FocusScope.of(context).requestFocus(nextFocus);
   }
 
   void _submit() {
@@ -97,44 +101,32 @@ class _LoginScreenState extends State<LoginPage>
     }
   }
 
-  Future<String> getRole() async {
-    FirebaseUser user = await FirebaseAuth.instance.currentUser();
-    bool girl_user, protector;
-    QuerySnapshot qs_girl =
-        await Firestore.instance.collection('girl_user').getDocuments();
-    qs_girl.documents.forEach((DocumentSnapshot snap) {
-      if (snap.documentID == user.uid) return 'girl';
-    });
-
-    QuerySnapshot qs_protect =
-        await Firestore.instance.collection('protector').getDocuments();
-    qs_protect.documents.forEach((DocumentSnapshot snap) {
-      if (snap.documentID == user.uid) return 'protector';
-    });
-  }
-
   @override
   void moveUserDashboardScreen(FirebaseUser currentUser) async {
-    phoneTabEnable();
-    closeLoader();
+    //phoneTabEnable();
+
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setBool('Loggedin', true);
-
     print('passed the login shared preferencess ${currentUser.uid}');
-    bool girl=false,proteector=false;
+    bool girl = false, proteector = false;
+
     Firestore.instance
         .collection('girl_user')
         .getDocuments()
         .then((QuerySnapshot qs_girl) {
+      List<DocumentSnapshot> doc = qs_girl.documents;
+      print('girl user length ${doc.length}');
       qs_girl.documents.forEach((DocumentSnapshot snap) {
         print("Current snp is ${snap.documentID}");
         print("current user id is ${currentUser.uid}");
         if (snap.documentID == currentUser.uid) {
-
           debugPrint("I am girl user");
-          girl=true;
+          girl = true;
+          closeLoader();
           Navigator.pushReplacement(
-              context, MaterialPageRoute(builder: (context) => ProfilePage1()));
+              context,
+              MaterialPageRoute(
+                  builder: (context) => girlHomeScreen(currentUser)));
         }
       });
     });
@@ -142,33 +134,34 @@ class _LoginScreenState extends State<LoginPage>
         .collection('protector')
         .getDocuments()
         .then((QuerySnapshot qs_protector) {
-          List<DocumentSnapshot> doc = qs_protector.documents;
-          print(doc.length);
+      List<DocumentSnapshot> doc = qs_protector.documents;
+      print('protector user length ${doc.length}');
       qs_protector.documents.forEach((DocumentSnapshot snap) {
         print("Current snp is ${snap.documentID}");
         print("current user id is ${currentUser.uid}");
         if (snap.documentID == currentUser.uid) {
           debugPrint("I am protector user");
-          proteector=true;
-          Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) => girlHomeScreen()));
+          proteector = true;
+          closeLoader();
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => protectorHomeScreen(currentUser)));
         }
-
-     });
-     if((!girl)&&(!proteector)){
-       print('i got insidde regisering as a role');
-       Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (context) => setUserRole(currentUser)));}
+      });
+      if ((!girl) && (!proteector)) {
+        print('i got insidde regisering as a role');
+        closeLoader();
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) => setUserRole(currentUser)));
+      }
     });
-    }
-
-
+  }
 
   //TODO search in database for user role.
   //TODO if role => girl -> send to girlHomeScreen
   //TODO if role => protector -> send to protectorHomeScreen
   //TODO if no role selected or no entry found -> send to setUserRole
-  //Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ProfilePage1()));
 
   var _isHidden = true;
 
@@ -284,6 +277,11 @@ class _LoginScreenState extends State<LoginPage>
         new TextFormField(
           controller: _teMobileEmail,
           focusNode: _focusNodeMobileEmail,
+          textInputAction: TextInputAction.next,
+          onFieldSubmitted: (term) {
+            _fieldFocusChange(
+                context, _focusNodeMobileEmail, _focusNodePassword);
+          },
           keyboardType: TextInputType.emailAddress,
           decoration: InputDecoration(
             labelText: "Please enter email",

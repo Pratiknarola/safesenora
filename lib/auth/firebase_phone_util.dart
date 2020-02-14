@@ -1,8 +1,10 @@
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'firebase_listenter.dart';
 
 class FirebasePhoneUtil {
@@ -74,7 +76,10 @@ class FirebasePhoneUtil {
     }
   }
 
+
+
   void onLoginUserVerified(FirebaseUser currentUser) {
+
     _view.onLoginUserVerified(currentUser);
   }
 

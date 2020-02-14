@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -6,18 +7,17 @@ import 'package:prototype/auth/login.dart';
 import 'package:prototype/util/getDrawer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class protectorHomeScreen extends StatefulWidget {
-
+class girlHomeScreen extends StatefulWidget {
   FirebaseUser user;
 
-
-  protectorHomeScreen(this.user);
+  girlHomeScreen(this.user);
 
   @override
-  _protectorHomeScreenState createState() => _protectorHomeScreenState(user);
+  _girlHomeScreenState createState() => _girlHomeScreenState(user);
 }
 
-class _protectorHomeScreenState extends State<protectorHomeScreen> with SingleTickerProviderStateMixin {
+class _girlHomeScreenState extends State<girlHomeScreen>
+    with SingleTickerProviderStateMixin {
 
   FirebaseUser user;
   final Geolocator geolocator = Geolocator()..forceAndroidLocationManager;
@@ -25,7 +25,7 @@ class _protectorHomeScreenState extends State<protectorHomeScreen> with SingleTi
   Position currentPosition;
   String currentAddress;
 
-  _protectorHomeScreenState(this.user);
+  _girlHomeScreenState(this.user);
 
   String uid;
   var selectedItemId = 'Home';
@@ -33,7 +33,7 @@ class _protectorHomeScreenState extends State<protectorHomeScreen> with SingleTi
   @override
   void initState() {
     super.initState();
-    uid = user.uid;
+      uid = user.uid;
   }
 
   getCurrentLocation() {
@@ -64,27 +64,32 @@ class _protectorHomeScreenState extends State<protectorHomeScreen> with SingleTi
     }
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: getDrawer(user, 'protector').getdrawer(context),
+      drawer: getDrawer(user, 'girl').getdrawer(context),
       appBar: AppBar(
-        title: Text("Protector screen"),
+        title: Text("Girl screen"),
       ),
       body: ListView(
         children: <Widget>[
-
+          currentPosition!=null ? Text(currentAddress, style: TextStyle(fontSize: 20),) : RaisedButton(
+            child: Text("get location"),
+            onPressed: () {
+              getCurrentLocation();
+            },
+          ),
+          SizedBox(height: 20,),
           CupertinoButton(
             // color: Color(0xff93E7AE),
               onPressed: () async {
                 // widget._signOut();
 
-                SharedPreferences prefs =
-                await SharedPreferences.getInstance();
+                SharedPreferences prefs = await SharedPreferences.getInstance();
                 await prefs.setBool('Loggedin', false);
                 Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(
-                        builder: (context) => LoginPage()));
+                    MaterialPageRoute(builder: (context) => LoginPage()));
               },
               child: Text("Sign Out")),
         ],

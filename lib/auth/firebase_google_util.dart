@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:prototype/auth/login.dart';
 import 'firebase_listenter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -44,6 +45,7 @@ class FirebaseGoogleUtil {
   }
 
   void onLoginUserVerified(FirebaseUser currentUser) {
+
     _view.onLoginUserVerified(currentUser);
   }
 

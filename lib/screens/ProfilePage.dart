@@ -2,30 +2,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:prototype/auth/auth.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+import 'package:prototype/auth/login.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'SelectProfilePic.dart';
 
 class ProfilePage extends StatefulWidget {
-  final Auth auth = new Auth();
-/*
-  UserProfil({@required this.onSignOut});
-
-//  final BaseAuth auth;
-  final VoidCallback onSignOut;
-
-  final BaseAuth auth = new Auth();
-
-  void _signOut() async {
-    try {
-      await auth.signOut();
-      onSignOut();
-    } catch (e) {
-      print(e);
-    }
-  }
-*/
-
   @override
   State<StatefulWidget> createState() {
     return ProfilePageState();
@@ -34,68 +18,53 @@ class ProfilePage extends StatefulWidget {
 
 class ProfilePageState extends State<ProfilePage> {
   String userId;
+
   // CrudMethods crudObj = new CrudMethods();
   String userMail = 'userMail';
   String _phoneNumber;
   String _name;
   String _surname;
-
-  bool _notificationValue = true;
+  String dob;
   final _formKey = GlobalKey<FormState>();
 
   Future<String> getUid() {
     FirebaseAuth.instance.currentUser().then((user) {
       //Future.delayed(Duration(seconds: 2));
-
       setState(() {
         userId = user.uid;
         debugPrint("called setstate method");
-        Firestore.instance
-            .collection('girl_user')
-            .document(userId)
-            .collection('user_info')
-            .document(userId)
-            .setData({'name': 'kallu'});
+        print('userrrrrrrrrrrrrr $userId');
       });
-      print('userrrrrrrrrrrrrr $userId');
     });
   }
 
+  @override
   void initState() {
     getUid();
-    //userId = await getUid();
   }
 
-/*  void _onChangedNotification(bool value) {
-    setState(() {
-      _notificationValue = value;
-    });
-    crudObj.createOrUpdateUserData({'notification': _notificationValue});
+  String validateEmail(String value) {
+    if (value.isEmpty ||
+        !RegExp(r"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?")
+            .hasMatch(value)) {
+      return 'Enter a valid email';
+    } else
+      return null;
   }
 
-  void initState() {
-    super.initState();
-    //grace a ca principalPage s'occupe de recuperer les informations de l'utilisateur actif - peut etre pas le meilleur choix mais ca fonctionne
-    widget.auth.currentUser().then((id) {
-      setState(() {
-        userId = id;
-      });
-    });
-    widget.auth.userEmail().then((mail) {
-      setState(() {
-        userMail = mail;
-      });
-    });
+  String validateName(String value) {
+    if (value.isEmpty) {
+      return 'Enter a valid value';
+    } else
+      return null;
+  }
 
-    crudObj.getDataFromUserFromDocument().then((value) {
-      // correspond à await Firestore.instance.collection('user').document(user.uid).get();
-      Map<String, dynamic> dataMap = value
-          .data; // retourne la Map des donné de l'utilisateur correspondant à uid passé dans la methode venant du cruObj
-      setState(() {
-        _notificationValue = dataMap['notification'];
-      });
-    });
-  }*/
+  String validatePhone(String value) {
+    if (value.length != 10)
+      return 'Enter a valid number';
+    else
+      return null;
+  }
 
   void _openModalBottomSheet(context) {
     showModalBottomSheet(
@@ -118,29 +87,6 @@ class ProfilePageState extends State<ProfilePage> {
             ),
           );
         });
-  }
-
-  String validateEmail(String value) {
-    if (value.isEmpty ||
-        !RegExp(r"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?")
-            .hasMatch(value)) {
-      return 'Enter a valid email';
-    } else
-      return null;
-  }
-
-  String validateName(String value) {
-    if (value.isEmpty || !RegExp(r"/^[a-z ,.'-]+$/i").hasMatch(value)) {
-      return 'Enter a valid value';
-    } else
-      return null;
-  }
-
-  String validatePhone(String value) {
-    if (value.length != 10)
-      return 'Enter a valid number';
-    else
-      return null;
   }
 
   @override
@@ -177,54 +123,7 @@ class ProfilePageState extends State<ProfilePage> {
           );
   }
 
-  Widget userInfoTopSection(userData) {
-    return Container(
-      padding: EdgeInsets.only(top: 16),
-      child: Column(
-        children: <Widget>[
-          Container(
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(
-                color: Color.fromRGBO(212, 63, 141, 1),
-                width: 6,
-              ),
-            ),
-            child: GestureDetector(
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => SelectProfilPicture()));
-                _openModalBottomSheet(context);
-              },
-              child: CircleAvatar(
-                // photo de profil
-                backgroundImage: NetworkImage(userData[0]['picture']),
-                minRadius: 30,
-                maxRadius: 93,
-              ),
-            ),
-          ),
-          Container(
-            height: 15,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget divider() {
-    return Divider(
-      color: Colors.white,
-      height: 15,
-      indent: 70,
-    );
-  }
-
-  Widget userBottomSection(userData) {
-    //Map<dynamic, dynamic> musicMap = userData['music'];
-
+  Widget pageConstruct(userData, context) {
     Widget name() {
       return ListTile(
         leading: Icon(
@@ -384,27 +283,6 @@ class ProfilePageState extends State<ProfilePage> {
       );
     }
 
-    Widget mail() {
-      return ListTile(
-        leading: Icon(
-          Icons.mail,
-          color: Color(0xff18352B),
-          size: 35,
-        ),
-        title: Text(
-          'Mail',
-          style: TextStyle(
-              color: Color(0xff18352B),
-              fontSize: 18.0,
-              fontWeight: FontWeight.w500),
-        ),
-        subtitle: Text(
-          userMail,
-          style: TextStyle(fontSize: 15.0, color: Color(0xff18352B)),
-        ),
-      );
-    }
-
     Widget phone() {
       return ListTile(
         leading: Icon(
@@ -414,7 +292,9 @@ class ProfilePageState extends State<ProfilePage> {
         ),
         title: Text(
           "Number",
-          style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w500),
+          style: TextStyle(
+            fontSize: 18.0,
+          ),
         ),
         trailing: IconButton(
           icon: Icon(Icons.edit, color: Color(0xff18352B)),
@@ -486,61 +366,26 @@ class ProfilePageState extends State<ProfilePage> {
       );
     }
 
-    /* Widget musics() {
+    Widget mail() {
       return ListTile(
         leading: Icon(
-          Icons.music_note,
-          color: Colors.white,
+          Icons.mail,
+          color: Color(0xff18352B),
           size: 35,
         ),
         title: Text(
-          "Style de musique",
+          'Mail',
           style: TextStyle(
-            color: Colors.white,
+            color: Color(0xff18352B),
             fontSize: 18.0,
           ),
         ),
-        trailing: IconButton(
-          icon: Icon(Icons.edit, color: Colors.white),
-          onPressed: () {
-           */ /* showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return MyCheckbox();
-                });*/ /*
-          },
-        ),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            musicMap['electro'] == true
-                ? Text('Électro',
-                style: TextStyle(color: Colors.white, height: 1.2))
-                : Container(),
-            musicMap['populaire'] == true
-                ? Text('Populaire',
-                style: TextStyle(color: Colors.white, height: 1.2))
-                : Container(),
-            musicMap['rap'] == true
-                ? Text('Rap',
-                style: TextStyle(color: Colors.white, height: 1.2))
-                : Container(),
-            musicMap['rnb'] == true
-                ? Text('RnB',
-                style: TextStyle(color: Colors.white, height: 1.2))
-                : Container(),
-            musicMap['rock'] == true
-                ? Text('Rock',
-                style: TextStyle(color: Colors.white, height: 1.2))
-                : Container(),
-            musicMap['trans'] == true
-                ? Text('Trance',
-                style: TextStyle(color: Colors.white, height: 1.2))
-                : Container(),
-          ],
+        subtitle: Text(
+          userMail,
+          style: TextStyle(fontSize: 15.0, color: Color(0xff18352B)),
         ),
       );
-    }*/
+    }
 
     Widget birth() {
       return ListTile(
@@ -553,53 +398,57 @@ class ProfilePageState extends State<ProfilePage> {
           "Date of Birth",
           style: TextStyle(color: Colors.black, fontSize: 18.0),
         ),
+        trailing: IconButton(
+          icon: Icon(Icons.edit, color: Color(0xff18352B)),
+          onPressed: () {
+            DatePicker.showDatePicker(context,
+                theme: DatePickerTheme(
+                  containerHeight: 210.0,
+                ),
+                showTitleActions: true,
+                minTime: DateTime(1900, 1, 1),
+                maxTime: DateTime.now(), onConfirm: (date) {
+              print('confirm $dob');
+              dob = '${date.day} - ${date.month} - ${date.year}';
+              Firestore.instance
+                  .collection('girl_user')
+                  .document(userId)
+                  .collection('user_info')
+                  .document(userId)
+                  .setData({'birth': dob}, merge: true);
+            }, currentTime: DateTime.now(), locale: LocaleType.en);
+          },
+        ),
         subtitle: Text(
-          "birthText",
+          userData[0]['birth'],
           //DateFormat('dd/MM/yyyy').format(userData['DOB'].toDate())
           style: TextStyle(fontSize: 15.0, color: Color(0xff18352B)),
         ),
       );
     }
 
-    Widget notification() {
-      return ListTile(
-        leading: Icon(
-          Icons.notifications,
-          color: Color(0xff18352B),
-          size: 35,
-        ),
-        title: Text(
-          "Notification",
-          style: TextStyle(color: Colors.black, fontSize: 18.0),
-        ),
-        trailing: Switch(
-          value: _notificationValue,
-          onChanged: (_notificationValue) => print('hello'),
-          /*_onChangedNotification*/
-          activeColor: Colors.lightBlueAccent,
-        ),
-      );
-    }
-
-    return Padding(
-      padding: EdgeInsets.only(top: 5.0),
-      child: Container(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+    return Scaffold(
+      backgroundColor: Colors.grey.shade300,
+      body: SingleChildScrollView(
+        child: Stack(
           children: <Widget>[
-            Flexible(
+            SizedBox(
+                height: 250,
+                width: double.infinity,
+                child: Image.network(
+                  userData[0]['picture'],
+                  fit: BoxFit.cover,
+                )),
+            Container(
+              margin: EdgeInsets.fromLTRB(16.0, 200.0, 16.0, 16.0),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
-                  Container(
-                    alignment: FractionalOffset.center,
-                    width: 390,
-                    child: Column(
-                      children: <Widget>[
-                        Container(
-                          padding: EdgeInsets.only(top: 16),
-                          width: MediaQuery.of(context).size.width,
-                          decoration: BoxDecoration(
+                  Stack(
+                    children: <Widget>[
+                      Container(
+                        padding: EdgeInsets.all(16.0),
+                        margin: EdgeInsets.only(top: 16.0),
+                        decoration: BoxDecoration(
                             gradient: LinearGradient(
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,
@@ -610,104 +459,141 @@ class ProfilePageState extends State<ProfilePage> {
                                   //Color.fromRGBO(212, 63, 141, 1),
                                   //Color.fromRGBO(2, 80, 197, 1)
                                 ]),
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(20.0)),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey,
-                                offset: Offset(2.0, 5.0),
-                                blurRadius: 10.0,
-                              )
-                            ],
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              Flexible(
-                                child: Column(
-                                  children: <Widget>[
-                                    name(),
-                                    divider(),
-                                    surname(),
-                                    divider(),
-                                    mail(),
-                                    divider(),
-                                    phone(),
-                                    divider(),
-                                    //musics(),
-                                    //divider(),
-                                    birth(),
-                                    divider(),
-                                    notification(),
-                                  ],
-                                ),
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(5.0)),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Container(
+                              margin: EdgeInsets.only(left: 96.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Text(
+                                    userData[0]['name'] +
+                                        userData[0]['surname'],
+                                    style: Theme.of(context).textTheme.title,
+                                  ),
+                                  ListTile(
+                                    contentPadding: EdgeInsets.all(0),
+                                    title: Text("Product Designer"),
+                                    subtitle: Text("Kathmandu"),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
+                            ),
+                            SizedBox(height: 10.0),
+                            Row(
+                              children: <Widget>[
+                                Expanded(
+                                  child: Column(
+                                    children: <Widget>[
+                                      Text("5"),
+                                      Text("Family members")
+                                    ],
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Column(
+                                    children: <Widget>[
+                                      Text("20"),
+                                      Text("Trustful")
+                                    ],
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Column(
+                                    children: <Widget>[
+                                      Text("8"),
+                                      Text("E-Numbers")
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
+                      ),
+                      Container(
+                        margin: EdgeInsets.only(left: 14, top: 1),
+                        height: 80,
+                        width: 80,
+                        child: GestureDetector(
+                            onTap: () {
+                              /*Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          SelectProfilPicture()));*/
+                              _openModalBottomSheet(context);
+                            },
+                            child: ClipRRect(
+                              borderRadius: new BorderRadius.circular(10.0),
+                              child: Image.network(
+                                userData[0]['picture'],
+                                fit: BoxFit.cover,
+                              ),
+                            )),
+                      )
+                    ],
+                  ),
+                  SizedBox(height: 20.0),
+                  Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            Color(0xffA8A8A4),
+                            Color(0xffACFBDF),
+                            //Color(0xffB6C8BC)
+                            //Color.fromRGBO(212, 63, 141, 1),
+                            //Color.fromRGBO(2, 80, 197, 1)
+                          ]),
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(5.0),
+                    ),
+                    child: Column(
+                      children: <Widget>[
+                        ListTile(
+                          title: Text("User information"),
+                        ),
+                        Divider(),
+                        name(),
+                        surname(),
+                        mail(),
+                        phone(),
+                        birth(),
+                        Divider(),
+                        Container(
+                          //margin: EdgeInsets.only(left: 10, right: 10),
+                          width: double.infinity,
+                          child: CupertinoButton(
+                              // color: Color(0xff93E7AE),
+                              onPressed: () async {
+                                // widget._signOut();
+
+                                SharedPreferences prefs =
+                                    await SharedPreferences.getInstance();
+                                await prefs.setBool('Loggedin', false);
+                                Navigator.of(context).pushReplacement(
+                                    MaterialPageRoute(
+                                        builder: (context) => LoginPage()));
+                              },
+                              child: Text("Sign Out")),
+                        )
                       ],
                     ),
-                  ),
+                  )
                 ],
               ),
+            ),
+            AppBar(
+              backgroundColor: Colors.transparent,
+              elevation: 0,
             )
           ],
         ),
-      ),
-    );
-  }
-
-  Widget pageConstruct(userData, context) {
-    return Scaffold(
-      backgroundColor: Color(0xff8E8C8A),
-      /*drawer: CustomSlider(
-        userMail: userMail,
-        signOut: widget._signOut,
-        activePage: 'Profil',
-      ),*/
-      resizeToAvoidBottomPadding: false,
-      body: CustomScrollView(
-        slivers: <Widget>[
-          SliverAppBar(
-            floating: false,
-            pinned: true,
-            backgroundColor: Color(0xff818583),
-            iconTheme: IconThemeData(color: Theme.of(context).primaryColor),
-            flexibleSpace: FlexibleSpaceBar(
-              title: userData[0]['name'] == ""
-                  ? Text(userMail)
-                  : Text(
-                      userData[0]['name'] + ' ' + userData[0]['surname'],
-                      style: TextStyle(
-                          fontSize: 30, color: Theme.of(context).primaryColor),
-                    ),
-            ),
-          ),
-          SliverList(
-            delegate: SliverChildListDelegate(
-              [
-                Container(
-                  child: userInfoTopSection(userData),
-                ),
-                Container(
-                  child: userBottomSection(userData),
-                ),
-                Container(
-                  height: 10,
-                ),
-                Container(
-                  child: CupertinoButton(
-                      color: Color(0xff93E7AE),
-                      onPressed: () {
-                        // widget._signOut();
-                        Navigator.pushReplacementNamed(context, '/');
-                      },
-                      child: Text("sign out")),
-                ),
-              ],
-            ),
-          ),
-        ],
       ),
     );
   }
