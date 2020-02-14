@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:safesenora/first_screen.dart';
 
-void main() {
-  runApp(MainApp());
-}
+void main() => runApp(MyApp());
 
-class MainApp extends StatefulWidget {
-  @override
-  _MainAppState createState() => _MainAppState();
-}
-
-class _MainAppState extends State<MainApp> {
+class MyApp extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
-    return Container();
+    // TODO: implement build
+    return MaterialApp(
+      title: "Prototype",
+      debugShowCheckedModeBanner: false,
+      home: FirstScreen(),
+    );
   }
+
 }
