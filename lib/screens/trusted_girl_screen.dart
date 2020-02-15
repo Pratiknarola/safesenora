@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:location/location.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class trustedGirlScreen extends StatefulWidget {
@@ -412,7 +413,7 @@ class _trustedGirlScreenState extends State<trustedGirlScreen> {
               trafficEnabled: _isTrafficEnabled,
               myLocationEnabled: true,
               initialCameraPosition: CameraPosition(
-                  target: _center == null ? LatLng(0, 0) : _center, zoom: 11.5),
+                  target: _center == null ? Location().getLocation().then((loc) {return LatLng(loc.latitude, loc.longitude);}) : _center, zoom: 11.5),
               compassEnabled: true,
               //markers:
             ),
