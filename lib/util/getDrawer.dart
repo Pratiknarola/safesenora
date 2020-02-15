@@ -272,7 +272,7 @@ class getDrawer {
                                     builder: (_) => trustedMemberPage(user)));
                           })
                       : Container(),
-                  SizedBox(height: 3.0),
+                  role == 'girl'? SizedBox(height: 3.0):Container(),
                   _buildDivider(),
                   SizedBox(height: 3.0),
                   GestureDetector(
