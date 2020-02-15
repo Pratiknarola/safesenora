@@ -7,31 +7,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart' as location_plugin;
 import 'package:prototype/util/getDrawer.dart';
+import 'package:sms_maintained/contact.dart';
+import 'package:sms_maintained/sms.dart';
 import 'package:url_launcher/url_launcher.dart';
-
-/*class Visibility extends StatefulWidget {
-  @override
-  Visibility createState() {
-    return _visible();
-  }
-}
-
-class _visible extends State {
-  bool _isvisible = false;
-  void showToast() {
-    setState(() {
-      _isvisible = !_isvisible;
-    });
-  }
-  @override
-  Widget build(BuildContext context) {
-    return girlHomeScreen();
-  }
-}*/
 
 // Import package
 
@@ -40,7 +23,15 @@ class _visible extends State {
 class girlHomeScreen extends StatefulWidget {
   FirebaseUser user;
 
-  girlHomeScreen(this.user);
+  girlHomeScreen(user) {
+    if (user == null)
+      FirebaseAuth.instance.currentUser().then((user) {
+        this.user = user;
+      });
+    else {
+      this.user = user;
+    }
+  }
 
   @override
   _girlHomeScreenState createState() => _girlHomeScreenState(user);
@@ -103,6 +94,54 @@ class _girlHomeScreenState extends State<girlHomeScreen>
   void initState() {
     super.initState();
 
+    /*******msg testing***********/
+    UserProfileProvider provider = new UserProfileProvider();
+    UserProfile profile ;
+    try {
+          () async {
+        profile = await provider.getUserProfile();
+      }();
+    }catch(e){
+      print("error in getting profile provider");
+    }
+   //print('user phone no is ${profile.}');
+
+    /*SmsSender sender = new SmsSender();
+    String address = '+917043858474';
+    SmsMessage message = new SmsMessage(address, 'Hello flutter!');
+    message.onStateChanged.listen((state) {
+      if (state == SmsMessageState.Sent) {
+        print("SMS is sent!");
+      } else if (state == SmsMessageState.Delivered) {
+        print("SMS is delivered!");
+      }
+    });
+    sender.onSmsDelivered.listen((SmsMessage message){
+      print('${message.address} received your message.');
+    });
+    sender.sendSms(message);*/
+
+
+
+
+    /****java location testing******/
+
+    /*************java location testing*****************/
+    const platform = const MethodChannel("platformlocation");
+    print("java location testing");
+    print("channel created");
+    try{
+      () async {
+        print("calling letlastlocation");
+        print(platform);
+        //await platform.invokeMethod("startLocationService");
+        print("location call done");
+      }();
+    }catch(e){
+      print("error in java lastlocation");
+      print(e);
+    }
+
     /*****************Battery part *******************/
     battery = Battery();
     () async {
@@ -111,26 +150,24 @@ class _girlHomeScreenState extends State<girlHomeScreen>
     }();
 
     battery.onBatteryStateChanged.listen((BatteryState state) async {
-      if (state == BatteryState.discharging) {
-        var currentBatteryLevel = await battery.batteryLevel;
-        if (currentBatteryLevel >= 50 &&
-            (pastBatteryLevel - currentBatteryLevel > 2)) {
-          pastBatteryLevel = currentBatteryLevel;
-          Firestore.instance
-              .collection('girl_user')
-              .document(user.uid)
-              .collection('level_info')
-              .document(user.uid)
-              .setData({'battery': '$currentBatteryLevel'}, merge: true);
-        } else if (currentBatteryLevel < 50) {
-          pastBatteryLevel = currentBatteryLevel;
-          Firestore.instance
-              .collection('girl_user')
-              .document(user.uid)
-              .collection('level_info')
-              .document(user.uid)
-              .setData({'battery': '$currentBatteryLevel'}, merge: true);
-        }
+      var currentBatteryLevel = await battery.batteryLevel;
+      if (currentBatteryLevel >= 50 &&
+          (pastBatteryLevel - currentBatteryLevel > 1)) {
+        pastBatteryLevel = currentBatteryLevel;
+        Firestore.instance
+            .collection('girl_user')
+            .document(user.uid)
+            .collection('user_info')
+            .document(user.uid)
+            .setData({'battery': '$currentBatteryLevel'}, merge: true);
+      } else if (currentBatteryLevel < 50) {
+        pastBatteryLevel = currentBatteryLevel;
+        Firestore.instance
+            .collection('girl_user')
+            .document(user.uid)
+            .collection('user_info')
+            .document(user.uid)
+            .setData({'battery': '$currentBatteryLevel'}, merge: true);
       }
     });
 
@@ -145,6 +182,13 @@ class _girlHomeScreenState extends State<girlHomeScreen>
           if (locationData != null) {
             lat = locationData.latitude;
             lng = locationData.longitude;
+            /*Firestore.instance.collection("locations").add({
+              "lat": lat,
+              "long": lng
+            });*/
+            if (_center == null) {
+              _center = LatLng(lat, lng);
+            }
             try {
               if (distInKm(LatLng(lat, lng), _center) > 0.007) {
                 distance = distInKm(LatLng(lat, lng), _center);
@@ -164,13 +208,13 @@ class _girlHomeScreenState extends State<girlHomeScreen>
                       placemark[0].country +
                       " - " +
                       placemark[0].postalCode;
-                  address =
+                  /*address =
                       "I am in emergency!\nThis is my current location: " +
                           gatsby +
                           "\nCoordinates: " +
                           lat.toString() +
                           "," +
-                          lng.toString();
+                          lng.toString();*/
                   link =
                       "https://www.google.com/maps/search/?api=1&query=$lat,$lng";
                 });
@@ -186,6 +230,7 @@ class _girlHomeScreenState extends State<girlHomeScreen>
                 });
               }
             } catch (e) {
+              print(e);
               debugPrint("ERROR IN GIRL HOME SCREEN IN INITSTATE");
             }
           }
@@ -230,6 +275,10 @@ class _girlHomeScreenState extends State<girlHomeScreen>
             print(lat);
             print(lng);
             print("lat and lng");
+            /*Firestore.instance.collection("locations").add({
+              "lat": lat,
+              "long": lng
+            });*/
           }
         });
       }
@@ -251,6 +300,42 @@ class _girlHomeScreenState extends State<girlHomeScreen>
 
   @override
   Widget build(BuildContext context) {
+    LocationServices();
+    location.onLocationChanged().listen((locationData) {
+      if (locationData != null) {
+        lat = locationData.latitude;
+        lng = locationData.longitude;
+        print(lat);
+        print(lng);
+        print("lat and lng");
+        /*Firestore.instance.collection("locations").add({
+          "lat": lat,
+          "long": lng
+        });*/
+      }});
+    battery.onBatteryStateChanged.listen((BatteryState state) async {
+      var currentBatteryLevel = await battery.batteryLevel;
+      if (currentBatteryLevel >= 50 &&
+          (pastBatteryLevel - currentBatteryLevel > 2)) {
+        pastBatteryLevel = currentBatteryLevel;
+        Firestore.instance
+            .collection('girl_user')
+            .document(user.uid)
+            .collection('user_info')
+            .document(user.uid)
+            .setData({'battery': '$currentBatteryLevel'}, merge: true);
+      } else if (currentBatteryLevel < 50) {
+        pastBatteryLevel = currentBatteryLevel;
+        Firestore.instance
+            .collection('girl_user')
+            .document(user.uid)
+            .collection('user_info')
+            .document(user.uid)
+            .setData({'battery': '$currentBatteryLevel'}, merge: true);
+      }
+    });
+
+//akg19082000#
     //_center = LatLng(lat, lng);
     //print("Lat: ${_center.latitude} and Lng: ${_center.longitude}");
     return Scaffold(
@@ -334,12 +419,11 @@ class _girlHomeScreenState extends State<girlHomeScreen>
                 ),
                 RaisedButton(
                   child: Text("Reload"),
-                  onPressed: (){
+                  onPressed: () {
                     setState(() {
-                      if(lat != null && lng != null){
+                      if (lat != null && lng != null) {
                         _center = LatLng(lat, lng);
-                      }
-                      else{
+                      } else {
                         LocationServices();
                       }
                     });
@@ -347,13 +431,15 @@ class _girlHomeScreenState extends State<girlHomeScreen>
                 ),
                 RaisedButton(
                   child: Text("Reset Levels"),
-                  onPressed: (){
+                  onPressed: () {
                     Firestore.instance
                         .collection('girl_user')
                         .document(user.uid)
                         .collection('level_info')
                         .document(user.uid)
-                        .setData({'level1': false, 'level2': false, 'level3': false}, merge: true);
+                        .setData(
+                            {'level1': false, 'level2': false, 'level3': false},
+                            merge: true);
                   },
                 ),
                 RaisedButton(
