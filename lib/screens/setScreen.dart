@@ -2,12 +2,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:location/location.dart' as location_plugin;
 import 'package:prototype/auth/login.dart';
 import 'package:prototype/auth/progresshud.dart';
 import 'package:prototype/auth/setUserRole.dart';
 import 'package:prototype/screens/protector_home_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:location/location.dart' as location_plugin;
+
 import 'girl_home_screen.dart';
 import 'intro.dart';
 
@@ -57,6 +58,41 @@ class _setScreenState extends State<setScreen> {
                       .document(currentUser.uid)
                       .setData({'NotifyToken': token}, merge: true);
                 });
+                print(
+                    'NottttttttttttttttttttttifyyyyyyyyyyyyyyyyyTokeeeeeeeen');
+
+                /*() async {
+                  final SmsAutoFill _autoFill = SmsAutoFill();
+                  var completePhoneNumber = await _autoFill.hint;
+                  if (completePhoneNumber == null) completePhoneNumber = '0';
+                  Firestore.instance
+                      .collection('girl_user')
+                      .document(currentUser.uid)
+                      .collection('user_info')
+                      .document(currentUser.uid)
+                      .setData({'phone': '${completePhoneNumber}'},
+                          merge: true);
+                  print('mobile no is ${completePhoneNumber}');
+                }();*/
+
+                /*() async {
+                  String mobileNumber;
+                  try {
+                    mobileNumber = await MobileNumber.mobileNumber;
+                  } catch (e) {
+                    debugPrint(
+                        "Failed to get mobile number because of '${e.message}'");
+                  }
+                  print('mobile no is ${mobileNumber}');
+                  Firestore.instance
+                      .collection('girl_user')
+                      .document(currentUser.uid)
+                      .collection('user_info')
+                      .document(currentUser.uid)
+                      .setData({'phone': '${mobileNumber}'}, merge: true);
+                }();*/
+
+                print('Áfterrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr');
 
                 Navigator.pushReplacement(
                     context,
@@ -83,6 +119,44 @@ class _setScreenState extends State<setScreen> {
                       .document(currentUser.uid)
                       .setData({'NotifyToken': token}, merge: true);
                 });
+
+                print(
+                    'NottttttttttttttttttttttifyyyyyyyyyyyyyyyyyTokeeeeeeeen');
+
+                /*() async {
+                  final SmsAutoFill _autoFill = SmsAutoFill();
+                  var completePhoneNumber = await _autoFill.hint;
+                  if (completePhoneNumber == null) completePhoneNumber = '0';
+                  Firestore.instance
+                      .collection('protector')
+                      .document(currentUser.uid)
+                      .collection('user_info')
+                      .document(currentUser.uid)
+                      .setData({'phone': '${completePhoneNumber}'},
+                          merge: true);
+                  print('mobile no is ${completePhoneNumber}');
+                }();*/
+
+                /*() async {
+                  String mobileNumber;
+                  try {
+                    mobileNumber = await MobileNumber.mobileNumber;
+                  } catch (e) {
+                    debugPrint(
+                        "Failed to get mobile number because of '${e.message}'");
+                  }
+                  print('mobile no is ${mobileNumber}');
+
+                  Firestore.instance
+                      .collection('protector')
+                      .document(currentUser.uid)
+                      .collection('user_info')
+                      .document(currentUser.uid)
+                      .setData({'phone': '${mobileNumber}'}, merge: true);
+                }();*/
+
+                print('Áfterrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr');
+
                 Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
