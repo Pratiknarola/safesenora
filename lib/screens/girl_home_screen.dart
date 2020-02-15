@@ -104,7 +104,7 @@ class _girlHomeScreenState extends State<girlHomeScreen>
     }catch(e){
       print("error in getting profile provider");
     }
-   //print('user phone no is ${profile.}');
+    //print('user phone no is ${profile.}');
 
     /*SmsSender sender = new SmsSender();
     String address = '+917043858474';
@@ -131,7 +131,7 @@ class _girlHomeScreenState extends State<girlHomeScreen>
     print("java location testing");
     print("channel created");
     try{
-      () async {
+          () async {
         print("calling letlastlocation");
         print(platform);
         //await platform.invokeMethod("startLocationService");
@@ -144,7 +144,7 @@ class _girlHomeScreenState extends State<girlHomeScreen>
 
     /*****************Battery part *******************/
     battery = Battery();
-    () async {
+        () async {
       pastBatteryLevel = await battery.batteryLevel;
       print('in init state with battery $pastBatteryLevel');
     }();
@@ -216,7 +216,7 @@ class _girlHomeScreenState extends State<girlHomeScreen>
                           "," +
                           lng.toString();*/
                   link =
-                      "https://www.google.com/maps/search/?api=1&query=$lat,$lng";
+                  "https://www.google.com/maps/search/?api=1&query=$lat,$lng";
                 });
                 if (_center != null) latlng.add(_center);
                 setState(() {
@@ -296,7 +296,7 @@ class _girlHomeScreenState extends State<girlHomeScreen>
   }
 
   final GlobalKey<AsyncLoaderState> _asyncLoaderState =
-      new GlobalKey<AsyncLoaderState>();
+  new GlobalKey<AsyncLoaderState>();
 
   @override
   Widget build(BuildContext context) {
@@ -438,8 +438,8 @@ class _girlHomeScreenState extends State<girlHomeScreen>
                         .collection('level_info')
                         .document(user.uid)
                         .setData(
-                            {'level1': false, 'level2': false, 'level3': false},
-                            merge: true);
+                        {'level1': false, 'level2': false, 'level3': false},
+                        merge: true);
                   },
                 ),
                 RaisedButton(

@@ -123,30 +123,30 @@ class _protectorHomeScreenState extends State<protectorHomeScreen>
         },
 
         onResume: (Map<String, dynamic> message) async {
-      print('on resume hello in resumed state $message');
-      showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            content: ListTile(
-              title: Text(message['data']['title']),
-              subtitle: Text(message['data']['body']),
-              leading: Icon(Icons.play_arrow),
-            ),
-            actions: <Widget>[
-              FlatButton(
-                child: Text("resume"),
-                onPressed: () => Navigator.of(context).pop(),
-              )
-            ],
-          ));
+          print('on resume hello in resumed state $message');
+          showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                content: ListTile(
+                  title: Text(message['data']['title']),
+                  subtitle: Text(message['data']['body']),
+                  leading: Icon(Icons.play_arrow),
+                ),
+                actions: <Widget>[
+                  FlatButton(
+                    child: Text("resume"),
+                    onPressed: () => Navigator.of(context).pop(),
+                  )
+                ],
+              ));
 
-      print("resume");
-      print("resume");
-      print("resume");
+          print("resume");
+          print("resume");
+          print("resume");
 
-      print('on resume hello in resumed state $message');
-      setState(() => _message = "hello on resume ${message["data"]["title"]}");
-    }, onLaunch: (Map<String, dynamic> message) async {
+          print('on resume hello in resumed state $message');
+          setState(() => _message = "hello on resume ${message["data"]["title"]}");
+        }, onLaunch: (Map<String, dynamic> message) async {
       showDialog(
           context: context,
           builder: (context) => AlertDialog(
@@ -515,18 +515,18 @@ class _protectorHomeScreenState extends State<protectorHomeScreen>
   Future<void> initBackgroundfetch() async {
 
     BackgroundFetch.scheduleTask(TaskConfig(
-      taskId: "flutter_background_fetch",
-      periodic: true,
-      delay: 5000,
-      startOnBoot: true,
-      stopOnTerminate: false,
-      enableHeadless: true,
-      forceAlarmManager: true,
-      requiredNetworkType: NetworkType.ANY,
-      requiresBatteryNotLow: false,
-      requiresCharging: false,
-      requiresDeviceIdle: false,
-      requiresStorageNotLow: false
+        taskId: "flutter_background_fetch",
+        periodic: true,
+        delay: 5000,
+        startOnBoot: true,
+        stopOnTerminate: false,
+        enableHeadless: true,
+        forceAlarmManager: true,
+        requiredNetworkType: NetworkType.ANY,
+        requiresBatteryNotLow: false,
+        requiresCharging: false,
+        requiresDeviceIdle: false,
+        requiresStorageNotLow: false
     ));
 
     BackgroundFetch.configure(
