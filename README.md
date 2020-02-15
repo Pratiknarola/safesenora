@@ -48,6 +48,8 @@ We believe in the Idea of Community concern i.e. helping one person might not ch
 * firebase storage
 * firestore functions
 * flutter framwork
+* native android api
+* firebase cloud messaging
 * node js 
 * platform channels
 * Mobile Resources
