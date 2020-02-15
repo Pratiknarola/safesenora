@@ -7,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:location/location.dart';
+import 'package:prototype/screens/trusted_girl_screen.dart';
 import 'package:prototype/util/getDrawer.dart';
 import 'package:prototype/auth/login.dart';
 import 'package:prototype/screens/protector_girl_screen.dart';
@@ -70,8 +71,7 @@ class _protectorHomeScreenState extends State<protectorHomeScreen>
   var selected;
 
   final int sendHeartbeatId = 0;
-  String girluid;
-  var count = 0;
+
   _protectorHomeScreenState(this.user);
 
   String uid;
