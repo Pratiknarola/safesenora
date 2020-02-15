@@ -65,6 +65,7 @@ class _girlHomeScreenState extends State<girlHomeScreen>
   _girlHomeScreenState(this.user);
 
   location_plugin.Location location;
+  bool isForegroundServiceOn = false;
   String uid;
   var selectedItemId = 'Home';
 
@@ -149,39 +150,22 @@ class _girlHomeScreenState extends State<girlHomeScreen>
     /*****************Battery part *******************/
     updateBattery();
 
-      /*if (currentBatteryLevel >= 50 &&
-          (pastBatteryLevel - currentBatteryLevel > 1)) {
-        pastBatteryLevel = currentBatteryLevel;
-        Firestore.instance
-            .collection('girl_user')
-            .document(user.uid)
-            .collection('user_info')
-            .document(user.uid)
-            .setData({'battery': '$currentBatteryLevel'}, merge: true);
-      } else if (currentBatteryLevel < 50) {
-        pastBatteryLevel = currentBatteryLevel;
-        Firestore.instance
-            .collection('girl_user')
-            .document(user.uid)
-            .collection('user_info')
-            .document(user.uid)
-            .setData({'battery': '$currentBatteryLevel'}, merge: true);
-      }*/
+
 
     /************************************************/
     uid = user.uid;
     location = location_plugin.Location();
     location.changeSettings(
+      interval: 10000,
         accuracy: location_plugin.LocationAccuracy.NAVIGATION);
     location.requestPermission().then((granted) {
       if (granted) {
         location.onLocationChanged().listen((locationData) {
+
           if (locationData != null) {
             lat = locationData.latitude;
             lng = locationData.longitude;
-            Firestore.instance
-                .collection("locations")
-                .add({"lat": lat, "long": lng});
+
             if (_center == null) {
               _center = LatLng(lat, lng);
             }
@@ -190,31 +174,10 @@ class _girlHomeScreenState extends State<girlHomeScreen>
                 distance = distInKm(LatLng(lat, lng), _center);
                 print(lat);
                 print(lng);
-                //print(DateTime.now());
-                Geolocator()
-                    .placemarkFromCoordinates(lat, lng)
-                    .then((placemark) {
-                  var gatsby = placemark[0].name +
-                      ", " +
-                      placemark[0].subLocality +
-                      ", " +
-                      placemark[0].locality +
-                      ", " +
-                      placemark[0].administrativeArea +
-                      ", " +
-                      placemark[0].country +
-                      " - " +
-                      placemark[0].postalCode;
-                  /*address =
-                      "I am in emergency!\nThis is my current location: " +
-                          gatsby +
-                          "\nCoordinates: " +
-                          lat.toString() +
-                          "," +
-                          lng.toString();*/
-                  link =
-                  "https://www.google.com/maps/search/?api=1&query=$lat,$lng";
-                });
+                print(DateTime.now());
+
+                link =
+                "https://www.google.com/maps/search/?api=1&query=$lat,$lng";
                 if (_center != null) latlng.add(_center);
                 setState(() {
                   _center = LatLng(lat, lng);
@@ -280,7 +243,10 @@ class _girlHomeScreenState extends State<girlHomeScreen>
 
   void _onMapCreated(GoogleMapController controller) async {
     mapController = controller;
-    _center = LatLng(lat, lng);
+    location.getLocation().then((loc){
+      _center = LatLng(loc.latitude, loc.longitude);
+    });
+    //_center = LatLng(lat, lng);
     /*final markerOptions = Marker(
         markerId: MarkerId(k),
         position: LatLng(lat, lng)
@@ -294,32 +260,15 @@ class _girlHomeScreenState extends State<girlHomeScreen>
           markerId: MarkerId(_lastmapposition.toString()),
           position: _lastmapposition,
           icon: BitmapDescriptor.defaultMarker));
-      _polyline.add(Polyline(
-          width: 5,
-          polylineId: PolylineId(_lastmapposition.toString()),
-          visible: true,
-          points: latlng,
-          color: Colors.blue));
+
     });
   }
 
   //bool setting = await location.changeSettings(accuracy: LocationAccuracy.NAVIGATION);
   LocationServices() {
-    location.requestPermission().then((granted) {
-      if (granted) {
-        location.onLocationChanged().listen((locationData) {
-          if (locationData != null) {
-            lat = locationData.latitude;
-            lng = locationData.longitude;
-            print(lat);
-            print(lng);
-            print("lat and lng");
-            Firestore.instance
-                .collection("locations")
-                .add({"lat": lat, "long": lng});
-          }
-        });
-      }
+    location.getLocation().then((loc){
+      lat = loc.latitude;
+      lng = loc.longitude;
     });
   }
 
@@ -339,63 +288,12 @@ class _girlHomeScreenState extends State<girlHomeScreen>
   @override
   Widget build(BuildContext context) {
     LocationServices();
-    /*location.onLocationChanged().listen((locationData) {
-      if (locationData != null) {
-        lat = locationData.latitude;
-        lng = locationData.longitude;
-        print(lat);
-        print(lng);
-        print("lat and lng");
-        Firestore.instance
-            .collection("locations")
-            .add({"lat": lat, "long": lng});
-      }
-    });*/
-    battery.onBatteryStateChanged.listen((BatteryState state) async {
-      var currentBatteryLevel = await battery.batteryLevel;
-      Future.delayed(Duration(minutes: 5),(){
-        if(currentBatteryLevel >=50 && (pastBatteryLevel-currentBatteryLevel>=10)){
-          pastBatteryLevel = currentBatteryLevel;
-          Firestore.instance
-              .collection('girl_user')
-              .document(user.uid)
-              .collection('user_info')
-              .document(user.uid).setData({'battery':'$currentBatteryLevel'},merge: true);
-        }
-        else if(currentBatteryLevel < 50) {
-          pastBatteryLevel = currentBatteryLevel;
-          Firestore.instance
-              .collection('girl_user')
-              .document(user.uid)
-              .collection('user_info')
-              .document(user.uid)
-              .setData({'battery': '$currentBatteryLevel'},merge: true);
-        }
-      });
-      /*if (currentBatteryLevel >= 50 &&
-          (pastBatteryLevel - currentBatteryLevel > 2)) {
-        pastBatteryLevel = currentBatteryLevel;
-        Firestore.instance
-            .collection('girl_user')
-            .document(user.uid)
-            .collection('user_info')
-            .document(user.uid)
-            .setData({'battery': '$currentBatteryLevel'}, merge: true);
-      } else if (currentBatteryLevel < 50) {
-        pastBatteryLevel = currentBatteryLevel;
-        Firestore.instance
-            .collection('girl_user')
-            .document(user.uid)
-            .collection('user_info')
-            .document(user.uid)
-            .setData({'battery': '$currentBatteryLevel'}, merge: true);
-      }*/
-    });
+
+    updateBattery();
+
 
 //akg19082000#
-    //_center = LatLng(lat, lng);
-    //print("Lat: ${_center.latitude} and Lng: ${_center.longitude}");
-    //bool _lights = false;
+
     return BackdropScaffold(
       title: Text(
         'Home Screen',
@@ -408,24 +306,7 @@ class _girlHomeScreenState extends State<girlHomeScreen>
         child: Stack(
           //color: Colors.green,
           children: <Widget>[
-            /*WaveWidget(
-              config: CustomConfig(
-                gradients: [
-                  [Colors.red, Color(0xEEF44336)],
-                  [Colors.red[800], Color(0x77E57373)],
-                  [Colors.orange, Color(0x66FF9800)],
-                  [Colors.yellow, Color(0x55FFEB3B)]
-                ],
-                durations: [35000, 19440, 10800, 6000],
-                heightPercentages: [0.20, 0.23, 0.25, 0.30],
-                blur: MaskFilter.blur(BlurStyle.solid, 10),
-                gradientBegin: Alignment.bottomLeft,
-                gradientEnd: Alignment.topRight,
-              ),
-              waveAmplitude: 8,
-              backgroundColor: Colors.white,
-              size: Size(double.infinity, double.infinity),
-            ),*/
+
             Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -479,17 +360,7 @@ class _girlHomeScreenState extends State<girlHomeScreen>
                                       textScaleFactor: 2.0),
                                 ),
 
-                                /*Align(
-                            alignment: Alignment.center,
-                            child: Container(),
-                          ),*/
-                                /*new Container(
-                            child: Text(
-                              "Level 3",
-                              textAlign: TextAlign.justify,
-                              textScaleFactor: 2.0,
-                            ),
-                          )*/
+
                               ],
                             ),
                           ),
@@ -503,7 +374,9 @@ class _girlHomeScreenState extends State<girlHomeScreen>
                               .setData({'level1': true}, merge: true);
                           const platform = const MethodChannel('platformlocation');
                           print("platform method channel ");
-                          platform.invokeMethod("startForeground Service");
+                          isForegroundServiceOn = true;
+                          platform.invokeMethod("startForegroundService");
+                          updateBatteryperiodic();
                           setState(() {
                             level_1_pressed = !level_1_pressed;
                             print("level 1 pressed");
@@ -577,7 +450,6 @@ class _girlHomeScreenState extends State<girlHomeScreen>
                               .collection('level_info')
                               .document(user.uid)
                               .setData({'level2': true}, merge: true);
-                          backgroundColor: Colors.yellow;
                           setState(() {
                             level_2_pressed = !level_2_pressed;
                             level_1_pressed = true;
@@ -655,8 +527,8 @@ class _girlHomeScreenState extends State<girlHomeScreen>
                           .setData({'level3': true}, merge: true);
                       const platform = const MethodChannel('platformlocation');
                       print("platform method channel ");
-                      platform.invokeMethod("startForeground Service");
-                      splashColor: Colors.yellow;
+                      platform.invokeMethod("stopForegroundService");
+                      isForegroundServiceOn = false;
                       setState(() {
                         level_3_pressed = !level_3_pressed;
                         level_1_pressed = true;
@@ -745,6 +617,14 @@ class _girlHomeScreenState extends State<girlHomeScreen>
         .document(user.uid)
         .collection('user_info')
         .document(user.uid).setData({'battery':'$currentBatteryLevel'},merge: true);
-    Future.delayed(Duration(minutes: 10),() { print("15 mins are done");});
+    Future.delayed(Duration(minutes: 10),() { print("10 mins are done");});
+  }
+
+  Future<void> updateBatteryperiodic() async {
+    while(isForegroundServiceOn) {
+      await Future.delayed(Duration(minutes: 15), () {
+        updateBattery();
+      });
+    }
   }
 }

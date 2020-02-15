@@ -532,7 +532,7 @@ class _protectorHomeScreenState extends State<protectorHomeScreen>
     BackgroundFetch.configure(
         BackgroundFetchConfig(
             startOnBoot: true,
-            minimumFetchInterval: 16,
+            minimumFetchInterval: 15,
             forceAlarmManager: true,
             stopOnTerminate: false,
             enableHeadless: true,
