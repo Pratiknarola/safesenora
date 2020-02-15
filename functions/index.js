@@ -100,6 +100,7 @@ exports.offerTrigger = functions.firestore.document(
                 //tokens.push(snap.data().NotifyToken);
                 console.log(`token is ${snap.data().NotifyToken}`);
 
+
                 let payload = {
                     "name":"Prototype",
                     "notification": {
@@ -227,6 +228,7 @@ exports.offerTrigger = functions.firestore.document(
                             "notification": {
                                 "title": "ALERT! ALERT! Someone near you needs help!",
                                 "body": "If you are willing to help please on this notifcation and help her.",
+
                                 "image": picture
                             },
                             "data": {

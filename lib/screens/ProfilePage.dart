@@ -109,31 +109,31 @@ class ProfilePageState extends State<ProfilePage> {
     return userId == null
         ? CircularProgressIndicator()
         : StreamBuilder<QuerySnapshot>(
-            stream: Firestore.instance
-                .collection('$collectionname')
-                .document('$userId')
-                .collection('user_info')
-                .snapshots(),
-            builder: (context, snapshot) {
-              debugPrint("i am in builder");
-              debugPrint("in builder with $userId");
+      stream: Firestore.instance
+          .collection('$collectionname')
+          .document('$userId')
+          .collection('user_info')
+          .snapshots(),
+      builder: (context, snapshot) {
+        debugPrint("i am in builder");
+        debugPrint("in builder with $userId");
 
-              if (!snapshot.hasData) {
-                debugPrint("i have got some data");
-                return LinearProgressIndicator();
-                // print(userId);
+        if (!snapshot.hasData) {
+          debugPrint("i have got some data");
+          return LinearProgressIndicator();
+          // print(userId);
 //          return LinearProgressIndicator();
 //        }
 
-                //print(snapshot.data.documents[0]['Name']);
+          //print(snapshot.data.documents[0]['Name']);
 
-              } else {
-                var userData = snapshot.data.documents;
-                //print(userData);
-                return pageConstruct(userData, context);
-              }
-            },
-          );
+        } else {
+          var userData = snapshot.data.documents;
+          //print(userData);
+          return pageConstruct(userData, context);
+        }
+      },
+    );
   }
 
   Widget pageConstruct(userData, context) {
@@ -176,7 +176,7 @@ class ProfilePageState extends State<ProfilePage> {
                               color: Theme.of(context).accentColor,
                               shape: RoundedRectangleBorder(
                                   borderRadius:
-                                      BorderRadius.all(Radius.circular(20.0))),
+                                  BorderRadius.all(Radius.circular(20.0))),
                               child: Text(
                                 "Save",
                                 style: TextStyle(color: Color(0xff18352B)),
@@ -190,7 +190,7 @@ class ProfilePageState extends State<ProfilePage> {
                                       .collection('user_info')
                                       .document(userId)
                                       .setData({'name': _name},
-                                          merge: true).catchError((e) {
+                                      merge: true).catchError((e) {
                                     print(e);
                                   });
                                   /*crudObj
@@ -247,7 +247,7 @@ class ProfilePageState extends State<ProfilePage> {
                             child: TextFormField(
                               validator: validateName,
                               decoration:
-                                  InputDecoration(hintText: 'Last Name'),
+                              InputDecoration(hintText: 'Last Name'),
                               onSaved: (value) => _surname = value,
                             ),
                           ),
@@ -257,7 +257,7 @@ class ProfilePageState extends State<ProfilePage> {
                               color: Theme.of(context).accentColor,
                               shape: RoundedRectangleBorder(
                                   borderRadius:
-                                      BorderRadius.all(Radius.circular(20.0))),
+                                  BorderRadius.all(Radius.circular(20.0))),
                               child: Text(
                                 "Save",
                                 style: TextStyle(color: Color(0xff18352B)),
@@ -272,7 +272,7 @@ class ProfilePageState extends State<ProfilePage> {
                                       .collection('user_info')
                                       .document(userId)
                                       .setData({'surname': _surname},
-                                          merge: true).catchError((e) {
+                                      merge: true).catchError((e) {
                                     print(e);
                                   });
                                   /*crudObj.createOrUpdateUserData(
@@ -328,7 +328,7 @@ class ProfilePageState extends State<ProfilePage> {
                             child: TextFormField(
                               validator: validatePhone,
                               decoration:
-                                  InputDecoration(hintText: 'Mobile Number'),
+                              InputDecoration(hintText: 'Mobile Number'),
                               keyboardType: TextInputType.number,
                               onSaved: (value) => _phoneNumber = value,
                             ),
@@ -339,7 +339,7 @@ class ProfilePageState extends State<ProfilePage> {
                               color: Theme.of(context).accentColor,
                               shape: RoundedRectangleBorder(
                                   borderRadius:
-                                      BorderRadius.all(Radius.circular(20.0))),
+                                  BorderRadius.all(Radius.circular(20.0))),
                               child: Text(
                                 "Save",
                                 style: TextStyle(color: Color(0xff18352B)),
@@ -354,7 +354,7 @@ class ProfilePageState extends State<ProfilePage> {
                                       .collection('user_info')
                                       .document(userId)
                                       .setData({'phone': _phoneNumber},
-                                          merge: true).catchError((e) {
+                                      merge: true).catchError((e) {
                                     print(e);
                                   });
 
@@ -422,15 +422,15 @@ class ProfilePageState extends State<ProfilePage> {
                 showTitleActions: true,
                 minTime: DateTime(1900, 1, 1),
                 maxTime: DateTime.now(), onConfirm: (date) {
-              print('confirm $dob');
-              dob = '${date.day} - ${date.month} - ${date.year}';
-              Firestore.instance
-                  .collection('$collectionname')
-                  .document(userId)
-                  .collection('user_info')
-                  .document(userId)
-                  .setData({'birth': dob}, merge: true);
-            }, currentTime: DateTime.now(), locale: LocaleType.en);
+                  print('confirm $dob');
+                  dob = '${date.day} - ${date.month} - ${date.year}';
+                  Firestore.instance
+                      .collection('$collectionname')
+                      .document(userId)
+                      .collection('user_info')
+                      .document(userId)
+                      .setData({'birth': dob}, merge: true);
+                }, currentTime: DateTime.now(), locale: LocaleType.en);
           },
         ),
         subtitle: Text(
@@ -584,19 +584,19 @@ class ProfilePageState extends State<ProfilePage> {
                           //margin: EdgeInsets.only(left: 10, right: 10),
                           width: double.infinity,
                           child: CupertinoButton(
-                              // color: Color(0xff93E7AE),
+                            // color: Color(0xff93E7AE),
                               onPressed: () async {
                                 // widget._signOut();
 
                                 SharedPreferences prefs =
-                                    await SharedPreferences.getInstance();
+                                await SharedPreferences.getInstance();
                                 await prefs.setBool('Loggedin', false);
 
                                 Firestore.instance
                                     .collection(collectionname)
                                     .document(userId)
                                     .setData({'NotifyToken': 'null'},
-                                        merge: true);
+                                    merge: true);
                                 Navigator.of(context).pushReplacement(
                                     MaterialPageRoute(
                                         builder: (context) => LoginPage()));

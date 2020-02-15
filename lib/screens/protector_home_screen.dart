@@ -1,15 +1,23 @@
+import 'package:android_alarm_manager/android_alarm_manager.dart';
 import 'package:background_fetch/background_fetch.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart' as geolocator;
-import 'package:prototype/screens/trusted_girl_screen.dart';
+import 'package:flutter/services.dart';
+import 'package:location/location.dart';
 import 'package:prototype/util/getDrawer.dart';
+import 'package:prototype/auth/login.dart';
+import 'package:prototype/screens/protector_girl_screen.dart';
+import 'package:prototype/util/getDrawer.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sms_autofill/sms_autofill.dart';
+import 'package:geolocator/geolocator.dart' as geolocator;
 
 void backgroundFetchHeadlessTask(String taskId) async {
   print('[BackgroundFetch] Headless event received. $taskId');
+  print("in line 19");
   try {
     geolocator.Position position = await geolocator.Geolocator()
         .getCurrentPosition(desiredAccuracy: geolocator.LocationAccuracy.high);
@@ -26,7 +34,8 @@ void backgroundFetchHeadlessTask(String taskId) async {
     try {
       geolocator.Position position = await geolocator.Geolocator()
           .getLastKnownPosition(
-              desiredAccuracy: geolocator.LocationAccuracy.high);
+
+          desiredAccuracy: geolocator.LocationAccuracy.high);
       GeoPoint pos = GeoPoint(position.latitude, position.longitude);
       FirebaseAuth.instance.currentUser().then((user) {
         Firestore.instance
@@ -59,6 +68,10 @@ class _protectorHomeScreenState extends State<protectorHomeScreen>
   String girluid;
   var count = 0;
   var selected;
+
+  final int sendHeartbeatId = 0;
+  String girluid;
+  var count = 0;
   _protectorHomeScreenState(this.user);
 
   String uid;
@@ -72,24 +85,7 @@ class _protectorHomeScreenState extends State<protectorHomeScreen>
     _firebaseMessaging.getToken().then((token) => print(token));
   }
 
-/*  Widget level1and3Notification(message) {
-    return AlertDialog(
-      content: ListTile(
-        title: Text(message['data']['title']),
-        subtitle: Text(message['data']['body']),
-        leading: Icon(Icons.message),
-      ),
-      actions: <Widget>[
-        FlatButton(
-          child: Text("Got It"),
-          onPressed: () {
-            Navigator.of(context).pop();
-            count = 0;
-          },
-        )
-      ],
-    );
-  }*/
+
 
   Widget level1and3Notification(message) {
     return Center(
@@ -393,11 +389,11 @@ class _protectorHomeScreenState extends State<protectorHomeScreen>
   @override
   void initState() {
     selected = 'girlList';
+    initAlarm();
     BackgroundFetch.registerHeadlessTask(backgroundFetchHeadlessTask);
     super.initState();
     uid = user.uid;
     initBackgroundfetch();
-
     getMessage();
 
     /*var location = Location();
@@ -427,7 +423,7 @@ class _protectorHomeScreenState extends State<protectorHomeScreen>
   }
 
   final TextStyle dropdownMenuItem =
-      TextStyle(color: Colors.black, fontSize: 18);
+  TextStyle(color: Colors.black, fontSize: 18);
 
   final primary = Color(0xff696b9e);
   final secondary = Color(0xfff29a94);
@@ -457,8 +453,32 @@ class _protectorHomeScreenState extends State<protectorHomeScreen>
   });*/
   }
 
+  void sendHeartbeat(){
+    print("into send heartbeat");
+    const platform = const MethodChannel("platformlocation");
+    platform.invokeMethod("sendBroadcast");
+    print("Method invoked");
+  }
+
   @override
   Widget build(BuildContext context) {
+    return StreamBuilder<QuerySnapshot>(
+      stream: Firestore.instance
+          .collection('protector')
+          .document(user.uid)
+          .collection('girl_list')
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData)
+          return LinearProgressIndicator();
+        else {
+          return buildHomepageList(context, snapshot.data.documents);
+        }
+      },
+    );
+  }
+
+  Widget buildHomepageList(context, girl_docs) {
     return Scaffold(
       backgroundColor: Color(0xfff0f0f0),
       drawer: getDrawer(user, 'protector').getdrawer(context),
@@ -648,6 +668,7 @@ class _protectorHomeScreenState extends State<protectorHomeScreen>
               context,
               MaterialPageRoute(
                   builder: (context) => trustedGirlScreen(girl_uid, snapshot)));
+
         },
         child: Container(
           decoration: BoxDecoration(
@@ -735,9 +756,26 @@ class _protectorHomeScreenState extends State<protectorHomeScreen>
   }
 
   Future<void> initBackgroundfetch() async {
+    BackgroundFetch.scheduleTask(TaskConfig(
+        taskId: "flutter_background_fetch",
+        periodic: true,
+        delay: 5000,
+        startOnBoot: true,
+        stopOnTerminate: false,
+        enableHeadless: true,
+        forceAlarmManager: true,
+        requiredNetworkType: NetworkType.ANY,
+        requiresBatteryNotLow: false,
+        requiresCharging: false,
+        requiresDeviceIdle: false,
+        requiresStorageNotLow: false
+    ));
+
     BackgroundFetch.configure(
         BackgroundFetchConfig(
+            startOnBoot: true,
             minimumFetchInterval: 16,
+            forceAlarmManager: true,
             stopOnTerminate: false,
             enableHeadless: true,
             requiresBatteryNotLow: false,
@@ -750,7 +788,7 @@ class _protectorHomeScreenState extends State<protectorHomeScreen>
       try {
         geolocator.Position position = await geolocator.Geolocator()
             .getCurrentPosition(
-                desiredAccuracy: geolocator.LocationAccuracy.high);
+            desiredAccuracy: geolocator.LocationAccuracy.high);
         GeoPoint pos = GeoPoint(position.latitude, position.longitude);
         Firestore.instance
             .collection("protector")
@@ -762,7 +800,7 @@ class _protectorHomeScreenState extends State<protectorHomeScreen>
         try {
           geolocator.Position position = await geolocator.Geolocator()
               .getLastKnownPosition(
-                  desiredAccuracy: geolocator.LocationAccuracy.high);
+              desiredAccuracy: geolocator.LocationAccuracy.high);
           GeoPoint pos = GeoPoint(position.latitude, position.longitude);
           Firestore.instance
               .collection("protector")
@@ -813,5 +851,13 @@ class _protectorHomeScreenState extends State<protectorHomeScreen>
 // message was in flight, we want to discard the reply rather than calling
 // setState to update our non-existent appearance.
     if (!mounted) return;
+  }
+
+  void initAlarm() async{
+    print("in init alarm");
+    await AndroidAlarmManager.initialize();
+    print("androidAlarmManager initialize");
+    await AndroidAlarmManager.periodic(const Duration(minutes: 5), sendHeartbeatId, sendHeartbeat);
+    print("periodic event registered");
   }
 }

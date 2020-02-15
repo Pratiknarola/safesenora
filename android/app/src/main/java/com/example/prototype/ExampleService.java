@@ -21,29 +21,38 @@ public class ExampleService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        String input = intent.getStringExtra("inputExtra");
 
-        Intent notificationIntent = new Intent(this, MainActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this,
-                0, notificationIntent, 0);
+        //String input = intent.getStringExtra("inputExtra");
+        if(intent.getBooleanExtra("start", true)) {
+            Intent notificationIntent = new Intent(this, MainActivity.class);
+            PendingIntent pendingIntent = PendingIntent.getActivity(this,
+                    0, notificationIntent, 0);
 
-        Notification notification = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
-                .setContentTitle("Example Service")
-                .setContentText(input)
-                .setSmallIcon(R.drawable.ic_notification)
-                .setContentIntent(pendingIntent)
-                .build();
+            Notification notification = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
+                    .setContentTitle("Prototype is running")
+                    .setContentText("processing...")
+                    .setSmallIcon(R.drawable.ic_notification)
+                    .setContentIntent(pendingIntent)
+                    .build();
 
-        startForeground(1, notification);
+            startForeground(1, notification);
 
-        //do heavy work on a background thread
-        //stopSelf();
+            //do heavy work on a background thread
+            //stopSelf();
 
+        }
+        else{
+            stopForeground(true);
+            stopSelf();
+
+        }
         return START_NOT_STICKY;
     }
 
     @Override
     public void onDestroy() {
+
+        stopSelf();
         super.onDestroy();
     }
 

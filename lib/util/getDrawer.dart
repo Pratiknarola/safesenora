@@ -8,6 +8,7 @@ import 'package:prototype/screens/settings.dart';
 import 'package:prototype/screens/trusted_member.dart';
 import 'package:prototype/util/oval_right_clipper.dart';
 
+
 class getDrawer {
   FirebaseUser user;
   String role;
