@@ -347,6 +347,7 @@ class ProfilePageState extends State<ProfilePage> {
                               onPressed: () {
                                 if (_formKey.currentState.validate()) {
                                   _formKey.currentState.save();
+                                  _phoneNumber = '+91' + _phoneNumber;
                                   Firestore.instance
                                       .collection('$collectionname')
                                       .document(userId)
