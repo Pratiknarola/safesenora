@@ -12,8 +12,6 @@ import android.os.IBinder;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
-import com.google.firebase.auth.FirebaseAuth;
-
 
 public class ExampleService extends Service {
     String uid;
@@ -59,27 +57,9 @@ public class ExampleService extends Service {
 
             startForeground(145, notification);
 
-            try{
-                uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-            }catch (Exception e){
-                System.out.println("Exception while foreground new thread user");
-                uid = "";
-            }
 
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    for(int i = 0; i < 10; i++){
-                        try {
-                            Thread.sleep(10000);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        new MainActivity().getLastLoc(uid, "girl_user");
 
-                    }
-                }
-            }).start();
+
 
             //do heavy work on a background thread
             //stopSelf();

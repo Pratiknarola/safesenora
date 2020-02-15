@@ -378,13 +378,16 @@ class _girlHomeScreenState extends State<girlHomeScreen>
                               .document(user.uid)
                               .setData({'level1': true}, merge: true);
                           print("addinglocation info in firestor level ");
-                          startLocationUpdate();
+                          try{
+                            startLocationUpdate();
+                          }catch(e){print("error in location update "); print(e);}
+
                           const platform = const MethodChannel('platformlocation');
-                          print("platform method channel ");
-                          isForegroundServiceOn = true;
-                          platform.invokeMethod("startForegroundService");
-                          print("method invoked");
-                          updateBatteryperiodic();
+                            print("platform method channel ");
+                            isForegroundServiceOn = true;
+                            platform.invokeMethod("startForegroundService");
+                            print("method invoked");
+                            updateBatteryperiodic();
                           /*setState(() {
                             level_1_pressed = !level_1_pressed;
                             print("level 1 pressed");
