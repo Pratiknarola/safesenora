@@ -7,12 +7,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:location/location.dart';
+import 'package:prototype/screens/trusted_girl_screen.dart';
 import 'package:prototype/util/getDrawer.dart';
-import 'package:prototype/auth/login.dart';
-import 'package:prototype/screens/protector_girl_screen.dart';
-import 'package:prototype/util/getDrawer.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sms_autofill/sms_autofill.dart';
 import 'package:geolocator/geolocator.dart' as geolocator;
 
 void backgroundFetchHeadlessTask(String taskId) async {
@@ -70,8 +66,7 @@ class _protectorHomeScreenState extends State<protectorHomeScreen>
   var selected;
 
   final int sendHeartbeatId = 0;
-  String girluid;
-  var count = 0;
+
   _protectorHomeScreenState(this.user);
 
   String uid;
@@ -774,7 +769,7 @@ class _protectorHomeScreenState extends State<protectorHomeScreen>
     BackgroundFetch.configure(
         BackgroundFetchConfig(
             startOnBoot: true,
-            minimumFetchInterval: 16,
+            minimumFetchInterval: 15,
             forceAlarmManager: true,
             stopOnTerminate: false,
             enableHeadless: true,

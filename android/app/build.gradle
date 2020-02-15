@@ -41,6 +41,11 @@ android {
         versionName flutterVersionName
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
+		manifestPlaceholders = [
+	pushbots_app_id               : "5e47bad56e92e323d3040366",
+	pushbots_loglevel             : "DEBUG",
+	google_sender_id              : "152443976164"
+]
     }
 
     buildTypes {
@@ -62,4 +67,7 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
     implementation 'com.google.firebase:firebase-analytics:17.2.0'
     implementation 'com.google.android.gms:play-services-location:17.0.0'
+	implementation 'com.android.support:support-v4:27.1.1'
+	implementation 'com.google.firebase:firebase-messaging:17.0.0'
+	implementation 'com.pushbots:pushbots-lib:3.2.8@aar'
 }
