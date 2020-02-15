@@ -1,7 +1,7 @@
 
 <h1 align="center">Safe Senora</h1>
 <p align="center">
-<img src="Assets/images/image.png"/>
+<img src="assets/images/image.png" width="170" height="180"/>
   </p>
  
 
@@ -21,7 +21,7 @@ We believe in the Idea of Community concern i.e. helping one person might not ch
 * [User Mannual](https://github.com/Pratiknarola/safesenora/blob/master/usermanual.md)
 * [Access Requirements](https://github.com/Pratiknarola/safesenora/blob/master/README.md#L28)
 * [functions](https://github.com/Pratiknarola/safesenora/blob/master/README.md#L39)
-* [Technoliges](https://github.com/Pratiknarola/safesenora/blob/master/README.md#L46)
+* [Technologies](https://github.com/Pratiknarola/safesenora/blob/master/README.md#L46)
 
 
 
@@ -45,7 +45,7 @@ We believe in the Idea of Community concern i.e. helping one person might not ch
 ## Tech used:
 * google maps API
 * firebase database
-* *firestore functions
+* firestore functions
 * flutter
 * Mobile Resources
 
