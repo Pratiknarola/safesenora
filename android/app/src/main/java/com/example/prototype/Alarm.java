@@ -27,6 +27,10 @@ public class Alarm extends BroadcastReceiver {
             am.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(),(long) (60000 * heartbeatValue), PendingIntent.getBroadcast(context, 0, new Intent(context, Alarm.class), 0));
             Log.d("Alarm", "Alarm interval set to " + heartbeatValue + " minutes");
         }
+
+        else{
+            Log.d("Alarm", "In else part of alarm manager");
+        }
     }
     public void cancelAlarm(Context context) {
         ((AlarmManager) context.getSystemService(Context.ALARM_SERVICE)).cancel(PendingIntent.getBroadcast(context, 0, new Intent(context, Alarm.class), 0));

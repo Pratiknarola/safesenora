@@ -55,6 +55,8 @@ dependencies:
   sms_autofill: ^1.2.0
   background_fetch: ^0.5.0
   android_alarm_manager: ^0.4.5+3
+  backdrop: ^0.2.8
+  flutter_gradients: ^0.0.3
 
 
 
