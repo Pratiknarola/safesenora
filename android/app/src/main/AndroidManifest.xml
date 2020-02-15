@@ -1,6 +1,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.prototype">
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+<<<<<<< HEAD
+=======
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE " />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+>>>>>>> 1e0917c855f6e397c2aa25ee654bbc556ca669b2
 
     <!-- io.flutter.app.FlutterApplication is an android.app.Application that
          calls FlutterMain.startInitialization(this); in its onCreate method.

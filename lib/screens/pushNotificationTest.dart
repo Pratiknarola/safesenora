@@ -1,3 +1,5 @@
+import 'dart:html';
+
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 
@@ -24,23 +26,39 @@ class pushNotificationState extends State<pushNotification> {
   }
 
   void getMessage() {
+    _firebaseMessaging.setAutoInitEnabled(true);
     _firebaseMessaging.configure(
         onMessage: (Map<String, dynamic> message) async {
-      print('on message $message');
-      showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-                content: ListTile(
-                  title: Text(message['notification']['title']),
-                  subtitle: Text(message['notification']['body']),
-                ),
-                actions: <Widget>[
-                  FlatButton(
-                    child: Text("heya"),
-                    onPressed: () => Navigator.of(context).pop(),
-                  )
-                ],
-              ));
+          var level1 = message['data']['level1'];
+          print("");
+          var level2 = message['data']['level2'];
+          var level3 = message['data']['level3'];
+          var pressedLevel = message['data']['pressedLevel'];
+          var batteryLevel = message['data']['battery'];
+          var girluserid = message['data']['girl_id'];
+
+          if(pressedLevel == 'level1'){
+            print('on message $message');
+            showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  content: ListTile(
+                    title: Text(message['notification']['title']),
+                    subtitle: Text(message['notification']['body']),
+                  ),
+                  actions: <Widget>[
+                    FlatButton(
+                      child: Text("heya"),
+                      onPressed: () => Navigator.of(context).pop(),
+                    )
+                  ],
+                ));
+          }
+
+
+
+
+
       setState(() {
         print('hello inside setstate');
         _message =

@@ -50,7 +50,12 @@ dependencies:
   url_launcher: ^5.4.1
   async_loader: ^0.1.2
   firebase_messaging: any
+<<<<<<< HEAD
   battery: any
+=======
+  battery: ^0.3.1+7
+
+>>>>>>> 1e0917c855f6e397c2aa25ee654bbc556ca669b2
 
 
 dev_dependencies:

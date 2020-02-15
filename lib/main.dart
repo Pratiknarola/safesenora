@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+<<<<<<< HEAD
+=======
+import 'package:prototype/screens/pushNotificationTest.dart';
+>>>>>>> 1e0917c855f6e397c2aa25ee654bbc556ca669b2
 import 'package:prototype/screens/setScreen.dart';
 
 void main() => runApp(MyApp());
