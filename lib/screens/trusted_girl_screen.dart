@@ -9,6 +9,7 @@ import 'package:url_launcher/url_launcher.dart';
 class trustedGirlScreen extends StatefulWidget {
   String girlid;
   var girl_docsnap;
+
   trustedGirlScreen(this.girlid, this.girl_docsnap);
 
   @override
@@ -169,13 +170,22 @@ class _trustedGirlScreenState extends State<trustedGirlScreen> {
 
   Widget buildnearbyUserList(context, agreeduser_docs) {
     return Container(
-      height: MediaQuery.of(context).size.height,
-      width: MediaQuery.of(context).size.width,
+      height: MediaQuery
+          .of(context)
+          .size
+          .height,
+      width: MediaQuery
+          .of(context)
+          .size
+          .width,
       child: Stack(
         children: <Widget>[
           SingleChildScrollView(
             child: Container(
-              height: MediaQuery.of(context).size.height,
+              height: MediaQuery
+                  .of(context)
+                  .size
+                  .height,
               width: double.infinity,
               child: ListView.builder(
                   itemCount: agreeduser_docs.length,
@@ -217,12 +227,13 @@ class _trustedGirlScreenState extends State<trustedGirlScreen> {
           if (!snapshot.hasData)
             return LinearProgressIndicator();
           else
-            return buildSingleList(snapshot.data.documents[0], agreeduser_id);
+            return buildSingleList(snapshot.data.documents[0], agreeduser_id,
+                agreeduser_docs[index]['allowed']);
         });
   }
 
-  Widget buildSingleList(snapshot, agreeduser_id) {
-    print('aggggreeiid id is$agreeduser_id');
+  Widget buildSingleList(snapshot, agreeduser_id, index_allowed) {
+    print('aggggreeiid id is$agreeduser_id  and is $index_allowed');
     print('name is ${snapshot['name']}');
     return Container(
       decoration: BoxDecoration(
@@ -282,76 +293,85 @@ class _trustedGirlScreenState extends State<trustedGirlScreen> {
                 SizedBox(
                   height: 6,
                 ),
-                allowed == 'NA'
+                index_allowed == 'NA'
                     ? Expanded(
-                        child: Row(
-                          children: <Widget>[
-                            Expanded(
-                              child: RaisedButton(
-                                child: Text("Dont Allow"),
-                                color: Colors.red,
-                                colorBrightness: Brightness.dark,
-                                onPressed: () {
-                                  print(
-                                      'hello in sett statee$agreeduser_id ${agreeduser_id.length} girl id $girlid');
-                                  Firestore.instance
-                                      .collection('girl_user')
-                                      .document(girlid)
-                                      .collection('agreed_user')
-                                      .document(agreeduser_id)
-                                      .setData({'allowed': 'Not Allowed'},
-                                          merge: true);
-                                },
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20.0)),
-                              ),
-                            ),
-                            SizedBox(width: 10.0),
-                            Expanded(
-                              child: RaisedButton(
-                                child: Text("Allow"),
-                                color: Colors.green,
-                                colorBrightness: Brightness.dark,
-                                onPressed: () {
-                                  print('allow pressed');
-                                  Firestore.instance
-                                      .collection('girl_user')
-                                      .document(girlid)
-                                      .collection('allowed_user')
-                                      .document(agreeduser_id)
-                                      .setData({
-                                    'name': snapshot['name'],
-                                    'surname': snapshot['surname'],
-                                    'phone': snapshot['phone'],
-                                    'picture': snapshot['picture'],
-                                    'battery': snapshot['battery'],
-                                    'birth': snapshot['birth'],
-                                  }, merge: true);
-                                  Firestore.instance
-                                      .collection('girl_user')
-                                      .document(girlid)
-                                      .collection('agreed_user')
-                                      .document(agreeduser_id)
-                                      .setData({'allowed': 'Allowed'},
-                                          merge: true);
-                                },
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20.0)),
-                              ),
-                            ),
-                          ],
-                        ),
-                      )
-                    : Expanded(
+                  child: Row(
+                    children: <Widget>[
+                      Expanded(
                         child: RaisedButton(
-                          child: Text(allowed),
-                          color: Colors.transparent,
+                          child: Text("Dont Allow"),
+                          color: Colors.red,
                           colorBrightness: Brightness.dark,
-                          onPressed: () {},
+                          onPressed: () {
+                            print(
+                                'hello in sett statee$agreeduser_id ${agreeduser_id
+                                    .length} girl id $girlid');
+                            Firestore.instance
+                                .collection('girl_user')
+                                .document(girlid)
+                                .collection('agreed_user')
+                                .document(agreeduser_id)
+                                .setData({'allowed': 'Not Allowed'},
+                                merge: true);
+                          },
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(20.0)),
                         ),
                       ),
+                      SizedBox(width: 10.0),
+                      Expanded(
+                        child: RaisedButton(
+                          child: Text("Allow"),
+                          color: Colors.green,
+                          colorBrightness: Brightness.dark,
+                          onPressed: () {
+                            print('allow pressed');
+                            Firestore.instance
+                                .collection('girl_user')
+                                .document(girlid)
+                                .collection('allowed_user')
+                                .document(agreeduser_id)
+                                .setData({
+                              'name': snapshot['name'],
+                              'surname': snapshot['surname'],
+                              'phone': snapshot['phone'],
+                              'picture': snapshot['picture'],
+                              'battery': snapshot['battery'],
+                              'birth': snapshot['birth'],
+                            }, merge: true);
+                            Firestore.instance
+                                .collection('protector')
+                                .document(agreeduser_id)
+                                .collection('helping_list')
+                                .document(girlid)
+                                .setData({
+                              'girl_id': girlid,
+                            }, merge: true);
+                            Firestore.instance
+                                .collection('girl_user')
+                                .document(girlid)
+                                .collection('agreed_user')
+                                .document(agreeduser_id)
+                                .setData({'allowed': 'Allowed'},
+                                merge: true);
+                          },
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20.0)),
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+                    : Expanded(
+                  child: RaisedButton(
+                    child: Text(index_allowed),
+                    color: Colors.transparent,
+                    colorBrightness: Brightness.dark,
+                    onPressed: () {},
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20.0)),
+                  ),
+                ),
               ],
             ),
           )
@@ -381,7 +401,10 @@ class _trustedGirlScreenState extends State<trustedGirlScreen> {
                 borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(15),
                     bottomRight: Radius.circular(15))),
-            height: MediaQuery.of(context).size.height * 0.6,
+            height: MediaQuery
+                .of(context)
+                .size
+                .height * 0.6,
             child: GoogleMap(
               //polylines: _polyline,
               onMapCreated: _onMapCreated,

@@ -7,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:location/location.dart';
+import 'package:prototype/screens/helping_girl_screen.dart';
 import 'package:prototype/screens/trusted_girl_screen.dart';
 import 'package:prototype/util/getDrawer.dart';
 import 'package:geolocator/geolocator.dart' as geolocator;
@@ -383,7 +384,7 @@ class _protectorHomeScreenState extends State<protectorHomeScreen>
 
   @override
   void initState() {
-    selected = 'girlList';
+    selected = 'girl_list';
     initAlarm();
     BackgroundFetch.registerHeadlessTask(backgroundFetchHeadlessTask);
     super.initState();
@@ -500,7 +501,7 @@ class _protectorHomeScreenState extends State<protectorHomeScreen>
                     child: Text(
                       "Helping Girl's",
                       style: TextStyle(
-                          color: selected == 'helpingList'
+                          color: selected == 'helping_list'
                               ? secondary
                               : Colors.white,
                           fontSize: 20),
@@ -508,7 +509,7 @@ class _protectorHomeScreenState extends State<protectorHomeScreen>
                   ),
                   onTap: () {
                     setState(() {
-                      selected = 'helpingList';
+                      selected = 'helping_list';
                     });
                   },
                 ),
@@ -524,13 +525,13 @@ class _protectorHomeScreenState extends State<protectorHomeScreen>
                       "Trusted Girls's",
                       style: TextStyle(
                           color:
-                              selected == 'girlList' ? secondary : Colors.white,
+                              selected == 'girl_list' ? secondary : Colors.white,
                           fontSize: 20),
                     ),
                   ),
                   onTap: () {
                     setState(() {
-                      selected = 'girlList';
+                      selected = 'girl_list';
                     });
                   },
                 ),
@@ -538,24 +539,19 @@ class _protectorHomeScreenState extends State<protectorHomeScreen>
             ),
           ),
           Expanded(
-              child: selected == 'helpingList' ? helpingList() : girlList()),
+              child: girlList()),
         ],
       ),
     );
   }
 
-  Widget helpingList() {
-    return Container(
-      child: Text('Hello helping list'),
-    );
-  }
 
   Widget girlList() {
     return StreamBuilder<QuerySnapshot>(
       stream: Firestore.instance
           .collection('protector')
           .document(user.uid)
-          .collection('girl_list')
+          .collection(selected)
           .snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData)
@@ -648,7 +644,7 @@ class _protectorHomeScreenState extends State<protectorHomeScreen>
     Firestore.instance
         .collection('protector')
         .document(user.uid)
-        .collection('girl_list')
+        .collection(selected)
         .document(girl_uid)
         .setData({
       'battery': snapshot['battery'],
@@ -662,7 +658,9 @@ class _protectorHomeScreenState extends State<protectorHomeScreen>
           Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => trustedGirlScreen(girl_uid, snapshot)));
+                  builder: (context) =>  selected == 'girl_list'
+                      ? trustedGirlScreen(girl_uid, snapshot):
+                  helpingGirlScreen(girl_uid, snapshot)));
 
         },
         child: Container(
