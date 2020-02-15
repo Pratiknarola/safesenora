@@ -44,9 +44,12 @@ We believe in the Idea of Community concern i.e. helping one person might not ch
 
 ## Tech used:
 * google maps API
-* firebase database
+* firebase firestore
+* firebase storage
 * firestore functions
-* flutter
+* flutter framwork
+* node js 
+* platform channels
 * Mobile Resources
 
 ### Installation
