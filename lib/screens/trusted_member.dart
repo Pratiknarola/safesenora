@@ -19,8 +19,21 @@ class _trustedMemberPageState extends State<trustedMemberPage> {
   final _formKey = GlobalKey<FormState>();
   String mem_name, mem_surname, mem_id;
   Map<String, String> protectorList = new Map();
+  var userInfoSnap;
 
   _trustedMemberPageState(this.user);
+
+  void getUserData() {
+    Firestore.instance
+        .collection('girl_user')
+        .document(user.uid)
+        .collection('user_info')
+        .document(user.uid)
+        .get()
+        .then((snap) {
+      userInfoSnap = snap;
+    });
+  }
 
   void getProtectorList() {
     Firestore.instance.collection('user_list').getDocuments().then((qs) {
@@ -76,6 +89,7 @@ class _trustedMemberPageState extends State<trustedMemberPage> {
 
   @override
   void initState() {
+    getUserData();
     getProtectorList();
     updateGirlTrustedListNames();
   }
@@ -180,6 +194,7 @@ class _trustedMemberPageState extends State<trustedMemberPage> {
                                 if (_formKey.currentState.validate()) {
                                   //print("form validated");
                                   _formKey.currentState.save();
+                                  setInProtectorList(mem_id,user.uid);
                                   //print("current name is $mem_name");
                                   //print("current id is $mem_id");
                                   //print("current surname is $mem_surname");
@@ -216,6 +231,29 @@ class _trustedMemberPageState extends State<trustedMemberPage> {
         ));
   }
 
+  void deleteFromProtectorList(proid, userId) {
+    Firestore.instance
+        .collection('protector')
+        .document('$proid')
+        .collection('girl_list')
+        .document(userId)
+        .delete();
+  }
+  void setInProtectorList(proid,userId){
+    Firestore.instance
+        .collection('protector')
+        .document(proid)
+        .collection('girl_list')
+        .document(userId)
+        .setData({
+      'name': userInfoSnap['name'],
+      'surname': userInfoSnap['surname'],
+      'picture': userInfoSnap['picture'],
+      'battery': userInfoSnap['battery'],
+      'phone': userInfoSnap['phone']
+    }, merge: true);
+  }
+
   Widget buildProtectorList(List<DocumentSnapshot> documents) {
     return ListView(
       children: documents.map((document) {
@@ -228,6 +266,7 @@ class _trustedMemberPageState extends State<trustedMemberPage> {
             key: Key(document['identifier']),
             onDismissed: (DismissDirection dir) {
               document.reference.delete();
+              deleteFromProtectorList(docid, user.uid);
               _scaffoldKey.currentState.showSnackBar(
                 SnackBar(
                   content: Text("$docname $docsurname removed"),
@@ -235,6 +274,7 @@ class _trustedMemberPageState extends State<trustedMemberPage> {
                       label: "UNDO",
                       onPressed: () {
                         setState(() {
+                          //adding to girl's trusted_member list
                           Firestore.instance
                               .collection('girl_user')
                               .document(user.uid)
@@ -244,7 +284,9 @@ class _trustedMemberPageState extends State<trustedMemberPage> {
                             'name': docname,
                             'surname': docsurname,
                             'identifier': docidentifier
-                          });
+                          }, merge: true);
+                          //Adding to protector's girl_list
+                          setInProtectorList(docid,user.uid);
                         });
                       }),
                 ),

@@ -1,4 +1,3 @@
-
 <h1 align="center">SafeSenora</h1>
 <p align="center">
 <img src="assets/images/image.png" width="170" height="180"/>
