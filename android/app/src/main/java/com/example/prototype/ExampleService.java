@@ -21,6 +21,7 @@ public class ExampleService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+
         //String input = intent.getStringExtra("inputExtra");
         if(intent.getBooleanExtra("start", true)) {
             Intent notificationIntent = new Intent(this, MainActivity.class);
@@ -50,6 +51,7 @@ public class ExampleService extends Service {
 
     @Override
     public void onDestroy() {
+
         stopSelf();
         super.onDestroy();
     }

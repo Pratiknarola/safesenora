@@ -98,7 +98,8 @@ exports.offerTrigger = functions.firestore.document(
         }).then((promisesnap) => {
             promisesnap.forEach((snap) => {
                 //tokens.push(snap.data().NotifyToken);
-                console.log("token is ");
+                console.log(`token is ${snap.data().NotifyToken}`);
+
 
                 let payload = {
                     "name":"Prototype",
@@ -225,8 +226,9 @@ exports.offerTrigger = functions.firestore.document(
                         let payload = {
                             "name":"Prototype",
                             "notification": {
-                                "title": "someone near you needs help",
-                                "body": "if you are willing to help please open app and help her.",
+                                "title": "ALERT! ALERT! Someone near you needs help!",
+                                "body": "If you are willing to help please on this notifcation and help her.",
+
                                 "image": picture
                             },
                             "data": {

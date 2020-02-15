@@ -1,5 +1,6 @@
 package com.example.prototype;
 
+
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
 import android.content.ComponentName;
@@ -23,6 +24,9 @@ import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 
@@ -34,6 +38,7 @@ import io.flutter.embedding.android.FlutterActivity;
 import io.flutter.embedding.engine.FlutterEngine;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugins.GeneratedPluginRegistrant;
+
 
 
 public class MainActivity extends FlutterActivity {
@@ -152,6 +157,7 @@ public class MainActivity extends FlutterActivity {
         System.out.println("forground service startd");
 
     }
+
 
     public void getLastLoc(String userid, String role) {
         String collectionName = role.equals("protector") ? "protector" : "girl_user";
@@ -292,6 +298,7 @@ public class MainActivity extends FlutterActivity {
     }*/
 
     @Override
+
     public void onCreate(@Nullable Bundle savedInstanceState, @Nullable PersistableBundle persistentState) {
         super.onCreate(savedInstanceState, persistentState);
 

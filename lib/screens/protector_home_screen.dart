@@ -34,6 +34,7 @@ void backgroundFetchHeadlessTask(String taskId) async {
     try {
       geolocator.Position position = await geolocator.Geolocator()
           .getLastKnownPosition(
+
           desiredAccuracy: geolocator.LocationAccuracy.high);
       GeoPoint pos = GeoPoint(position.latitude, position.longitude);
       FirebaseAuth.instance.currentUser().then((user) {
@@ -64,10 +65,13 @@ class protectorHomeScreen extends StatefulWidget {
 class _protectorHomeScreenState extends State<protectorHomeScreen>
     with SingleTickerProviderStateMixin {
   FirebaseUser user;
+  String girluid;
+  var count = 0;
+  var selected;
+
   final int sendHeartbeatId = 0;
   String girluid;
   var count = 0;
-
   _protectorHomeScreenState(this.user);
 
   String uid;
@@ -81,87 +85,297 @@ class _protectorHomeScreenState extends State<protectorHomeScreen>
     _firebaseMessaging.getToken().then((token) => print(token));
   }
 
+
+
+  Widget level1and3Notification(message) {
+    return Center(
+      child: Dialog(
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        child: Container(
+          padding: EdgeInsets.only(right: 16.0),
+          height: 200,
+          decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(75),
+                  bottomLeft: Radius.circular(75),
+                  topRight: Radius.circular(10),
+                  bottomRight: Radius.circular(10))),
+          child: Row(
+            children: <Widget>[
+              SizedBox(width: 15.0),
+              CircleAvatar(
+                radius: 30,
+                backgroundColor: Colors.grey.shade200,
+                child: Image.network(
+                  message['data']['image'],
+                  width: 60,
+                ),
+              ),
+              SizedBox(width: 15.0),
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      "Alert!",
+                      style: Theme.of(context).textTheme.title,
+                    ),
+                    SizedBox(height: 10.0),
+                    Flexible(
+                      child: Text(message['data']['title']),
+                    ),
+                    Flexible(
+                      child: Text(message['data']['body']),
+                    ),
+                    SizedBox(height: 10.0),
+                    Row(
+                      children: <Widget>[
+                        Expanded(
+                          child: RaisedButton(
+                            child: Text("Got It"),
+                            color: Colors.red,
+                            colorBrightness: Brightness.dark,
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20.0)),
+                          ),
+                        ),
+                      ],
+                    )
+                  ],
+                ),
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget level2Notification(message) {
+    return Center(
+      child: Dialog(
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        child: Container(
+          padding: EdgeInsets.only(right: 16.0),
+          height: 200,
+          decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(75),
+                  bottomLeft: Radius.circular(75),
+                  topRight: Radius.circular(10),
+                  bottomRight: Radius.circular(10))),
+          child: Row(
+            children: <Widget>[
+              SizedBox(width: 15.0),
+              CircleAvatar(
+                radius: 30,
+                backgroundColor: Colors.grey.shade200,
+                child: Image.network(
+                  message['data']['image'],
+                  width: 60,
+                ),
+              ),
+              SizedBox(width: 15.0),
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      "Alert!",
+                      style: Theme.of(context).textTheme.title,
+                    ),
+                    SizedBox(height: 10.0),
+                    Flexible(
+                      child: Text(message['data']['title']),
+                    ),
+                    Flexible(
+                      child: Text(message['data']['body']),
+                    ),
+                    SizedBox(height: 10.0),
+                    Row(
+                      children: <Widget>[
+                        Expanded(
+                          child: RaisedButton(
+                            child: Text("No"),
+                            color: Colors.red,
+                            colorBrightness: Brightness.dark,
+                            onPressed: () {
+                              Firestore.instance
+                                  .collection('girl_user')
+                                  .document(message['data']['girl_id'])
+                                  .collection('help_permission')
+                                  .document(user.uid)
+                                  .setData({'permission': false}, merge: true);
+                              Navigator.pop(context);
+                            },
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20.0)),
+                          ),
+                        ),
+                        SizedBox(width: 10.0),
+                        Expanded(
+                          child: RaisedButton(
+                            child: Text("Yes"),
+                            color: Colors.green,
+                            colorBrightness: Brightness.dark,
+                            onPressed: () {
+                              Firestore.instance
+                                  .collection('girl_user')
+                                  .document(message['data']['girl_id'])
+                                  .collection('help_permission')
+                                  .document(user.uid)
+                                  .setData({'permission': true}, merge: true);
+                              Navigator.pop(context);
+                            },
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20.0)),
+                          ),
+                        ),
+                      ],
+                    )
+                  ],
+                ),
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   void getMessage() {
     _firebaseMessaging.configure(
 
-      // ignore: missing_return
+        // ignore: missing_return
         onMessage: (Map<String, dynamic> message) {
-          var level1 = message['data']['level1'];
+      var level1 = message['data']['level1'];
 
-          var level2 = message['data']['level2'];
-          var level3 = message['data']['level3'];
-          var pressedLevel = message['data']['pressedLevel'];
-          var batteryLevel = message['data']['battery'];
-          var girluserid = message['data']['girl_id'];
-          print('pressed level $pressedLevel and level1 is $level1');
-          if (pressedLevel == 'level1' && level1 == 'true' && count == 0) {
-            print("on message $message");
-            print("current count is $count");
-            count += 1;
-            showDialog(
-                context: context,
-                builder: (context) {
-                  return AlertDialog(
-                    content: ListTile(
-                      title: Text(message['notification']['title']),
-                      subtitle: Text(message['notification']['body']),
-                      leading: Icon(Icons.message),
-                    ),
-                    actions: <Widget>[
-                      FlatButton(
-                        child: Text("onmessage"),
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                          count = 0;
-                        },
-                      )
-                    ],
-                  );
-                  //TODO setstate to show changes according to levels and data
-                });
-          }
-        },
+      var level2 = message['data']['level2'];
+      var level3 = message['data']['level3'];
+      var pressedLevel = message['data']['pressedLevel'];
+      var batteryLevel = message['data']['battery'];
+      var girluserid = message['data']['girl_id'];
+      print('pressed level $pressedLevel and level1 is $level1');
+      if (pressedLevel == 'level1' && level1 == 'true' && count == 0) {
+        print("on message $message");
+        print("current count is $count");
+        count += 1;
+        showDialog(
+            context: context,
+            builder: (context) {
+              return level1and3Notification(message);
+              //TODO setstate to show changes according to levels and data
+            });
+      } else if (pressedLevel == 'level2' && level2 == 'true' && count == 0) {
+        print("on message $message");
+        print("current count of level2 mesej is $count");
+        showDialog(
+            context: context,
+            builder: (context) {
+              return level2Notification(message);
+              //TODO setstate to show changes according to levels and data
+            });
+      } else if (pressedLevel == 'level3' && level3 == 'true' && count == 0) {
+        print("on message $message");
+        print("current count of level2 mesej is $count");
+        showDialog(
+            context: context,
+            builder: (context) {
+              return level1and3Notification(message);
+              //TODO setstate to show changes according to levels and data
+            });
+      }
+    }, onResume: (Map<String, dynamic> message) async {
+      print('on resume hello in resumed state $message');
+      var level1 = message['data']['level1'];
+      var level2 = message['data']['level2'];
+      var level3 = message['data']['level3'];
+      var pressedLevel = message['data']['pressedLevel'];
+      var batteryLevel = message['data']['battery'];
+      var girluserid = message['data']['girl_id'];
+      print('pressed level $pressedLevel and level1 is $level1');
+      if (pressedLevel == 'level1' && level1 == 'true' && count == 0) {
+        print("on message $message");
+        print("current count is $count");
+        count += 1;
+        showDialog(
+            context: context,
+            builder: (context) {
+              return level1and3Notification(message);
+              //TODO setstate to show changes according to levels and data
+            });
+      } else if (pressedLevel == 'level2' && level2 == 'true' && count == 0) {
+        print("on message $message");
+        print("current count of level2 mesej is $count");
+        showDialog(
+            context: context,
+            builder: (context) {
+              return level2Notification(message);
+              //TODO setstate to show changes according to levels and data
+            });
+      } else if (pressedLevel == 'level3' && level3 == 'true' && count == 0) {
+        print("on message $message");
+        print("current count of level2 mesej is $count");
+        showDialog(
+            context: context,
+            builder: (context) {
+              return level1and3Notification(message);
+              //TODO setstate to show changes according to levels and data
+            });
+      }
 
-        onResume: (Map<String, dynamic> message) async {
-          print('on resume hello in resumed state $message');
-          showDialog(
-              context: context,
-              builder: (context) => AlertDialog(
-                content: ListTile(
-                  title: Text(message['data']['title']),
-                  subtitle: Text(message['data']['body']),
-                  leading: Icon(Icons.play_arrow),
-                ),
-                actions: <Widget>[
-                  FlatButton(
-                    child: Text("resume"),
-                    onPressed: () => Navigator.of(context).pop(),
-                  )
-                ],
-              ));
+      print("resume");
+      print("resume");
+      print("resume");
 
-          print("resume");
-          print("resume");
-          print("resume");
-
-          print('on resume hello in resumed state $message');
-          setState(() => _message = "hello on resume ${message["data"]["title"]}");
-        }, onLaunch: (Map<String, dynamic> message) async {
-      showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            content: ListTile(
-              title: Text(message['data']['title']),
-              subtitle: Text(message['data']['body']),
-              leading: Icon(Icons.launch),
-            ),
-            actions: <Widget>[
-              FlatButton(
-                child: Text("launch"),
-                onPressed: () => Navigator.of(context).pop(),
-              )
-            ],
-          ));
+      print('on resume hello in resumed state $message');
+      setState(() => _message = "hello on resume ${message["data"]["title"]}");
+    }, onLaunch: (Map<String, dynamic> message) async {
+      var level1 = message['data']['level1'];
+      var level2 = message['data']['level2'];
+      var level3 = message['data']['level3'];
+      var pressedLevel = message['data']['pressedLevel'];
+      var batteryLevel = message['data']['battery'];
+      var girluserid = message['data']['girl_id'];
+      print('pressed level $pressedLevel and level1 is $level1');
+      if (pressedLevel == 'level1' && level1 == 'true' && count == 0) {
+        print("on message $message");
+        print("current count is $count");
+        count += 1;
+        showDialog(
+            context: context,
+            builder: (context) {
+              return level1and3Notification(message);
+              //TODO setstate to show changes according to levels and data
+            });
+      } else if (pressedLevel == 'level2' && level2 == 'true' && count == 0) {
+        print("on message $message");
+        print("current count of level2 mesej is $count");
+        showDialog(
+            context: context,
+            builder: (context) {
+              return level2Notification(message);
+              //TODO setstate to show changes according to levels and data
+            });
+      } else if (pressedLevel == 'level3' && level3 == 'true' && count == 0) {
+        print("on message $message");
+        print("current count of level2 mesej is $count");
+        showDialog(
+            context: context,
+            builder: (context) {
+              return level1and3Notification(message);
+              //TODO setstate to show changes according to levels and data
+            });
+      }
       print('on launch on aunched state $message');
       print("launch");
       print("launch");
@@ -174,6 +388,7 @@ class _protectorHomeScreenState extends State<protectorHomeScreen>
 
   @override
   void initState() {
+    selected = 'girlList';
     initAlarm();
     BackgroundFetch.registerHeadlessTask(backgroundFetchHeadlessTask);
     super.initState();
@@ -203,7 +418,6 @@ class _protectorHomeScreenState extends State<protectorHomeScreen>
       }
 
       print('calling get message in inint state');
-
       print('got out of mesej with count $count');
     });*/
   }
@@ -269,129 +483,158 @@ class _protectorHomeScreenState extends State<protectorHomeScreen>
       backgroundColor: Color(0xfff0f0f0),
       drawer: getDrawer(user, 'protector').getdrawer(context),
       appBar: AppBar(
-        title: Text("Protector screen"),
+        title: Text(''),
+        backgroundColor: primary,
+        elevation: 0,
       ),
-      body: SingleChildScrollView(
-        child: Container(
-          height: MediaQuery.of(context).size.height,
-          width: MediaQuery.of(context).size.width,
-          child: Stack(
-            children: <Widget>[
-              Container(
-                padding: EdgeInsets.only(top: 145),
-                height: MediaQuery.of(context).size.height,
-                width: double.infinity,
-                child: ListView.builder(
-                    itemCount: girl_docs.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return buildList(context, index, girl_docs);
-                    }),
-              ),
-              Container(
-                height: 140,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                    color: primary,
-                    borderRadius: BorderRadius.only(
-                        bottomLeft: Radius.circular(30),
-                        bottomRight: Radius.circular(30))),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 30),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      IconButton(
-                        onPressed: () {},
-                        icon: Icon(
-                          Icons.menu,
-                          color: Colors.white,
-                        ),
-                      ),
-                      Text(
-                        "Girl's List",
-                        style: TextStyle(color: Colors.white, fontSize: 24),
-                      ),
-                      IconButton(
-                        onPressed: () {},
-                        icon: Icon(
-                          Icons.filter_list,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ],
+      body: Column(
+        children: <Widget>[
+          Container(
+            height: 60,
+            width: double.infinity,
+            decoration: BoxDecoration(
+                color: primary,
+                borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(30),
+                    bottomRight: Radius.circular(30))),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                GestureDetector(
+                  child: Center(
+                    child: Text(
+                      "Helping Girl's",
+                      style: TextStyle(
+                          color: selected == 'helpingList'
+                              ? secondary
+                              : Colors.white,
+                          fontSize: 20),
+                    ),
                   ),
+                  onTap: () {
+                    setState(() {
+                      selected = 'helpingList';
+                    });
+                  },
+                ),
+                VerticalDivider(
+                  color: Colors.white,
+                  indent: 18,
+                  thickness: 1,
+                  endIndent: 13,
+                ),
+                GestureDetector(
+                  child: Center(
+                    child: Text(
+                      "Trusted Girls's",
+                      style: TextStyle(
+                          color:
+                              selected == 'girlList' ? secondary : Colors.white,
+                          fontSize: 20),
+                    ),
+                  ),
+                  onTap: () {
+                    setState(() {
+                      selected = 'girlList';
+                    });
+                  },
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+              child: selected == 'helpingList' ? helpingList() : girlList()),
+        ],
+      ),
+    );
+  }
+
+  Widget helpingList() {
+    return Container(
+      child: Text('Hello helping list'),
+    );
+  }
+
+  Widget girlList() {
+    return StreamBuilder<QuerySnapshot>(
+      stream: Firestore.instance
+          .collection('protector')
+          .document(user.uid)
+          .collection('girl_list')
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData)
+          return LinearProgressIndicator();
+        else {
+          return buildHomepageGirlList(context, snapshot.data.documents);
+        }
+      },
+    );
+  }
+
+  Widget buildHomepageGirlList(context, girl_docs) {
+    return Container(
+      height: MediaQuery.of(context).size.height,
+      width: MediaQuery.of(context).size.width,
+      child: Stack(
+        children: <Widget>[
+          SingleChildScrollView(
+            child: Container(
+              height: MediaQuery.of(context).size.height,
+              width: double.infinity,
+              child: ListView.builder(
+                  itemCount: girl_docs.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return buildList(context, index, girl_docs);
+                  }),
+            ),
+          ),
+          /*Container(
+            height: 60,
+            width: double.infinity,
+            decoration: BoxDecoration(
+                color: primary,
+                borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(30),
+                    bottomRight: Radius.circular(30))),
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 30),
+                child: Text(
+                  "Girl's List",
+                  style: TextStyle(color: Colors.white, fontSize: 24),
                 ),
               ),
-              Container(
-                child: Column(
-                  children: <Widget>[
-                    RaisedButton(
-                      child: Text(
-                        "Start service",
-                        style: TextStyle(fontSize: 18, color: Colors.black),
-                      ),
-                      onPressed: () {
-                        _onClickEnable(true);
-                        const platform = const MethodChannel("platformlocation");
-                        print("Start service platform location platform created");
-                        platform.invokeMethod("startJob", <String, dynamic> {
-                          "userid": user.uid
-                        });
-                      },
-                    ),
-                    RaisedButton(
-                      child: Text(
-                        "Stop service",
-                        style: TextStyle(fontSize: 18, color: Colors.black),
-                      ),
-                      onPressed: () {
-                        _onClickEnable(false);
-                        const platform = const MethodChannel("platformlocation");
-                        print("Start service platform location platform created");
-                        platform.invokeMethod("stopJob");
-
-                      },
-                    ),
-                    SizedBox(
-                      height: 110,
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 20),
-                      child: Material(
-                        elevation: 5.0,
-                        borderRadius: BorderRadius.all(Radius.circular(30)),
-                        child: TextField(
-                          // controller: TextEditingController(text: locations[0]),
-                          cursorColor: Theme.of(context).primaryColor,
-                          style: dropdownMenuItem,
-                          decoration: InputDecoration(
-                              hintText: "Search School",
-                              hintStyle: TextStyle(
-                                  color: Colors.black38, fontSize: 16),
-                              prefixIcon: Material(
-                                elevation: 0.0,
-                                borderRadius:
-                                BorderRadius.all(Radius.circular(30)),
-                                child: Icon(Icons.search),
-                              ),
-                              border: InputBorder.none,
-                              contentPadding: EdgeInsets.symmetric(
-                                  horizontal: 25, vertical: 13)),
-                        ),
-                      ),
-                    ),
-                  ],
+            ),
+          ),*/
+          /*Container(
+            child: Column(
+              children: <Widget>[
+                 RaisedButton(
+                  child: Text(
+                    "Start serive",
+                    style: TextStyle(fontSize: 18, color: Colors.black),
+                  ),
+                  onPressed: () => _onClickEnable(true),
                 ),
-              )
-            ],
-          ),
-        ),
+                RaisedButton(
+                  child: Text(
+                    "Stop serive",
+                    style: TextStyle(fontSize: 18, color: Colors.black),
+                  ),
+                  onPressed: () => _onClickEnable(false),
+                ),
+              ],
+            ),
+          )*/
+        ],
       ),
     );
   }
 
   Widget buildList(BuildContext context, int index, girl_docs) {
     String girl_uid = girl_docs[index].documentID;
+    girl_uid = girl_uid.trimLeft();
     return StreamBuilder<QuerySnapshot>(
         stream: Firestore.instance
             .collection('girl_user')
@@ -424,8 +667,8 @@ class _protectorHomeScreenState extends State<protectorHomeScreen>
           Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) =>
-                      protectorGirlScreen(girl_uid, snapshot['name'])));
+                  builder: (context) => trustedGirlScreen(girl_uid, snapshot)));
+
         },
         child: Container(
           decoration: BoxDecoration(
@@ -513,7 +756,6 @@ class _protectorHomeScreenState extends State<protectorHomeScreen>
   }
 
   Future<void> initBackgroundfetch() async {
-
     BackgroundFetch.scheduleTask(TaskConfig(
         taskId: "flutter_background_fetch",
         periodic: true,
