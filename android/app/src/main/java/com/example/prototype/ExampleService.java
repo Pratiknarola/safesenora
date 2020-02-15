@@ -1,23 +1,45 @@
 package com.example.prototype;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
+import android.os.Build;
 import android.os.IBinder;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
-import static com.example.prototype.App.NOTIFICATION_CHANNEL_ID;
+import com.google.firebase.auth.FirebaseAuth;
 
 
 public class ExampleService extends Service {
+    String uid;
+
+    public static final String NOTIFICATION_CHANNEL_ID = "exampleServiceChannel";
 
     @Override
     public void onCreate() {
+        System.out.println("I am in the app.java on create file");
         super.onCreate();
+
+        createNotificationChannel();
     }
+
+    private void createNotificationChannel() {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            NotificationChannel serviceChannel = new NotificationChannel(
+                    NOTIFICATION_CHANNEL_ID,
+                    "NotificationChannel",
+                    NotificationManager.IMPORTANCE_HIGH
+            );
+            NotificationManager manager = getSystemService(NotificationManager.class);
+            manager.createNotificationChannel(serviceChannel);
+        }
+    }
+
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -35,7 +57,29 @@ public class ExampleService extends Service {
                     .setContentIntent(pendingIntent)
                     .build();
 
-            startForeground(1, notification);
+            startForeground(145, notification);
+
+            try{
+                uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+            }catch (Exception e){
+                System.out.println("Exception while foreground new thread user");
+                uid = "";
+            }
+
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    for(int i = 0; i < 10; i++){
+                        try {
+                            Thread.sleep(10000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        new MainActivity().getLastLoc(uid, "girl_user");
+
+                    }
+                }
+            }).start();
 
             //do heavy work on a background thread
             //stopSelf();

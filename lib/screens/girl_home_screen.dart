@@ -378,23 +378,17 @@ class _girlHomeScreenState extends State<girlHomeScreen>
                               .document(user.uid)
                               .setData({'level1': true}, merge: true);
                           print("addinglocation info in firestor level ");
-                          Firestore.instance.collection("girl_user")
-                          .document(user.uid)
-                          .collection("location_info")
-                          .document(user.uid)
-                          .setData({
-                            "last_location": GeoPoint(lat, lng),
-                            "last_updated": DateTime.now()
-                          });
+                          startLocationUpdate();
                           const platform = const MethodChannel('platformlocation');
                           print("platform method channel ");
                           isForegroundServiceOn = true;
                           platform.invokeMethod("startForegroundService");
+                          print("method invoked");
                           updateBatteryperiodic();
-                          setState(() {
+                          /*setState(() {
                             level_1_pressed = !level_1_pressed;
                             print("level 1 pressed");
-                          });
+                          });*/
                         },
                       ),
                       //ToDo I Am safe button to stop foreground service
@@ -571,4 +565,35 @@ class _girlHomeScreenState extends State<girlHomeScreen>
       });
     }
   }
-}
+
+  void startLocationUpdate() {
+    location_plugin.Location().onLocationChanged().listen((loc){
+      Firestore.instance.collection("girl_user")
+          .document(user.uid)
+          .collection("location_info")
+          .document(user.uid)
+          .setData({
+        "last_location": GeoPoint(loc.latitude, loc.longitude),
+        "last_update": DateTime.now()
+      });
+    });
+
+
+  }
+
+      /*//Future.delayed(Duration(seconds: 10), (){
+        while(isForegroundServiceOn){
+          location_plugin.Location().getLocation().then((loc){
+            Firestore.instance.collection("girl_user")
+                .document(user.uid)
+                .collection("location_info")
+                .document(user.uid)
+                .setData({
+              "last_location": GeoPoint(loc.latitude, loc.longitude),
+              "last_update": DateTime.now()
+            });
+          });
+      }});
+    }*/
+
+  }
