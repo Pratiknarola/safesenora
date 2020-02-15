@@ -3,147 +3,6 @@ const admin = require('firebase-admin');
 
 admin.initializeApp(functions.config().firebase);
 
-<<<<<<< HEAD
-var levelData;
-
-exports.offerTrigger =functions.firestore.document(
-    'girl_user/{userId}/level_info/{userId}'
-    ).onUpdate((snapshot, context) => {
-    console.log("going to assign snap data to leveldata");
-        levelData = snapshot.data();
-    console.log("value assigned");
-    console.log(userId);
-
-
-
-
-        if(levelData.level1==true){
-
-            //TODO make the level = false in database
-            var name;
-
-            /**********************************Name is getting here ***********************************/
-            admin.firestore().document(`girl_user/${userId}/user_profile/${userId}`).get().then((profilesnap)=>{
-                if(documentsnap.empty){
-                        console.log("error getting the name of the currentuser");
-                        }
-                        else{
-                        console.log(`got the name of the current user ${profilesnap.data().name}`);
-                        name = profilesnap.data().name + profilesnap.data().surname;
-                        }
-            }).catch((err)=>{
-                console.log("error occured in writing name query"+ err);
-            })
-
-            /*******************************************************************************************/
-
-            admin.firestore().collection(`girl_user/${userId}/trusted_member`).get().then((snapshots)=>{
-                    console.log("inside truted member list");
-                    if(snapshots.empty){
-                        console.log("No trusted member");
-                    }
-                    else
-                    {
-                        var tokens = [];
-                        for(var member of snapshots.docs)
-                        {
-
-                            var trustedId=member.id;
-                            admin.firestore().document(`protector/${trustedId}`).get().then((documentsnap)=>{
-                                if(documentsnap.empty){
-                                    console.log("error getting the token of the protector");
-                                }
-                                else{
-                                    console.log(`adding the token ${documentsnap.data().NotifyToken} to list`);
-                                    tokens.push(documentsnap.data().NotifyToken);
-                                }
-                            }).catch((err)=>{
-                                console.log("error in writing the protector token query");
-                            })
-                        }
-                        console.log('added tokens');
-                        var payload = {
-                          "notification" : {
-                          "title": name + "pressed Level1",
-                          "body": `tap to track ${name} details`,
-                          "sound": "default"
-                           },
-                          "data" : {
-                          "data1": "none",
-                          "data2": "none"
-                           }
-                        }
-
-                        console.log("after payload");
-                        return admin.messaging().sendToDevice(tokens, payload).then((response) => {
-                                    console.log("pushed them all");
-                                    return "pratik";
-                        }).catch((err)=> {
-                            console.log("error occured err " + err);
-                            return "error pratik";
-                        })
-
-                    }
-            })
-
-        }/*
-        else if (levelData.level2==true) {
-            
-        }
-        else if (levelData.level3==true) {
-            
-        }*/
-
-
-
-
-
-
-
-/*
-        admin.firestore().collection('pushTokens').get().then((snapshots) => {
-            var tokens = [];
-            console.log("into pushtokens then");
-            //print(tokens);
-            if(snapshots.empty){
-                console.log('No Devices');
-            }
-            else
-            {
-                for(var token of snapshots.docs){
-                console.log("devtoekns ");
-                console.log(token.data().devTokens);
-                    tokens.push(token.data().devTokens);
-                }
-            }
-            console.log("before payload");
-            var payload = {
-                "notification" :{
-                    "title": "From" + msgData.offerName,
-                    "body": "offer" + msgData.offerValue,
-                    "sound": "default"
-
-                },
-                "data" : {
-                    "offerName": msgData.offerName,
-                    "offerValue": msgData.offerValue
-                }
-            }
-             console.log("after payload");
-            return admin.messaging().sendToDevice(tokens, payload).then((response) => {
-                        console.log("pushed them all");
-                        return "pratik";
-            }).catch((err)=> {
-                console.log("error occured err " + err);
-                return "error pratik";
-            })
-        })
-
-*/
-
-    })
-
-=======
 let levelData, prevData, pressedLevel;
 
 exports.offerTrigger = functions.firestore.document(
@@ -187,31 +46,40 @@ exports.offerTrigger = functions.firestore.document(
 
     //TODO make the level = false in database
     var fname, picture;
+    var batterylevel;
 
+
+
+    /**********************************Name is getting here ***********************************/
+    admin.firestore().collection(`girl_user/${userId}/user_info`).get().then((profilesnap) => {
+        if (profilesnap.isEmpty) {
+            console.log("error getting the name of the currentuser");
+        } else {
+            profilesnap.forEach((prosnap) => {
+                console.log(`got the name of the current user ${prosnap.data().name}`);
+                fname = `${prosnap.data().name} ${prosnap.data().surname} `;
+                picture = prosnap.data().picture;
+                batterylevel = prosnap.data().battery;
+            });
+
+        }
+    }).catch((err) => {
+        console.log("error occured in writing name query" + err);
+    });
+
+
+
+    // This thing sends notification.
     if((levelData.level1 === true && pressedLevel === 'level1') ||
         (levelData.level2 === true && pressedLevel === 'level2') ||
         (levelData.level3 === true && pressedLevel === 'level3')) {
 
 
-        /**********************************Name is getting here ***********************************/
-        admin.firestore().collection(`girl_user/${userId}/user_info`).get().then((profilesnap) => {
-            if (profilesnap.isEmpty) {
-                console.log("error getting the name of the currentuser");
-            } else {
-                profilesnap.forEach((prosnap) => {
-                    console.log(`got the name of the current user ${prosnap.data().name}`);
-                    fname = `${prosnap.data().name} ${prosnap.data().surname} `;
-                    picture = prosnap.data().picture;
-                });
 
-            }
-        }).catch((err) => {
-            console.log("error occured in writing name query" + err);
-        });
 
         /*******************************************Tokens and notificaations are sending here************************************************/
 
-        let tokens = [];
+        //let tokens = [];
         let payloadarray = [];
         admin.firestore().collection(`girl_user/${userId}/trusted_member`).get().then((snapshots) => {
             console.log("inside truted member list");
@@ -229,20 +97,26 @@ exports.offerTrigger = functions.firestore.document(
             }
         }).then((promisesnap) => {
             promisesnap.forEach((snap) => {
-                tokens.push(snap.data().NotifyToken);
+                //tokens.push(snap.data().NotifyToken);
+                console.log(`token is ${snap.data().NotifyToken}`);
+
                 let payload = {
-                    //"name":"Prototype",
+                    "name":"Prototype",
                     "notification": {
-                        "title": fname + "pressed Level1",
+                        "title": fname + "pressed " + pressedLevel,
                         "body": `Keep ur phone handy.\nTap to track ${fname} details`,
                         "image": picture
                     },
                     "data": {
+                        "title": fname + "pressed " + pressedLevel,
+                        "body": `Keep ur phone handy.\nTap to track ${fname} details`,
+                        "image": picture,
+                        "click_action": "FLUTTER_NOTIFICATION_CLICK",
                         "level1": `${levelData.level1}`,
                         "level2": `${levelData.level2}`,
                         "level3": `${levelData.level3}`,
                         "pressedLevel": pressedLevel,
-                        "battery": levelData.battery,
+                        "battery": batterylevel,
                         "lastLocation": "none",
                         "girl_id": userId,
                         "girl_distance": "none"
@@ -252,23 +126,22 @@ exports.offerTrigger = functions.firestore.document(
                         "notification": {
                             "color": "#FF4040",
                             "sound": "default",
-                            // "click-action":""
                             "sticky": true,
                             "notification_priority": "priority_max",
                             "default_sound": true,
                             "default_vibrate_timings": true,
-                            "default_light_settings": false,
+                            "default_light_settings": true,
                             "visibility": "public",
-                            "light_settings": {
-                                "color": {
+                            /*"light_settings": {
+                                /!*"color": {
                                     "red": 255,
                                     "green": 0,
                                     "blue": 0,
                                     "alpha": 0
-                                },
+                                },*!/
                                 "light_on_duration": "1.0s",
                                 "light_off_duration": "1.0s"
-                            }
+                            }*/
                         },
                     },
                     "token": snap.data().NotifyToken
@@ -304,68 +177,112 @@ exports.offerTrigger = functions.firestore.document(
         });
 
     }
-    /* .then((documentsnap)=>{
-     if(documentsnap.isEmpty){
-         console.log("error getting the token of the protector");
-     }
-     else{
-         console.log(`adding the token ${documentsnap.data().NotifyToken} to list`);
-         token\s.push(documentsnap.data().NotifyToken);
-     }
- }).catch((err)=>{
-     console.log("error in writing the protector token query");
- });*/
 
+    //This thing will be executed when level2 is pressed
+    // this will send notifications to all those people who are in radius of 2 km
 
-    /*
-    else if (levelData.level2==true) {
+    if(levelData.level2 === true && pressedLevel === 'level2'){
+        var level2PayloadArray = [];
+        let l2promises = [];
+        let ProtectorNotifyToken = new Map();
+        let prouid;
+        admin.firestore().doc(`girl_user/${userId}/location_info/${userId}`).get().then((snap) => {
+            let LocationList = snap.data().location_list;
+            let gLastLocation = LocationList[LocationList.length-1];
+            admin.firestore().collection(`protector`).get().then((query_snap) => {
+                query_snap.docs.forEach((doc_snap) => {
+                    prouid = doc_snap.id;
+                    ProtectorNotifyToken.set(`${prouid}`,`${doc_snap.data().NotifyToken}`);
+                    const l2p = admin.firestore().doc(`protector/${prouid}/location_info/${prouid}`).get()
+                    l2promises.push(l2p);
+                });
+                return Promise.all(l2promises);
+            }).then((protectorsnaps)=>{
+                protectorsnaps.forEach((snap)=>{
+                    let pLastLocation=snap.data().last_location;
+                    let distance;
 
-    }
-    else if (levelData.level3==true) {
-
-    }*/
-
-
-    /*
-            admin.firestore().collection('pushTokens').get().then((snapshots) => {
-                var tokens = [];
-                console.log("into pushtokens then");
-                //print(tokens);
-                if(snapshots.empty){
-                    console.log('No Devices');
-                }
-                else
-                {
-                    for(var token of snapshots.docs){
-                    console.log("devtoekns ");
-                    console.log(token.data().devTokens);
-                        tokens.push(token.data().devTokens);
+                    function deg2rad(deg) {
+                        const pi = 3.1415926535897932;
+                        return deg * (pi / 180);
                     }
-                }
-                console.log("before payload");
-                var payload = {
-                    "notification" :{
-                        "title": "From" + msgData.offerName,
-                        "body": "offer" + msgData.offerValue,
-                        "sound": "default"
 
-                    },
-                    "data" : {
-                        "offerName": msgData.offerName,
-                        "offerValue": msgData.offerValue
+                    ((coord1=gLastLocation,coord2=pLastLocation) => {
+                        const R = 6371; // Radius of the earth in km
+                        let dLat = deg2rad(coord2.latitude - coord1.latitude);
+                        let dLng = deg2rad(coord2.longitude - coord1.longitude);
+                        let a = (Math.sin(dLat / 2) * Math.sin(dLat / 2)) +
+                            Math.cos(deg2rad(coord1.latitude)) *
+                            Math.cos(deg2rad(coord2.latitude)) *
+                            Math.sin(dLng / 2) *
+                            Math.sin(dLng / 2);
+                        let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+                        distance = R * c;
+                    })();
+                    console.log("Distance is " + distance.toString());
+                    if(distance < 2.0){
+                        //users.push(prouid);
+                        let payload = {
+                            "name":"Prototype",
+                            "notification": {
+                                "title": "ALERT! ALERT! Someone near you needs help!",
+                                "body": "If you are willing to help please on this notifcation and help her.",
+                                "image": picture
+                            },
+                            "data": {
+                                "title": "someone near you needs help",
+                                "body": "if you are willing to help please open app and help her.",
+                                "image": picture,
+                                "click_action": "FLUTTER_NOTIFICATION_CLICK",
+                                "level1": `${levelData.level1}`,
+                                "level2": `${levelData.level2}`,
+                                "level3": `${levelData.level3}`,
+                                "pressedLevel": pressedLevel,
+                                "battery": batterylevel,
+                                "lastLocation": "none",
+                                "girl_id": userId,
+                                "girl_distance": "none"
+                            },
+                            "android": {
+                                "priority": "high",
+                                "notification": {
+                                    "color": "#FF4040",
+                                    "sound": "default",
+                                    "sticky": true,
+                                    "notification_priority": "priority_max",
+                                    "default_sound": true,
+                                    "default_vibrate_timings": true,
+                                    "default_light_settings": true,
+                                    "visibility": "public",
+                                    /*"light_settings": {
+                                        /!*"color": {
+                                            "red": 255,
+                                            "green": 0,
+                                            "blue": 0,
+                                            "alpha": 0
+                                        },*!/
+                                        "light_on_duration": "1.0s",
+                                        "light_off_duration": "1.0s"
+                                    }*/
+                                },
+                            },
+                            "token": ProtectorNotifyToken.get(prouid)
+                        };
+                        console.log("pusing payload");
+                        level2PayloadArray.push(payload);
                     }
-                }
-                 console.log("after payload");
-                return admin.messaging().sendToDevice(tokens, payload).then((response) => {
-                            console.log("pushed them all");
-                            return "pratik";
-                }).catch((err)=> {
+                });
+                console.log('added tokens of nearby users');
+                console.log("after payload of nearby user");
+                console.log(level2PayloadArray);
+                return admin.messaging().sendAll(level2PayloadArray).then((response) => {
+                    console.log("pushed them all to nearby users");
+                }).catch((err) => {
                     console.log("error occured err " + err);
-                    return "error pratik";
-                })
-            })
+                });
+            });
 
-    */
+        })
+    }
 
 });
->>>>>>> 1e0917c855f6e397c2aa25ee654bbc556ca669b2

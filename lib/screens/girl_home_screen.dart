@@ -2,36 +2,20 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:async_loader/async_loader.dart';
+import 'package:backdrop/backdrop.dart';
 import 'package:battery/battery.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart' as location_plugin;
-import 'package:prototype/util/getDrawer.dart';
+import 'package:sms_maintained/sms.dart';
 import 'package:url_launcher/url_launcher.dart';
-
-/*class Visibility extends StatefulWidget {
-  @override
-  Visibility createState() {
-    return _visible();
-  }
-}
-
-class _visible extends State {
-  bool _isvisible = false;
-  void showToast() {
-    setState(() {
-      _isvisible = !_isvisible;
-    });
-  }
-  @override
-  Widget build(BuildContext context) {
-    return girlHomeScreen();
-  }
-}*/
+import 'package:wave/config.dart';
+import 'package:wave/wave.dart';
 
 // Import package
 
@@ -40,14 +24,22 @@ class _visible extends State {
 class girlHomeScreen extends StatefulWidget {
   FirebaseUser user;
 
-  girlHomeScreen(this.user);
+  girlHomeScreen(user) {
+    if (user == null)
+      FirebaseAuth.instance.currentUser().then((user) {
+        this.user = user;
+      });
+    else {
+      this.user = user;
+    }
+  }
 
   @override
   _girlHomeScreenState createState() => _girlHomeScreenState(user);
 }
 
 class _girlHomeScreenState extends State<girlHomeScreen>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   Completer<GoogleMapController> _controller = Completer();
   GoogleMapController mapController;
   Set<Marker> _markers = {};
@@ -65,6 +57,8 @@ class _girlHomeScreenState extends State<girlHomeScreen>
   final Geolocator geolocator = Geolocator()..forceAndroidLocationManager;
   var battery;
   var pastBatteryLevel;
+  var userData;
+  var TPhoneNumbers = [];
 
   _girlHomeScreenState(this.user);
 
@@ -73,6 +67,9 @@ class _girlHomeScreenState extends State<girlHomeScreen>
   var selectedItemId = 'Home';
 
   bool _isvisible = false;
+  bool level_1_pressed = false;
+  bool level_2_pressed = false;
+  bool level_3_pressed = false;
 
   void showToast() {
     setState(() {
@@ -101,7 +98,49 @@ class _girlHomeScreenState extends State<girlHomeScreen>
 
   @override
   void initState() {
+    WidgetsBinding.instance.addObserver(this);
     super.initState();
+
+    /**************Getting the phone nubers of trusted users**************************/
+    var query = Firestore.instance.collection('girl_user').document(user.uid);
+    query.collection('user_info').document(user.uid).get().then((user_snap) {
+      userData = user_snap;
+    });
+    query.collection('trusted_member').getDocuments().then((qs_snap) {
+      var list = qs_snap.documents;
+
+      for (var snap in list) {
+        var id = snap.documentID;
+        Firestore.instance
+            .collection('protector')
+            .document(id)
+            .collection('user_info')
+            .document(id)
+            .get()
+            .then((doc_snap) {
+          //if (validateNumber(doc_snap['phone']))
+          TPhoneNumbers.add(doc_snap['phone']);
+        });
+      }
+    });
+
+    /*********************************************************************************/
+
+    /*************java location testing*****************/
+    const platform = const MethodChannel("platformlocation");
+    print("java location testing");
+    print("channel created");
+    try {
+      () async {
+        print("calling letlastlocation");
+        print(platform);
+        //await platform.invokeMethod("startLocationService");
+        print("location call done");
+      }();
+    } catch (e) {
+      print("error in java lastlocation");
+      print(e);
+    }
 
     /*****************Battery part *******************/
     battery = Battery();
@@ -111,26 +150,24 @@ class _girlHomeScreenState extends State<girlHomeScreen>
     }();
 
     battery.onBatteryStateChanged.listen((BatteryState state) async {
-      if (state == BatteryState.discharging) {
-        var currentBatteryLevel = await battery.batteryLevel;
-        if (currentBatteryLevel >= 50 &&
-            (pastBatteryLevel - currentBatteryLevel > 2)) {
-          pastBatteryLevel = currentBatteryLevel;
-          Firestore.instance
-              .collection('girl_user')
-              .document(user.uid)
-              .collection('level_info')
-              .document(user.uid)
-              .setData({'battery': '$currentBatteryLevel'}, merge: true);
-        } else if (currentBatteryLevel < 50) {
-          pastBatteryLevel = currentBatteryLevel;
-          Firestore.instance
-              .collection('girl_user')
-              .document(user.uid)
-              .collection('level_info')
-              .document(user.uid)
-              .setData({'battery': '$currentBatteryLevel'}, merge: true);
-        }
+      var currentBatteryLevel = await battery.batteryLevel;
+      if (currentBatteryLevel >= 50 &&
+          (pastBatteryLevel - currentBatteryLevel > 1)) {
+        pastBatteryLevel = currentBatteryLevel;
+        Firestore.instance
+            .collection('girl_user')
+            .document(user.uid)
+            .collection('user_info')
+            .document(user.uid)
+            .setData({'battery': '$currentBatteryLevel'}, merge: true);
+      } else if (currentBatteryLevel < 50) {
+        pastBatteryLevel = currentBatteryLevel;
+        Firestore.instance
+            .collection('girl_user')
+            .document(user.uid)
+            .collection('user_info')
+            .document(user.uid)
+            .setData({'battery': '$currentBatteryLevel'}, merge: true);
       }
     });
 
@@ -145,6 +182,12 @@ class _girlHomeScreenState extends State<girlHomeScreen>
           if (locationData != null) {
             lat = locationData.latitude;
             lng = locationData.longitude;
+            /*Firestore.instance
+                .collection("locations")
+                .add({"lat": lat, "long": lng});*/
+            if (_center == null) {
+              _center = LatLng(lat, lng);
+            }
             try {
               if (distInKm(LatLng(lat, lng), _center) > 0.007) {
                 distance = distInKm(LatLng(lat, lng), _center);
@@ -164,13 +207,13 @@ class _girlHomeScreenState extends State<girlHomeScreen>
                       placemark[0].country +
                       " - " +
                       placemark[0].postalCode;
-                  address =
+                  /*address =
                       "I am in emergency!\nThis is my current location: " +
                           gatsby +
                           "\nCoordinates: " +
                           lat.toString() +
                           "," +
-                          lng.toString();
+                          lng.toString();*/
                   link =
                       "https://www.google.com/maps/search/?api=1&query=$lat,$lng";
                 });
@@ -186,12 +229,53 @@ class _girlHomeScreenState extends State<girlHomeScreen>
                 });
               }
             } catch (e) {
+              print(e);
               debugPrint("ERROR IN GIRL HOME SCREEN IN INITSTATE");
             }
           }
         });
       }
     });
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    print('state = $state');
+  }
+
+  /* bool validateNumber(number) {
+    String pattern =
+        r'/^((\+*)((0[ -]+)*|(91 )*)(\d{12}+|\d{10}+))|\d{5}([- ]*)\d{6}$/';
+    RegExp regex = new RegExp(pattern);
+    if (!regex.hasMatch(number))
+      return false;
+    else
+      return true;
+  }*/
+
+  void send_sms(String mesej) {
+    for (var address in TPhoneNumbers) {
+      SmsSender sender = new SmsSender();
+      SmsMessage message = new SmsMessage(address, mesej);
+      /* message.onStateChanged.listen((state) {
+        if (state == SmsMessageState.Sent) {
+          print("SMS is sent!");
+        } else if (state == SmsMessageState.Delivered) {
+          print("SMS is delivered!");
+        }
+      });*/
+      /*sender.onSmsDelivered.listen((SmsMessage message) {
+        print('${message.address} received your message.');
+      });*/
+      sender.sendSms(message);
+    }
   }
 
   void _onMapCreated(GoogleMapController controller) async {
@@ -230,6 +314,9 @@ class _girlHomeScreenState extends State<girlHomeScreen>
             print(lat);
             print(lng);
             print("lat and lng");
+            Firestore.instance
+                .collection("locations")
+                .add({"lat": lat, "long": lng});
           }
         });
       }
@@ -251,9 +338,282 @@ class _girlHomeScreenState extends State<girlHomeScreen>
 
   @override
   Widget build(BuildContext context) {
+    LocationServices();
+    location.onLocationChanged().listen((locationData) {
+      if (locationData != null) {
+        lat = locationData.latitude;
+        lng = locationData.longitude;
+        print(lat);
+        print(lng);
+        print("lat and lng");
+        Firestore.instance
+            .collection("locations")
+            .add({"lat": lat, "long": lng});
+      }
+    });
+    battery.onBatteryStateChanged.listen((BatteryState state) async {
+      var currentBatteryLevel = await battery.batteryLevel;
+      if (currentBatteryLevel >= 50 &&
+          (pastBatteryLevel - currentBatteryLevel > 2)) {
+        pastBatteryLevel = currentBatteryLevel;
+        Firestore.instance
+            .collection('girl_user')
+            .document(user.uid)
+            .collection('user_info')
+            .document(user.uid)
+            .setData({'battery': '$currentBatteryLevel'}, merge: true);
+      } else if (currentBatteryLevel < 50) {
+        pastBatteryLevel = currentBatteryLevel;
+        Firestore.instance
+            .collection('girl_user')
+            .document(user.uid)
+            .collection('user_info')
+            .document(user.uid)
+            .setData({'battery': '$currentBatteryLevel'}, merge: true);
+      }
+    });
+
+//akg19082000#
     //_center = LatLng(lat, lng);
     //print("Lat: ${_center.latitude} and Lng: ${_center.longitude}");
-    return Scaffold(
+
+    return BackdropScaffold(
+        //appBar: _buildBar(context),
+        title: Text(
+          "Home Screen",
+          textAlign: TextAlign.center,
+        ),
+        iconPosition: BackdropIconPosition.action,
+        frontLayer: Column(
+          //scrollDirection: Axis.vertical,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Container(
+                  child: new FittedBox(
+                child: Material(
+                  color: Colors.white,
+                  elevation: 14.0,
+                  borderRadius: BorderRadius.circular(24.0),
+                  shadowColor: Color(0x802196F3),
+                  child: Visibility(
+                    visible: !level_1_pressed,
+                    child: Container(
+                      height: MediaQuery.of(context).size.height * 0.2,
+                      child: RaisedButton(
+                        onPressed: () {
+                          Firestore.instance
+                              .collection('girl_user')
+                              .document(user.uid)
+                              .collection('level_info')
+                              .document(user.uid)
+                              .setData({'level1': true}, merge: true);
+                          setState(() {
+                            //level_1_pressed = true;
+                            level_1_pressed = !level_1_pressed;
+                          });
+                        },
+                        child: Column(
+                          children: <Widget>[
+                            Center(
+                              child: Text(
+                                "Level 1",
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                            WaveWidget(
+                              config: CustomConfig(
+                                gradients: [
+                                  [Colors.yellow, Color(0x55FFEB3B)],
+                                  [Colors.red, Color(0xEEF44336)]
+                                ],
+                                durations: [10800, 6000],
+                                heightPercentages: [0.40, 0.30],
+                                blur: MaskFilter.blur(BlurStyle.inner, 10),
+                                gradientBegin: Alignment.bottomLeft,
+                                gradientEnd: Alignment.topRight,
+                              ),
+                              waveAmplitude: 8,
+                              backgroundColor: Colors.amber[50],
+                              size: Size(double.infinity, double.infinity),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              )),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Container(
+                child: new FittedBox(
+                  child: Material(
+                    color: Colors.white,
+                    elevation: 14.0,
+                    borderRadius: BorderRadius.circular(24.0),
+                    shadowColor: Color(0x802196F3),
+                    child: Container(
+                      height: 400,
+                      child: Visibility(
+                        visible: !level_2_pressed,
+                        child: RaisedButton(
+                          onPressed: () {
+                            Firestore.instance
+                                .collection('girl_user')
+                                .document(user.uid)
+                                .collection('level_info')
+                                .document(user.uid)
+                                .setData({'level2': true}, merge: true);
+                            setState(() {
+                              //level_1_pressed = true;
+                              //level_2_pressed = !level_2_pressed;
+                            });
+                          },
+                          child: Stack(
+                            children: <Widget>[
+                              Center(
+                                child: Text(
+                                  "Level 2",
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                              WaveWidget(
+                                config: CustomConfig(
+                                  gradients: [
+                                    [Colors.yellow, Color(0x55FFEB3B)],
+                                    [Colors.red, Color(0xEEF44336)]
+                                  ],
+                                  durations: [10800, 6000],
+                                  heightPercentages: [0.40, 0.30],
+                                  blur: MaskFilter.blur(BlurStyle.inner, 10),
+                                  gradientBegin: Alignment.bottomLeft,
+                                  gradientEnd: Alignment.topRight,
+                                ),
+                                waveAmplitude: 8,
+                                backgroundColor: Colors.amber[50],
+                                size: Size(double.infinity, double.infinity),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Container(
+                child: new FittedBox(
+                  child: Material(
+                    color: Colors.white,
+                    elevation: 14.0,
+                    borderRadius: BorderRadius.circular(24.0),
+                    shadowColor: Color(0x802196F3),
+                    child: Visibility(
+                      visible: !level_3_pressed,
+                      child: Container(
+                        height: 400,
+                        child: RaisedButton(
+                          onPressed: () {
+                            Firestore.instance
+                                .collection('girl_user')
+                                .document(user.uid)
+                                .collection('level_info')
+                                .document(user.uid)
+                                .setData({'level3': true}, merge: true);
+                            //*setState(() {
+                            //level_3_pressed = ! level_3_pressed;
+                          },
+                          child: Stack(
+                            children: <Widget>[
+                              Center(
+                                child: Text(
+                                  "Level 3",
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                              WaveWidget(
+                                config: CustomConfig(
+                                  gradients: [
+                                    [Colors.yellow, Color(0x55FFEB3B)],
+                                    [Colors.red, Color(0xEEF44336)]
+                                  ],
+                                  durations: [10800, 6000],
+                                  heightPercentages: [0.40, 0.30],
+                                  blur: MaskFilter.blur(BlurStyle.inner, 10),
+                                  gradientBegin: Alignment.bottomLeft,
+                                  gradientEnd: Alignment.topRight,
+                                ),
+                                waveAmplitude: 8,
+                                backgroundColor: Colors.amber[50],
+                                size: Size(double.infinity, double.infinity),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            )
+          ],
+        ),
+        backLayer: Column(
+          children: <Widget>[
+            Container(
+              height: MediaQuery.of(context).size.height * 0.50,
+              width: MediaQuery.of(context).size.width,
+              child: GoogleMap(
+                //polylines: _polyline,
+                onMapCreated: _onMapCreated,
+                myLocationEnabled: true,
+                //myLocationButtonEnabled: true,
+                initialCameraPosition: CameraPosition(
+                    target: _center == null ? LatLng(0, 0) : _center, zoom: 12),
+                compassEnabled: true,
+              ),
+            ),
+            Container(
+              padding: new EdgeInsets.all(30.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Material(
+                    color: Colors.white,
+                    elevation: 14.0,
+                    child: RaisedButton(
+                      child: Text("Add Marker"),
+                      onPressed: _onAddMarkerButtonPressed,
+                    ),
+                  ),
+                  SizedBox(
+                    width: 40,
+                  ),
+                  RaisedButton(
+                    child: Text("Reload"),
+                    onPressed: () {
+                      setState(() {
+                        if (lat != null && lng != null) {
+                          _center = LatLng(lat, lng);
+                        } else {
+                          LocationServices();
+                        }
+                      });
+                    },
+                  )
+                ],
+              ),
+            ),
+          ],
+        ));
+  }
+/*return Scaffold(
       drawer: getDrawer(user, 'girl').getdrawer(context),
       appBar: AppBar(
         title: Text("Girl screen"),
@@ -306,43 +666,6 @@ class _girlHomeScreenState extends State<girlHomeScreen>
                             child: Text('hide map'),
                             onPressed: showToast,
                           ),
-<<<<<<< HEAD
-                        ),
-                        RaisedButton(
-                          child: Text("Level 1"),
-                          onPressed: () {
-                            Firestore.instance
-                                .collection('girl_user')
-                                .document(user.uid)
-                                .collection('level_info')
-                                .document(user.uid)
-                                .setData({'level1': true}, merge: true);
-                          },
-                        ),
-                        RaisedButton(
-                          child: Text("Level 2"),
-                          onPressed: () {
-                            Firestore.instance
-                                .collection('girl_user')
-                                .document(user.uid)
-                                .collection('level_info')
-                                .document(user.uid)
-                                .setData({'level2': true}, merge: true);
-                          },
-                        ),
-                        RaisedButton(
-                            child: Text("Level 3"),
-                            onPressed: () {
-                              Firestore.instance
-                                  .collection('girl_user')
-                                  .document(user.uid)
-                                  .collection('level_info')
-                                  .document(user.uid)
-                                  .setData({'level3': true}, merge: true);
-                            }),
-                      ],
-                    ),
-=======
                         ])),
               ],
             ),
@@ -360,7 +683,6 @@ class _girlHomeScreenState extends State<girlHomeScreen>
                         ? "loading"
                         : "Lat: ${_center.latitude} and Lng: ${_center.longitude}",
                     style: TextStyle(fontSize: 20),
->>>>>>> 1e0917c855f6e397c2aa25ee654bbc556ca669b2
                   ),
                 ),
                 Padding(
@@ -372,12 +694,11 @@ class _girlHomeScreenState extends State<girlHomeScreen>
                 ),
                 RaisedButton(
                   child: Text("Reload"),
-                  onPressed: (){
+                  onPressed: () {
                     setState(() {
-                      if(lat != null && lng != null){
+                      if (lat != null && lng != null) {
                         _center = LatLng(lat, lng);
-                      }
-                      else{
+                      } else {
                         LocationServices();
                       }
                     });
@@ -385,13 +706,15 @@ class _girlHomeScreenState extends State<girlHomeScreen>
                 ),
                 RaisedButton(
                   child: Text("Reset Levels"),
-                  onPressed: (){
+                  onPressed: () {
                     Firestore.instance
                         .collection('girl_user')
                         .document(user.uid)
                         .collection('level_info')
                         .document(user.uid)
-                        .setData({'level1': false, 'level2': false, 'level3': false}, merge: true);
+                        .setData(
+                            {'level1': false, 'level2': false, 'level3': false},
+                            merge: true);
                   },
                 ),
                 RaisedButton(
@@ -403,17 +726,29 @@ class _girlHomeScreenState extends State<girlHomeScreen>
                         .collection('level_info')
                         .document(user.uid)
                         .setData({'level1': true}, merge: true);
+                    String mesej =
+                        '${userData['name']} ${userData['surname']} has pressed level1.He/She may get in danger so please keep phone near you.Track his/her location details by opening the app.';
+                    send_sms(mesej);
+                    setState(() {});
                   },
                 ),
                 RaisedButton(
                   child: Text("Level 2"),
                   onPressed: () {
+                    print('pppppppppressssssssseddddddddddd level222222222');
                     Firestore.instance
                         .collection('girl_user')
                         .document(user.uid)
                         .collection('level_info')
                         .document(user.uid)
                         .setData({'level2': true}, merge: true);
+                    String meseej =
+                        '${userData['name']} ${userData['surname']} has pressed level2.If u want the people around your girl to help her,please open prototype app and give us permissions.';
+                    send_sms(meseej);
+
+                    print('mesej of levvvvellll 2 ssssseeeeeeeeeeenttttttttt');
+
+                    setState(() {});
                   },
                 ),
                 RaisedButton(
@@ -425,6 +760,11 @@ class _girlHomeScreenState extends State<girlHomeScreen>
                           .collection('level_info')
                           .document(user.uid)
                           .setData({'level3': true}, merge: true);
+                      String mesej =
+                          '${userData['name']} ${userData['surname']} has pressed level3.Please you go and help her asap, inform the police if u want.Track his location by opening the app.';
+                      send_sms(mesej);
+
+                      setState(() {});
                     }),
               ],
             ),
@@ -432,5 +772,6 @@ class _girlHomeScreenState extends State<girlHomeScreen>
         ],
       ),
     );
-  }
+    */
+
 }

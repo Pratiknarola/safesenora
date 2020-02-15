@@ -98,6 +98,45 @@ class _setUserRoleState extends State<setUserRole> {
                                   .setData({'NotifyToken': token}, merge: true);
                             });
 
+                            print(
+                                'NottttttttttttttttttttttifyyyyyyyyyyyyyyyyyTokeeeeeeeen');
+
+                            /*() async {
+                              final SmsAutoFill _autoFill = SmsAutoFill();
+                              var completePhoneNumber = await _autoFill.hint;
+                              if (completePhoneNumber == null)
+                                completePhoneNumber = '0';
+                              Firestore.instance
+                                  .collection('girl_user')
+                                  .document(user.uid)
+                                  .collection('user_info')
+                                  .document(user.uid)
+                                  .setData({'phone': '${completePhoneNumber}'},
+                                      merge: true);
+                              print('mobile no is ${completePhoneNumber}');
+                            }();*/
+
+                            /* () async {
+                              String mobileNumber;
+                              try {
+                                mobileNumber = await MobileNumber.mobileNumber;
+                              } catch (e) {
+                                debugPrint(
+                                    "Failed to get mobile number because of '${e.message}'");
+                              }
+                              print('mobile no is ${mobileNumber}');
+                              Firestore.instance
+                                  .collection('girl_user')
+                                  .document(user.uid)
+                                  .collection('user_info')
+                                  .document(user.uid)
+                                  .setData({'phone': '${mobileNumber}'},
+                                      merge: true);
+                            }();*/
+
+                            print(
+                                'Áfterrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr');
+
                             Firestore.instance
                                 .collection('girl_user')
                                 .document(user.uid)
@@ -171,6 +210,45 @@ class _setUserRoleState extends State<setUserRole> {
                                   .document(user.uid)
                                   .setData({'NotifyToken': token}, merge: true);
                             });
+
+                            print(
+                                'NottttttttttttttttttttttifyyyyyyyyyyyyyyyyyTokeeeeeeeen');
+
+                            /*  () async {
+                              final SmsAutoFill _autoFill = SmsAutoFill();
+                              var completePhoneNumber = await _autoFill.hint;
+                              if (completePhoneNumber == null)
+                                completePhoneNumber = '0';
+                              Firestore.instance
+                                  .collection('protector')
+                                  .document(user.uid)
+                                  .collection('user_info')
+                                  .document(user.uid)
+                                  .setData({'phone': '${completePhoneNumber}'},
+                                      merge: true);
+                              print('mobile no is ${completePhoneNumber}');
+                            }();*/
+
+                            /*() async {
+                              String mobileNumber;
+                              try {
+                                mobileNumber = await MobileNumber.mobileNumber;
+                              } catch (e) {
+                                debugPrint(
+                                    "Failed to get mobile number because of '${e.message}'");
+                              }
+                              print('mobile no is ${mobileNumber}');
+                              Firestore.instance
+                                  .collection('protector')
+                                  .document(user.uid)
+                                  .collection('user_info')
+                                  .document(user.uid)
+                                  .setData({'phone': '${mobileNumber}'},
+                                      merge: true);
+                            }();*/
+
+                            print(
+                                'Áfterrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr');
 
                             Firestore.instance
                                 .collection('protector')

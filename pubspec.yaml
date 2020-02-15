@@ -50,12 +50,14 @@ dependencies:
   url_launcher: ^5.4.1
   async_loader: ^0.1.2
   firebase_messaging: any
-<<<<<<< HEAD
-  battery: any
-=======
   battery: ^0.3.1+7
+  sms_maintained: ^0.2.5
+  sms_autofill: ^1.2.0
+  mobile_number: ^0.0.2
+  background_fetch: ^0.5.0
+  backdrop: ^0.2.8
 
->>>>>>> 1e0917c855f6e397c2aa25ee654bbc556ca669b2
+
 
 
 dev_dependencies:
