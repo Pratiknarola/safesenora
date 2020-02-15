@@ -9,11 +9,6 @@ import 'package:flutter/services.dart';
 import 'package:location/location.dart';
 import 'package:prototype/screens/trusted_girl_screen.dart';
 import 'package:prototype/util/getDrawer.dart';
-import 'package:prototype/auth/login.dart';
-import 'package:prototype/screens/protector_girl_screen.dart';
-import 'package:prototype/util/getDrawer.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sms_autofill/sms_autofill.dart';
 import 'package:geolocator/geolocator.dart' as geolocator;
 
 void backgroundFetchHeadlessTask(String taskId) async {

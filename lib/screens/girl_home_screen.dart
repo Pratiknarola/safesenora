@@ -3,7 +3,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:async_loader/async_loader.dart';
-import 'package:backdrop/backdrop.dart';
+import 'map_screen.dart';
 import 'package:battery/battery.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -294,14 +294,18 @@ class _girlHomeScreenState extends State<girlHomeScreen>
 
 //akg19082000#
 
-    return BackdropScaffold(
-      title: Text(
-        'Home Screen',
-        textAlign: TextAlign.left,
-      ),
-      iconPosition: BackdropIconPosition.action,
-      headerHeight: 120.0,
-      frontLayer: Container(
+    return Scaffold(
+      appBar: AppBar(title: Text("Girl Home Screen"),actions: <Widget>[
+        IconButton(
+            icon:Icon(Icons.location_on),
+            onPressed: (){
+              Navigator.push(context, MaterialPageRoute(builder: (context) => girlMapScreen()),
+              );
+            }
+        ),
+      ],),
+      drawer: getDrawer(user,'girl').getdrawer(context),
+      body: Container(
         padding: EdgeInsets.all(2.0),
         child: Stack(
           //color: Colors.green,
@@ -428,17 +432,7 @@ class _girlHomeScreenState extends State<girlHomeScreen>
                                       textScaleFactor: 2.0),
                                 ),
 
-                                /*Align(
-                            alignment: Alignment.center,
-                            child: Container(),
-                          ),*/
-                                /*new Container(
-                            child: Text(
-                              "Level 3",
-                              textAlign: TextAlign.justify,
-                              textScaleFactor: 2.0,
-                            ),
-                          )*/
+
                               ],
                             ),
                           ),
@@ -543,81 +537,21 @@ class _girlHomeScreenState extends State<girlHomeScreen>
           ],
         ),
       ),
-      backLayer: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            Container(
-              height: MediaQuery.of(context).size.height * 0.50,
-              width: MediaQuery.of(context).size.width,
-              child: GoogleMap(
-                //polylines: _polyline,
-                onMapCreated: _onMapCreated,
-                myLocationEnabled: true,
-                //myLocationButtonEnabled: true,
-                initialCameraPosition: CameraPosition(
-                    target: _center == null ? LatLng(0, 0) : _center, zoom: 12),
-                compassEnabled: true,
-              ),
-            ),
-            Container(
-                padding: new EdgeInsets.all(30.0),
-                height: MediaQuery.of(context).size.height * 0.30,
-                //width: MediaQuery.of(context).size.width * 0.20,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    RaisedButton(
-                      child: Text("Marker",
-                          style: TextStyle(color: Colors.black,
-                              fontSize: 12,
-                              fontFamily: "Montserrat",
-                              fontWeight: FontWeight.w400
-                          ),
-                          textAlign: TextAlign.center,
-                          textScaleFactor: 2.0),
-                      onPressed: _onAddMarkerButtonPressed,
-                    ),
-                    /* SizedBox(
-                      width: 40,
-                    ),*/
-                    RaisedButton(
-                        child: Text("Reload",
-                            style: TextStyle(color: Colors.black,
-                                fontSize: 12,
-                                fontFamily: "Montserrat",
-                                fontWeight: FontWeight.w400
-                            ),
-                            textAlign: TextAlign.center,
-                            textScaleFactor: 2.0),
-                        onPressed: () {
-                          setState(() {
-                            if (lat != null && lng != null) {
-                              _center = LatLng(lat, lng);
-                            } else {
-                              LocationServices();
-                            }
-                          });
-                        })
-                  ],
-                )),
-          ],
-        ),
-      ),
+
     );
   }
 
   Future<void> updateBattery() async {
+    print("in update battery");
     battery = Battery();
     var currentBatteryLevel = await battery.batteryLevel;
+    print("in update battery with $currentBatteryLevel");
     Firestore.instance
         .collection('girl_user')
         .document(user.uid)
         .collection('user_info')
         .document(user.uid).setData({'battery':'$currentBatteryLevel'},merge: true);
-    Future.delayed(Duration(minutes: 10),() { print("10 mins are done");});
+    //Future.delayed(Duration(minutes: 10),() { print("10 mins are done");});
   }
 
   Future<void> updateBatteryperiodic() async {
