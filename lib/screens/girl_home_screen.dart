@@ -173,7 +173,7 @@ class _girlHomeScreenState extends State<girlHomeScreen>
                 print(DateTime.now());
 
                 link =
-                    "https://www.google.com/maps/search/?api=1&query=$lat,$lng";
+                "https://www.google.com/maps/search/?api=1&query=$lat,$lng";
                 if (_center != null) latlng.add(_center);
                 setState(() {
                   _center = LatLng(lat, lng);
@@ -278,7 +278,7 @@ class _girlHomeScreenState extends State<girlHomeScreen>
   }
 
   final GlobalKey<AsyncLoaderState> _asyncLoaderState =
-      new GlobalKey<AsyncLoaderState>();
+  new GlobalKey<AsyncLoaderState>();
 
   @override
   Widget build(BuildContext context) {
@@ -351,14 +351,14 @@ class _girlHomeScreenState extends State<girlHomeScreen>
                                         0.30
                                       ],
                                       blur:
-                                          MaskFilter.blur(BlurStyle.outer, 10),
+                                      MaskFilter.blur(BlurStyle.outer, 10),
                                       gradientBegin: Alignment.bottomLeft,
                                       gradientEnd: Alignment.topRight,
                                     ),
                                     waveAmplitude: 8,
                                     backgroundColor: Colors.white,
                                     size:
-                                        Size(double.infinity, double.infinity),
+                                    Size(double.infinity, double.infinity),
                                   ),
                                 ),
                                 Center(
@@ -383,25 +383,21 @@ class _girlHomeScreenState extends State<girlHomeScreen>
                               .collection('level_info')
                               .document(user.uid)
                               .setData({'level1': true}, merge: true);
-
                           print("addinglocation info in firestor level ");
-                          Firestore.instance.collection("girl_user")
-                          .document(user.uid)
-                          .collection("location_info")
-                          .document(user.uid)
-                          .setData({
-                            "last_location": GeoPoint(lat, lng),
-                            "last_updated": DateTime.now()
-                          });
+                          try{
+                            startLocationUpdate();
+                          }catch(e){print("error in location update "); print(e);}
+
                           const platform = const MethodChannel('platformlocation');
                           print("platform method channel ");
                           isForegroundServiceOn = true;
                           platform.invokeMethod("startForegroundService");
+                          print("method invoked");
                           updateBatteryperiodic();
-                          setState(() {
-                            level1 = true;
+                          /*setState(() {
+                            level_1_pressed = !level_1_pressed;
                             print("level 1 pressed");
-                          });
+                          });*/
                         },
                       ),
                       //ToDo I Am safe button to stop foreground service
@@ -439,14 +435,14 @@ class _girlHomeScreenState extends State<girlHomeScreen>
                                         0.30
                                       ],
                                       blur:
-                                          MaskFilter.blur(BlurStyle.outer, 10),
+                                      MaskFilter.blur(BlurStyle.outer, 10),
                                       gradientBegin: Alignment.bottomLeft,
                                       gradientEnd: Alignment.topRight,
                                     ),
                                     waveAmplitude: 8,
                                     backgroundColor: Colors.white,
                                     size:
-                                        Size(double.infinity, double.infinity),
+                                    Size(double.infinity, double.infinity),
                                   ),
                                 ),
                                 Center(
@@ -691,11 +687,55 @@ class _girlHomeScreenState extends State<girlHomeScreen>
     //Future.delayed(Duration(minutes: 10),() { print("10 mins are done");});
   }
 
+  void updateBatteryperiodic()  {
+    Battery().onBatteryStateChanged.listen((newstate) async {
+      var current = await Battery().batteryLevel;
+      Firestore.instance
+          .collection('girl_user')
+          .document(user.uid)
+          .collection('user_info')
+          .document(user.uid).setData({'battery':'$current'},merge: true);
+
+    });
+
+    /*while(isForegroundServiceOn) {
+
   Future<void> updateBatteryperiodic() async {
     while (isForegroundServiceOn) {
       await Future.delayed(Duration(minutes: 15), () {
         updateBattery();
       });
-    }
+    }*/
   }
+
+  void startLocationUpdate() {
+    location_plugin.Location().onLocationChanged().listen((loc){
+      Firestore.instance.collection("girl_user")
+          .document(user.uid)
+          .collection("location_info")
+          .document(user.uid)
+          .setData({
+        "last_location": GeoPoint(loc.latitude, loc.longitude),
+        "last_update": DateTime.now()
+      });
+    });
+
+
+  }
+
+/*//Future.delayed(Duration(seconds: 10), (){
+        while(isForegroundServiceOn){
+          location_plugin.Location().getLocation().then((loc){
+            Firestore.instance.collection("girl_user")
+                .document(user.uid)
+                .collection("location_info")
+                .document(user.uid)
+                .setData({
+              "last_location": GeoPoint(loc.latitude, loc.longitude),
+              "last_update": DateTime.now()
+            });
+          });
+      }});
+    }*/
+
 }

@@ -47,6 +47,7 @@ exports.offerTrigger = functions.firestore.document(
     //TODO make the level = false in database
     var fname, picture;
     var batterylevel;
+let trusted_array=[];
 
 
 
@@ -194,7 +195,7 @@ exports.offerTrigger = functions.firestore.document(
                 query_snap.docs.forEach((doc_snap) => {
                     prouid = doc_snap.id;
                     ProtectorNotifyToken.set(`${prouid}`,`${doc_snap.data().NotifyToken}`);
-                    const l2p = admin.firestore().doc(`protector/${prouid}/location_info/${prouid}`).get()
+                    const l2p = admin.firestore().doc(`protector/${prouid}/location_info/${prouid}`).get();
                     l2promises.push(l2p);
                 });
                 return Promise.all(l2promises);
@@ -221,6 +222,7 @@ exports.offerTrigger = functions.firestore.document(
                         distance = R * c;
                     })();
                     console.log("Distance is " + distance.toString());
+
                     if(distance < 2.0 ){
                         //users.push(prouid);
                         let payload = {

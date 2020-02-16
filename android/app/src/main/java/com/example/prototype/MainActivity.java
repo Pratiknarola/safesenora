@@ -24,9 +24,6 @@ import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FirebaseFirestore;
-
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 
@@ -143,6 +140,7 @@ public class MainActivity extends FlutterActivity {
     }
 
     private void startLocationService(String type) {
+        System.out.println("in start location service with type " + type);
         Intent serviceIntent;
         if (type.equals("start")) {
             serviceIntent = new Intent(this, ExampleService.class);
@@ -183,7 +181,7 @@ public class MainActivity extends FlutterActivity {
                     Map<String, Object> loc = new HashMap<>();
                     GeoPoint geoPoint = new GeoPoint(lat, lng);
                     loc.put("last_location", geoPoint);
-                    loc.put("last_updated", Calendar.getInstance().getTime());
+                    loc.put("last_update", Calendar.getInstance().getTime());
                     //loc.put("jLatitide", lat);
                     //loc.put("jLongitude", lng);
 
