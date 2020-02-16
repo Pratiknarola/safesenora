@@ -68,7 +68,7 @@ let trusted_array=[];
         console.log("error occured in writing name query" + err);
     });
 
-
+    let trusted_array=[];
 
     // This thing sends notification.
     if((levelData.level1 === true && pressedLevel === 'level1') ||
@@ -222,15 +222,14 @@ let trusted_array=[];
                         distance = R * c;
                     })();
                     console.log("Distance is " + distance.toString());
-                    console.log("snap.id before distance is ");
-                    console.log(snap.documentId);
-                    if(distance < 2.0){
+
+                    if(distance < 2.0 ){
                         //users.push(prouid);
                         let payload = {
                             "name":"Prototype",
                             "notification": {
                                 "title": "ALERT! ALERT! Someone near you needs help!",
-                                "body": "If you are willing to help please on this notifcation and help her.",
+                                "body": "If you are willing to help please click on this notifcation and help her.",
 
                                 "image": picture
                             },
