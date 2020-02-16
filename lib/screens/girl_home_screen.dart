@@ -1,9 +1,7 @@
 import 'dart:async';
-import 'dart:io';
 import 'dart:math';
 
 import 'package:async_loader/async_loader.dart';
-import 'map_screen.dart';
 import 'package:battery/battery.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -18,6 +16,8 @@ import 'package:sms_maintained/sms.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:wave/config.dart';
 import 'package:wave/wave.dart';
+
+import 'map_screen.dart';
 
 // Import package
 
@@ -70,9 +70,9 @@ class _girlHomeScreenState extends State<girlHomeScreen>
   var selectedItemId = 'Home';
 
   bool _isvisible = false;
-  bool level_1_pressed = false;
-  bool level_2_pressed = false;
-  bool level_3_pressed = false;
+  bool level1 = false;
+  bool level2 = false;
+  bool level3 = false;
 
   void showToast() {
     setState(() {
@@ -101,7 +101,7 @@ class _girlHomeScreenState extends State<girlHomeScreen>
 
   @override
   void initState() {
-    WidgetsBinding.instance.addObserver(this);  //TODO ask nikhar about this line
+    WidgetsBinding.instance.addObserver(this); //TODO ask nikhar about this line
     super.initState();
 
     //TODO Connctivity SOS button
@@ -131,7 +131,7 @@ class _girlHomeScreenState extends State<girlHomeScreen>
 
     /*********************************************************************************/
 
-    /*************java location testing*****************//* //not in use...
+    /*************java location testing*****************/ /* //not in use...
     const platform = const MethodChannel("platformlocation");
     print("java location testing");
     print("channel created");
@@ -150,18 +150,14 @@ class _girlHomeScreenState extends State<girlHomeScreen>
     /*****************Battery part *******************/
     updateBattery();
 
-
-
     /************************************************/
     uid = user.uid;
     location = location_plugin.Location();
     location.changeSettings(
-      interval: 10000,
-        accuracy: location_plugin.LocationAccuracy.NAVIGATION);
+        interval: 10000, accuracy: location_plugin.LocationAccuracy.NAVIGATION);
     location.requestPermission().then((granted) {
       if (granted) {
         location.onLocationChanged().listen((locationData) {
-
           if (locationData != null) {
             lat = locationData.latitude;
             lng = locationData.longitude;
@@ -243,7 +239,7 @@ class _girlHomeScreenState extends State<girlHomeScreen>
 
   void _onMapCreated(GoogleMapController controller) async {
     mapController = controller;
-    location.getLocation().then((loc){
+    location.getLocation().then((loc) {
       _center = LatLng(loc.latitude, loc.longitude);
     });
     //_center = LatLng(lat, lng);
@@ -260,13 +256,12 @@ class _girlHomeScreenState extends State<girlHomeScreen>
           markerId: MarkerId(_lastmapposition.toString()),
           position: _lastmapposition,
           icon: BitmapDescriptor.defaultMarker));
-
     });
   }
 
   //bool setting = await location.changeSettings(accuracy: LocationAccuracy.NAVIGATION);
   LocationServices() {
-    location.getLocation().then((loc){
+    location.getLocation().then((loc) {
       lat = loc.latitude;
       lng = loc.longitude;
     });
@@ -291,26 +286,28 @@ class _girlHomeScreenState extends State<girlHomeScreen>
 
     updateBattery();
 
-
 //akg19082000#
 
     return Scaffold(
-      appBar: AppBar(title: Text("Girl Home Screen"),actions: <Widget>[
-        IconButton(
-            icon:Icon(Icons.location_on),
-            onPressed: (){
-              Navigator.push(context, MaterialPageRoute(builder: (context) => girlMapScreen()),
-              );
-            }
-        ),
-      ],),
-      drawer: getDrawer(user,'girl').getdrawer(context),
+      appBar: AppBar(
+        title: Text("Girl Home Screen"),
+        actions: <Widget>[
+          IconButton(
+              icon: Icon(Icons.location_on),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => girlMapScreen()),
+                );
+              }),
+        ],
+      ),
+      drawer: getDrawer(user, 'girl').getdrawer(context),
       body: Container(
         padding: EdgeInsets.all(2.0),
         child: Stack(
           //color: Colors.green,
           children: <Widget>[
-
             Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -347,24 +344,33 @@ class _girlHomeScreenState extends State<girlHomeScreen>
                                         [Colors.yellow, Color(0x55FFEB3B)]
                                       ],
                                       durations: [35000, 19440, 10800, 6000],
-                                      heightPercentages: [0.20, 0.23, 0.25, 0.30],
-                                      blur: MaskFilter.blur(BlurStyle.outer, 10),
+                                      heightPercentages: [
+                                        0.20,
+                                        0.23,
+                                        0.25,
+                                        0.30
+                                      ],
+                                      blur:
+                                      MaskFilter.blur(BlurStyle.outer, 10),
                                       gradientBegin: Alignment.bottomLeft,
                                       gradientEnd: Alignment.topRight,
                                     ),
                                     waveAmplitude: 8,
                                     backgroundColor: Colors.white,
-                                    size: Size(double.infinity, double.infinity),
+                                    size:
+                                    Size(double.infinity, double.infinity),
                                   ),
                                 ),
                                 Center(
                                   child: Text("Level 1",
-                                      style: TextStyle(color: Colors.pink.shade300,fontSize: 24,fontFamily: "Montserrat",fontWeight: FontWeight.w400),
+                                      style: TextStyle(
+                                          color: Colors.pink.shade300,
+                                          fontSize: 24,
+                                          fontFamily: "Montserrat",
+                                          fontWeight: FontWeight.w400),
                                       textAlign: TextAlign.center,
                                       textScaleFactor: 2.0),
                                 ),
-
-
                               ],
                             ),
                           ),
@@ -383,11 +389,11 @@ class _girlHomeScreenState extends State<girlHomeScreen>
                           }catch(e){print("error in location update "); print(e);}
 
                           const platform = const MethodChannel('platformlocation');
-                            print("platform method channel ");
-                            isForegroundServiceOn = true;
-                            platform.invokeMethod("startForegroundService");
-                            print("method invoked");
-                            updateBatteryperiodic();
+                          print("platform method channel ");
+                          isForegroundServiceOn = true;
+                          platform.invokeMethod("startForegroundService");
+                          print("method invoked");
+                          updateBatteryperiodic();
                           /*setState(() {
                             level_1_pressed = !level_1_pressed;
                             print("level 1 pressed");
@@ -422,24 +428,33 @@ class _girlHomeScreenState extends State<girlHomeScreen>
                                         [Colors.yellow, Color(0x55FFEB3B)]
                                       ],
                                       durations: [35000, 19440, 10800, 6000],
-                                      heightPercentages: [0.20, 0.23, 0.25, 0.30],
-                                      blur: MaskFilter.blur(BlurStyle.outer, 10),
+                                      heightPercentages: [
+                                        0.20,
+                                        0.23,
+                                        0.25,
+                                        0.30
+                                      ],
+                                      blur:
+                                      MaskFilter.blur(BlurStyle.outer, 10),
                                       gradientBegin: Alignment.bottomLeft,
                                       gradientEnd: Alignment.topRight,
                                     ),
                                     waveAmplitude: 8,
                                     backgroundColor: Colors.white,
-                                    size: Size(double.infinity, double.infinity),
+                                    size:
+                                    Size(double.infinity, double.infinity),
                                   ),
                                 ),
                                 Center(
                                   child: Text("Level 2",
-                                      style: TextStyle(color: Colors.pink.shade300,fontSize: 23,fontFamily: "Montserrat",fontWeight: FontWeight.w400),
+                                      style: TextStyle(
+                                          color: Colors.pink.shade300,
+                                          fontSize: 23,
+                                          fontFamily: "Montserrat",
+                                          fontWeight: FontWeight.w400),
                                       textAlign: TextAlign.center,
                                       textScaleFactor: 2.0),
                                 ),
-
-
                               ],
                             ),
                           ),
@@ -452,8 +467,8 @@ class _girlHomeScreenState extends State<girlHomeScreen>
                               .document(user.uid)
                               .setData({'level2': true}, merge: true);
                           setState(() {
-                            level_2_pressed = !level_2_pressed;
-                            level_1_pressed = true;
+                            level2 = true;
+                            level1 = true;
                             print("level 2 pressed");
                           });
                         },
@@ -499,7 +514,11 @@ class _girlHomeScreenState extends State<girlHomeScreen>
                             ),
                             Center(
                               child: Text("Level 3",
-                                  style: TextStyle(color: Colors.pink.shade300,fontSize: 30,fontFamily: "Montserrat",fontWeight: FontWeight.w400),
+                                  style: TextStyle(
+                                      color: Colors.pink.shade300,
+                                      fontSize: 30,
+                                      fontFamily: "Montserrat",
+                                      fontWeight: FontWeight.w400),
                                   textAlign: TextAlign.center,
                                   textScaleFactor: 2.0),
                             ),
@@ -531,20 +550,126 @@ class _girlHomeScreenState extends State<girlHomeScreen>
                       platform.invokeMethod("stopForegroundService");
                       isForegroundServiceOn = false;
                       setState(() {
-                        level_3_pressed = !level_3_pressed;
-                        level_1_pressed = true;
-                        level_2_pressed = true;
+                        level3 = true;
                         print("level 3 pressed");
                       });
                     },
-                  )
+                  ),
+                  GestureDetector(
+                    child: Container(
+                      // padding: EdgeInsets.only(left:,
+                      height: MediaQuery.of(context).size.height * 0.2,
+                      width: MediaQuery.of(context).size.width * 0.87,
+                      decoration: new BoxDecoration(
+                          border: new Border.all(
+                            color: Colors.pink.shade200,
+                            width: 5.0,
+                            style: BorderStyle.solid,
+                          ),
+                          borderRadius: new BorderRadius.circular(20.0)),
+                      child: Padding(
+                        padding: EdgeInsets.all(3.0),
+                        child: Stack(
+                          children: <Widget>[
+                            Padding(
+                              padding: EdgeInsets.only(bottom: 2, top: 2),
+                              child: WaveWidget(
+                                config: CustomConfig(
+                                  gradients: [
+                                    [Colors.green, Colors.greenAccent],
+                                    [Colors.green[800], Color(0x77E57373)],
+                                    [Colors.lightGreen, Color(0x66FF9800)],
+                                    [Colors.yellow, Color(0x55FFEB3B)]
+                                  ],
+                                  durations: [35000, 19440, 10800, 6000],
+                                  heightPercentages: [0.20, 0.23, 0.25, 0.30],
+                                  blur: MaskFilter.blur(BlurStyle.outer, 10),
+                                  gradientBegin: Alignment.bottomLeft,
+                                  gradientEnd: Alignment.topRight,
+                                ),
+                                waveAmplitude: 8,
+                                backgroundColor: Colors.white,
+                                size: Size(double.infinity, double.infinity),
+                              ),
+                            ),
+                            Center(
+                              child: Text("I m safe now",
+                                  style: TextStyle(
+                                      color: Colors.pink.shade300,
+                                      fontSize: 30,
+                                      fontFamily: "Montserrat",
+                                      fontWeight: FontWeight.w400),
+                                  textAlign: TextAlign.center,
+                                  textScaleFactor: 2.0),
+                            ),
+
+                            /*Align(
+                            alignment: Alignment.center,
+                            child: Container(),
+                          ),*/
+                            /*new Container(
+                            child: Text(
+                              "Level 3",
+                              textAlign: TextAlign.justify,
+                              textScaleFactor: 2.0,
+                            ),
+                          )*/
+                          ],
+                        ),
+                      ),
+                    ),
+                    onTap: () {
+                      Firestore.instance
+                          .collection('girl_user')
+                          .document(user.uid)
+                          .collection('level_info')
+                          .document(user.uid)
+                          .setData({
+                        'level3': false,
+                        'level1': false,
+                        'level2': false
+                      }, merge: true);
+                      Firestore.instance
+                          .collection('girl_user')
+                          .document(user.uid)
+                          .collection('agreed_user')
+                          .getDocuments()
+                          .then((snapshot) {
+                        for (DocumentSnapshot ds in snapshot.documents) {
+                          ds.reference.delete();
+                        }
+                      });
+                      Firestore.instance
+                          .collection('girl_user')
+                          .document(user.uid)
+                          .collection('allowed_user')
+                          .getDocuments()
+                          .then((snapshot) {
+                        for (DocumentSnapshot ds in snapshot.documents) {
+                          Firestore.instance
+                              .collection('protector')
+                              .document(ds.documentID)
+                              .collection('helping_list')
+                              .document(user.uid)
+                              .delete();
+                          ds.reference.delete();
+                        }
+                      });
+
+                      setState(() {
+                        level1 = false;
+                        level2 = false;
+                        level3 = false;
+                        print("level 3 pressed");
+                      });
+                    },
+                  ),
                 ],
               ),
             ),
           ],
         ),
       ),
-
     );
   }
 
@@ -557,7 +682,8 @@ class _girlHomeScreenState extends State<girlHomeScreen>
         .collection('girl_user')
         .document(user.uid)
         .collection('user_info')
-        .document(user.uid).setData({'battery':'$currentBatteryLevel'},merge: true);
+        .document(user.uid)
+        .setData({'battery': '$currentBatteryLevel'}, merge: true);
     //Future.delayed(Duration(minutes: 10),() { print("10 mins are done");});
   }
 
@@ -573,6 +699,9 @@ class _girlHomeScreenState extends State<girlHomeScreen>
     });
 
     /*while(isForegroundServiceOn) {
+
+  Future<void> updateBatteryperiodic() async {
+    while (isForegroundServiceOn) {
       await Future.delayed(Duration(minutes: 15), () {
         updateBattery();
       });
@@ -594,7 +723,7 @@ class _girlHomeScreenState extends State<girlHomeScreen>
 
   }
 
-      /*//Future.delayed(Duration(seconds: 10), (){
+/*//Future.delayed(Duration(seconds: 10), (){
         while(isForegroundServiceOn){
           location_plugin.Location().getLocation().then((loc){
             Firestore.instance.collection("girl_user")
@@ -609,4 +738,4 @@ class _girlHomeScreenState extends State<girlHomeScreen>
       }});
     }*/
 
-  }
+}
