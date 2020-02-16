@@ -54,7 +54,6 @@ class _helpingGirlScreenState extends State<helpingGirlScreen> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -69,6 +68,7 @@ class _helpingGirlScreenState extends State<helpingGirlScreen> {
         if (!snapshot.hasData) {
           return LinearProgressIndicator();
         } else {
+          print(snapshot.data);
           print('i have got data ${snapshot.data['last_location'].latitude}');
           var lat = snapshot.data['last_location'].latitude;
           var lng = snapshot.data['last_location'].longitude;
@@ -92,7 +92,7 @@ class _helpingGirlScreenState extends State<helpingGirlScreen> {
                     myLocationEnabled: true,
                     markers: _markers,
                     initialCameraPosition:
-                    CameraPosition(target: LatLng(lat, lng), zoom: 15),
+                        CameraPosition(target: LatLng(lat, lng), zoom: 15),
                     compassEnabled: true,
                   ),
                 ),

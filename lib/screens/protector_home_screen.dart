@@ -6,11 +6,9 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:location/location.dart';
-import 'package:prototype/screens/helping_girl_screen.dart';
+import 'package:geolocator/geolocator.dart' as geolocator;
 import 'package:prototype/screens/trusted_girl_screen.dart';
 import 'package:prototype/util/getDrawer.dart';
-import 'package:geolocator/geolocator.dart' as geolocator;
 
 void backgroundFetchHeadlessTask(String taskId) async {
   print('[BackgroundFetch] Headless event received. $taskId');
@@ -31,8 +29,7 @@ void backgroundFetchHeadlessTask(String taskId) async {
     try {
       geolocator.Position position = await geolocator.Geolocator()
           .getLastKnownPosition(
-
-          desiredAccuracy: geolocator.LocationAccuracy.high);
+              desiredAccuracy: geolocator.LocationAccuracy.high);
       GeoPoint pos = GeoPoint(position.latitude, position.longitude);
       FirebaseAuth.instance.currentUser().then((user) {
         Firestore.instance
@@ -80,8 +77,6 @@ class _protectorHomeScreenState extends State<protectorHomeScreen>
   _register() {
     _firebaseMessaging.getToken().then((token) => print(token));
   }
-
-
 
   Widget level1and3Notification(message) {
     return Center(
@@ -136,7 +131,6 @@ class _protectorHomeScreenState extends State<protectorHomeScreen>
                             colorBrightness: Brightness.dark,
                             onPressed: () {
                               Navigator.pop(context);
-
                             },
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(20.0)),
@@ -420,7 +414,7 @@ class _protectorHomeScreenState extends State<protectorHomeScreen>
   }
 
   final TextStyle dropdownMenuItem =
-  TextStyle(color: Colors.black, fontSize: 18);
+      TextStyle(color: Colors.black, fontSize: 18);
 
   final primary = Color(0xff696b9e);
   final secondary = Color(0xfff29a94);
@@ -450,7 +444,7 @@ class _protectorHomeScreenState extends State<protectorHomeScreen>
   });*/
   }
 
-  void sendHeartbeat(){
+  void sendHeartbeat() {
     print("into send heartbeat");
     const platform = const MethodChannel("platformlocation");
     platform.invokeMethod("sendBroadcast");
@@ -525,8 +519,9 @@ class _protectorHomeScreenState extends State<protectorHomeScreen>
                     child: Text(
                       "Trusted Girls's",
                       style: TextStyle(
-                          color:
-                              selected == 'girl_list' ? secondary : Colors.white,
+                          color: selected == 'girl_list'
+                              ? secondary
+                              : Colors.white,
                           fontSize: 20),
                     ),
                   ),
@@ -539,13 +534,11 @@ class _protectorHomeScreenState extends State<protectorHomeScreen>
               ],
             ),
           ),
-          Expanded(
-              child: girlList()),
+          Expanded(child: girlList()),
         ],
       ),
     );
   }
-
 
   Widget girlList() {
     return StreamBuilder<QuerySnapshot>(
@@ -659,10 +652,9 @@ class _protectorHomeScreenState extends State<protectorHomeScreen>
           Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) =>  selected == 'girl_list'
-                      ? trustedGirlScreen(girl_uid, snapshot):
-                  helpingGirlScreen(girl_uid, snapshot)));
-
+                  builder: (context) => selected == 'girl_list'
+                      ? trustedGirlScreen(girl_uid, snapshot)
+                      : trustedGirlScreen(girl_uid, snapshot)));
         },
         child: Container(
           decoration: BoxDecoration(
@@ -762,8 +754,7 @@ class _protectorHomeScreenState extends State<protectorHomeScreen>
         requiresBatteryNotLow: false,
         requiresCharging: false,
         requiresDeviceIdle: false,
-        requiresStorageNotLow: false
-    ));
+        requiresStorageNotLow: false));
 
     BackgroundFetch.configure(
         BackgroundFetchConfig(
@@ -782,7 +773,7 @@ class _protectorHomeScreenState extends State<protectorHomeScreen>
       try {
         geolocator.Position position = await geolocator.Geolocator()
             .getCurrentPosition(
-            desiredAccuracy: geolocator.LocationAccuracy.high);
+                desiredAccuracy: geolocator.LocationAccuracy.high);
         GeoPoint pos = GeoPoint(position.latitude, position.longitude);
         Firestore.instance
             .collection("protector")
@@ -794,7 +785,7 @@ class _protectorHomeScreenState extends State<protectorHomeScreen>
         try {
           geolocator.Position position = await geolocator.Geolocator()
               .getLastKnownPosition(
-              desiredAccuracy: geolocator.LocationAccuracy.high);
+                  desiredAccuracy: geolocator.LocationAccuracy.high);
           GeoPoint pos = GeoPoint(position.latitude, position.longitude);
           Firestore.instance
               .collection("protector")
@@ -847,11 +838,12 @@ class _protectorHomeScreenState extends State<protectorHomeScreen>
     if (!mounted) return;
   }
 
-  void initAlarm() async{
+  void initAlarm() async {
     print("in init alarm");
     await AndroidAlarmManager.initialize();
     print("androidAlarmManager initialize");
-    await AndroidAlarmManager.periodic(const Duration(minutes: 5), sendHeartbeatId, sendHeartbeat);
+    await AndroidAlarmManager.periodic(
+        const Duration(minutes: 5), sendHeartbeatId, sendHeartbeat);
     print("periodic event registered");
   }
 }
