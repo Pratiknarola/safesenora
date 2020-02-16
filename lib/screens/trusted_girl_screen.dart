@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:location/location.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class trustedGirlScreen extends StatefulWidget {
@@ -47,20 +46,18 @@ class _trustedGirlScreenState extends State<trustedGirlScreen> {
   }
 
   void _onAddMarkerButtonPressed() {
-    setState(() {
-      _markers.add(Marker(
-          markerId: MarkerId(_center.toString()),
-          position: _center,
-          icon: BitmapDescriptor.defaultMarker));
-      if (_markers.length > 1) {
-        _markers.remove(_markers.elementAt(0));
-      }
-    });
+    _markers.add(Marker(
+        markerId: MarkerId(_center.toString()),
+        position: _center,
+        icon: BitmapDescriptor.defaultMarker));
+    if (_markers.length > 1) {
+      _markers.remove(_markers.elementAt(0));
+    }
   }
 
   void _onMapCreated(GoogleMapController controller) async {
     mapController = controller;
-    _center = LatLng(lat, lng);
+    _center = LatLng(0, 0);
   }
 
   static Future<void> openMap(double latitude, double longitude) async {
@@ -170,22 +167,13 @@ class _trustedGirlScreenState extends State<trustedGirlScreen> {
 
   Widget buildnearbyUserList(context, agreeduser_docs) {
     return Container(
-      height: MediaQuery
-          .of(context)
-          .size
-          .height,
-      width: MediaQuery
-          .of(context)
-          .size
-          .width,
+      height: MediaQuery.of(context).size.height,
+      width: MediaQuery.of(context).size.width,
       child: Stack(
         children: <Widget>[
           SingleChildScrollView(
             child: Container(
-              height: MediaQuery
-                  .of(context)
-                  .size
-                  .height,
+              height: MediaQuery.of(context).size.height,
               width: double.infinity,
               child: ListView.builder(
                   itemCount: agreeduser_docs.length,
@@ -295,83 +283,82 @@ class _trustedGirlScreenState extends State<trustedGirlScreen> {
                 ),
                 index_allowed == 'NA'
                     ? Expanded(
-                  child: Row(
-                    children: <Widget>[
-                      Expanded(
-                        child: RaisedButton(
-                          child: Text("Dont Allow"),
-                          color: Colors.red,
-                          colorBrightness: Brightness.dark,
-                          onPressed: () {
-                            print(
-                                'hello in sett statee$agreeduser_id ${agreeduser_id
-                                    .length} girl id $girlid');
-                            Firestore.instance
-                                .collection('girl_user')
-                                .document(girlid)
-                                .collection('agreed_user')
-                                .document(agreeduser_id)
-                                .setData({'allowed': 'Not Allowed'},
-                                merge: true);
-                          },
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20.0)),
+                        child: Row(
+                          children: <Widget>[
+                            Expanded(
+                              child: RaisedButton(
+                                child: Text("Dont Allow"),
+                                color: Colors.red,
+                                colorBrightness: Brightness.dark,
+                                onPressed: () {
+                                  print(
+                                      'hello in sett statee$agreeduser_id ${agreeduser_id.length} girl id $girlid');
+                                  Firestore.instance
+                                      .collection('girl_user')
+                                      .document(girlid)
+                                      .collection('agreed_user')
+                                      .document(agreeduser_id)
+                                      .setData({'allowed': 'Not Allowed'},
+                                          merge: true);
+                                },
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20.0)),
+                              ),
+                            ),
+                            SizedBox(width: 10.0),
+                            Expanded(
+                              child: RaisedButton(
+                                child: Text("Allow"),
+                                color: Colors.green,
+                                colorBrightness: Brightness.dark,
+                                onPressed: () {
+                                  print('allow pressed');
+                                  Firestore.instance
+                                      .collection('girl_user')
+                                      .document(girlid)
+                                      .collection('allowed_user')
+                                      .document(agreeduser_id)
+                                      .setData({
+                                    'name': snapshot['name'],
+                                    'surname': snapshot['surname'],
+                                    'phone': snapshot['phone'],
+                                    'picture': snapshot['picture'],
+                                    'battery': snapshot['battery'],
+                                    'birth': snapshot['birth'],
+                                  }, merge: true);
+                                  Firestore.instance
+                                      .collection('protector')
+                                      .document(agreeduser_id)
+                                      .collection('helping_list')
+                                      .document(girlid)
+                                      .setData({
+                                    'girl_id': girlid,
+                                  }, merge: true);
+                                  Firestore.instance
+                                      .collection('girl_user')
+                                      .document(girlid)
+                                      .collection('agreed_user')
+                                      .document(agreeduser_id)
+                                      .setData({'allowed': 'Allowed'},
+                                          merge: true);
+                                },
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20.0)),
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                      SizedBox(width: 10.0),
-                      Expanded(
-                        child: RaisedButton(
-                          child: Text("Allow"),
-                          color: Colors.green,
-                          colorBrightness: Brightness.dark,
-                          onPressed: () {
-                            print('allow pressed');
-                            Firestore.instance
-                                .collection('girl_user')
-                                .document(girlid)
-                                .collection('allowed_user')
-                                .document(agreeduser_id)
-                                .setData({
-                              'name': snapshot['name'],
-                              'surname': snapshot['surname'],
-                              'phone': snapshot['phone'],
-                              'picture': snapshot['picture'],
-                              'battery': snapshot['battery'],
-                              'birth': snapshot['birth'],
-                            }, merge: true);
-                            Firestore.instance
-                                .collection('protector')
-                                .document(agreeduser_id)
-                                .collection('helping_list')
-                                .document(girlid)
-                                .setData({
-                              'girl_id': girlid,
-                            }, merge: true);
-                            Firestore.instance
-                                .collection('girl_user')
-                                .document(girlid)
-                                .collection('agreed_user')
-                                .document(agreeduser_id)
-                                .setData({'allowed': 'Allowed'},
-                                merge: true);
-                          },
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20.0)),
-                        ),
-                      ),
-                    ],
-                  ),
-                )
+                      )
                     : Expanded(
-                  child: RaisedButton(
-                    child: Text(index_allowed),
-                    color: Colors.transparent,
-                    colorBrightness: Brightness.dark,
-                    onPressed: () {},
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20.0)),
-                  ),
-                ),
+                        child: RaisedButton(
+                          child: Text(index_allowed),
+                          color: Colors.transparent,
+                          colorBrightness: Brightness.dark,
+                          onPressed: () {},
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20.0)),
+                        ),
+                      ),
               ],
             ),
           )
@@ -390,69 +377,98 @@ class _trustedGirlScreenState extends State<trustedGirlScreen> {
   }*/
 
   Widget girlLiveLocationPage() {
-    return Container(
-      color: Color(0xfff0f0f0),
-      child: Column(
-        children: <Widget>[
-          SizedBox(height: 10),
-          Container(
-            width: double.infinity,
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(15),
-                    bottomRight: Radius.circular(15))),
-            height: MediaQuery
-                .of(context)
-                .size
-                .height * 0.6,
-            child: GoogleMap(
-              //polylines: _polyline,
-              onMapCreated: _onMapCreated,
-              mapType: MapType.hybrid,
-              markers: _markers,
-              trafficEnabled: _isTrafficEnabled,
-              myLocationEnabled: true,
-              initialCameraPosition: CameraPosition(
-                  target: _center == null ? Location().getLocation().then((loc) {return LatLng(loc.latitude, loc.longitude);}) : _center, zoom: 11.5),
-              compassEnabled: true,
-              //markers:
+    return StreamBuilder<DocumentSnapshot>(
+      stream: Firestore.instance
+          .collection('girl_user')
+          .document(girlid)
+          .collection('location_info')
+          .document(girlid)
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return LinearProgressIndicator();
+        } else {
+          print('i have got data ${snapshot.data['last_location'].latitude}');
+          var lat = snapshot.data['last_location'].latitude;
+          var lng = snapshot.data['last_location'].longitude;
+          _center = LatLng(lat, lng);
+          _onAddMarkerButtonPressed();
+
+          return Container(
+            color: Color(0xfff0f0f0),
+            child: Column(
+              children: <Widget>[
+                SizedBox(height: 10),
+                Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(15),
+                          bottomRight: Radius.circular(15))),
+                  height: MediaQuery.of(context).size.height * 0.6,
+                  child: GoogleMap(
+                    onMapCreated: _onMapCreated,
+                    myLocationEnabled: true,
+                    markers: _markers,
+                    initialCameraPosition:
+                        CameraPosition(target: LatLng(lat, lng), zoom: 15),
+                    compassEnabled: true,
+                  ),
+                ),
+                Expanded(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: <Widget>[
+                      CupertinoButton(
+                        child: Text("Open in maps"),
+                        onPressed: () {
+                          openMap(lat, lng);
+                        },
+                      ),
+                      CupertinoButton(
+                        child: Text("Show marker"),
+                        onPressed: () {
+                          _onAddMarkerButtonPressed();
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+
+                /*Expanded(
+            child: StreamBuilder<DocumentSnapshot>(
+                stream: Firestore.instance
+                    .collection('girl_user')
+                    .document(girlid)
+                    .collection('user_info')
+                    .document(girlid)
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  return Padding(
+                    padding: EdgeInsets.all(10),
+                    child: Text("Battery % -> ${snapshot.data["battery"]}"),
+                  );
+                }),
+          ),*/
+              ],
             ),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: <Widget>[
-              CupertinoButton(
-                child: Text("Open in maps"),
-                onPressed: () {
-                  openMap(lat, lng);
-                },
-              ),
-              CupertinoButton(
-                child: Text("Show marker"),
-                onPressed: () {
-                  _onAddMarkerButtonPressed();
-                },
-              ),
-            ],
-          ),
-          StreamBuilder<DocumentSnapshot>(
-              stream: Firestore.instance
-                  .collection('girl_user')
-                  .document(girlid)
-                  .collection('user_info')
-                  .document(girlid)
-                  .snapshots(),
-              builder: (context, snapshot) {
-                return Padding(
-                  padding: EdgeInsets.all(10),
-                  child: Text("Battery % -> ${snapshot.data["battery"]}"),
-                );
-              })
-        ],
-      ),
+          );
+
+          /*
+          return callsetState(context);*/
+        }
+      },
     );
   }
+
+  Widget callsetState(BuildContext context) {}
 }
+
+/*Future<LatLng> getLatLng() async {
+    var loc = await Location().getLocation();
+    return LatLng(loc.latitude, loc.longitude);
+  }*/
+
 /*    return StreamBuilder<DocumentSnapshot>(
       stream: Firestore.instance
           .collection('girl_user')
