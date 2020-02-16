@@ -561,12 +561,22 @@ class _girlHomeScreenState extends State<girlHomeScreen>
     //Future.delayed(Duration(minutes: 10),() { print("10 mins are done");});
   }
 
-  Future<void> updateBatteryperiodic() async {
-    while(isForegroundServiceOn) {
+  void updateBatteryperiodic()  {
+    Battery().onBatteryStateChanged.listen((newstate) async {
+      var current = await Battery().batteryLevel;
+      Firestore.instance
+          .collection('girl_user')
+          .document(user.uid)
+          .collection('user_info')
+          .document(user.uid).setData({'battery':'$current'},merge: true);
+
+    });
+
+    /*while(isForegroundServiceOn) {
       await Future.delayed(Duration(minutes: 15), () {
         updateBattery();
       });
-    }
+    }*/
   }
 
   void startLocationUpdate() {

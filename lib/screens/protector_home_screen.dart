@@ -136,6 +136,7 @@ class _protectorHomeScreenState extends State<protectorHomeScreen>
                             colorBrightness: Brightness.dark,
                             onPressed: () {
                               Navigator.pop(context);
+
                             },
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(20.0)),

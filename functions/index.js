@@ -47,6 +47,7 @@ exports.offerTrigger = functions.firestore.document(
     //TODO make the level = false in database
     var fname, picture;
     var batterylevel;
+let trusted_array=[];
 
 
 
@@ -90,6 +91,7 @@ exports.offerTrigger = functions.firestore.document(
                 for (var member of snapshots.docs) {
 
                     var trustedId = member.id;
+                    trusted_array.push(trustedId);
                     const p = admin.firestore().doc(`protector/${trustedId}`).get();
                     promises.push(p);
                 }
@@ -188,13 +190,12 @@ exports.offerTrigger = functions.firestore.document(
         let ProtectorNotifyToken = new Map();
         let prouid;
         admin.firestore().doc(`girl_user/${userId}/location_info/${userId}`).get().then((snap) => {
-            let LocationList = snap.data().location_list;
-            let gLastLocation = LocationList[LocationList.length-1];
+            let gLastLocation = snap.data().last_location;
             admin.firestore().collection(`protector`).get().then((query_snap) => {
                 query_snap.docs.forEach((doc_snap) => {
                     prouid = doc_snap.id;
                     ProtectorNotifyToken.set(`${prouid}`,`${doc_snap.data().NotifyToken}`);
-                    const l2p = admin.firestore().doc(`protector/${prouid}/location_info/${prouid}`).get()
+                    const l2p = admin.firestore().doc(`protector/${prouid}/location_info/${prouid}`).get();
                     l2promises.push(l2p);
                 });
                 return Promise.all(l2promises);
@@ -221,6 +222,8 @@ exports.offerTrigger = functions.firestore.document(
                         distance = R * c;
                     })();
                     console.log("Distance is " + distance.toString());
+                    console.log("snap.id before distance is ");
+                    console.log(snap.documentId);
                     if(distance < 2.0){
                         //users.push(prouid);
                         let payload = {
