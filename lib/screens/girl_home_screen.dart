@@ -173,7 +173,7 @@ class _girlHomeScreenState extends State<girlHomeScreen>
                 print(DateTime.now());
 
                 link =
-                "https://www.google.com/maps/search/?api=1&query=$lat,$lng";
+                    "https://www.google.com/maps/search/?api=1&query=$lat,$lng";
                 if (_center != null) latlng.add(_center);
                 setState(() {
                   _center = LatLng(lat, lng);
@@ -278,7 +278,7 @@ class _girlHomeScreenState extends State<girlHomeScreen>
   }
 
   final GlobalKey<AsyncLoaderState> _asyncLoaderState =
-  new GlobalKey<AsyncLoaderState>();
+      new GlobalKey<AsyncLoaderState>();
 
   @override
   Widget build(BuildContext context) {
@@ -317,6 +317,9 @@ class _girlHomeScreenState extends State<girlHomeScreen>
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
+                      SizedBox(
+                        height: 10,
+                      ),
                       GestureDetector(
                         child: Container(
                           // padding: EdgeInsets.only(left:,
@@ -351,14 +354,14 @@ class _girlHomeScreenState extends State<girlHomeScreen>
                                         0.30
                                       ],
                                       blur:
-                                      MaskFilter.blur(BlurStyle.outer, 10),
+                                          MaskFilter.blur(BlurStyle.outer, 10),
                                       gradientBegin: Alignment.bottomLeft,
                                       gradientEnd: Alignment.topRight,
                                     ),
                                     waveAmplitude: 8,
                                     backgroundColor: Colors.white,
                                     size:
-                                    Size(double.infinity, double.infinity),
+                                        Size(double.infinity, double.infinity),
                                   ),
                                 ),
                                 Center(
@@ -384,11 +387,15 @@ class _girlHomeScreenState extends State<girlHomeScreen>
                               .document(user.uid)
                               .setData({'level1': true}, merge: true);
                           print("addinglocation info in firestor level ");
-                          try{
+                          try {
                             startLocationUpdate();
-                          }catch(e){print("error in location update "); print(e);}
+                          } catch (e) {
+                            print("error in location update ");
+                            print(e);
+                          }
 
-                          const platform = const MethodChannel('platformlocation');
+                          const platform =
+                              const MethodChannel('platformlocation');
                           print("platform method channel ");
                           isForegroundServiceOn = true;
                           platform.invokeMethod("startForegroundService");
@@ -399,6 +406,9 @@ class _girlHomeScreenState extends State<girlHomeScreen>
                             print("level 1 pressed");
                           });*/
                         },
+                      ),
+                      SizedBox(
+                        height: 10,
                       ),
                       //ToDo I Am safe button to stop foreground service
                       GestureDetector(
@@ -435,14 +445,14 @@ class _girlHomeScreenState extends State<girlHomeScreen>
                                         0.30
                                       ],
                                       blur:
-                                      MaskFilter.blur(BlurStyle.outer, 10),
+                                          MaskFilter.blur(BlurStyle.outer, 10),
                                       gradientBegin: Alignment.bottomLeft,
                                       gradientEnd: Alignment.topRight,
                                     ),
                                     waveAmplitude: 8,
                                     backgroundColor: Colors.white,
                                     size:
-                                    Size(double.infinity, double.infinity),
+                                        Size(double.infinity, double.infinity),
                                   ),
                                 ),
                                 Center(
@@ -474,6 +484,9 @@ class _girlHomeScreenState extends State<girlHomeScreen>
                         },
                       )
                     ],
+                  ),
+                  SizedBox(
+                    height: 10,
                   ),
                   GestureDetector(
                     child: Container(
@@ -555,114 +568,119 @@ class _girlHomeScreenState extends State<girlHomeScreen>
                       });
                     },
                   ),
-                  GestureDetector(
-                    child: Container(
-                      // padding: EdgeInsets.only(left:,
-                      height: MediaQuery.of(context).size.height * 0.2,
-                      width: MediaQuery.of(context).size.width * 0.87,
-                      decoration: new BoxDecoration(
-                          border: new Border.all(
-                            color: Colors.pink.shade200,
-                            width: 5.0,
-                            style: BorderStyle.solid,
-                          ),
-                          borderRadius: new BorderRadius.circular(20.0)),
-                      child: Padding(
-                        padding: EdgeInsets.all(3.0),
-                        child: Stack(
-                          children: <Widget>[
-                            Padding(
-                              padding: EdgeInsets.only(bottom: 2, top: 2),
-                              child: WaveWidget(
-                                config: CustomConfig(
-                                  gradients: [
-                                    [Colors.green, Colors.greenAccent],
-                                    [Colors.green[800], Color(0x77E57373)],
-                                    [Colors.lightGreen, Color(0x66FF9800)],
-                                    [Colors.yellow, Color(0x55FFEB3B)]
-                                  ],
-                                  durations: [35000, 19440, 10800, 6000],
-                                  heightPercentages: [0.20, 0.23, 0.25, 0.30],
-                                  blur: MaskFilter.blur(BlurStyle.outer, 10),
-                                  gradientBegin: Alignment.bottomLeft,
-                                  gradientEnd: Alignment.topRight,
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Expanded(
+                    child: GestureDetector(
+                      child: Container(
+                        // padding: EdgeInsets.only(left:,
+                        height: MediaQuery.of(context).size.height * 0.5,
+                        width: MediaQuery.of(context).size.width * 0.5,
+                        decoration: new BoxDecoration(
+                            border: new Border.all(
+                              color: Colors.pink.shade200,
+                              width: 5.0,
+                              style: BorderStyle.solid,
+                            ),
+                            borderRadius: new BorderRadius.circular(20.0)),
+                        child: Padding(
+                          padding: EdgeInsets.all(3.0),
+                          child: Stack(
+                            children: <Widget>[
+                              Padding(
+                                padding: EdgeInsets.only(bottom: 2, top: 2),
+                                child: WaveWidget(
+                                  config: CustomConfig(
+                                    gradients: [
+                                      [Colors.green, Colors.greenAccent],
+                                      [Colors.green[800], Color(0x77E57373)],
+                                      [Colors.lightGreen, Color(0x66FF9800)],
+                                      [Colors.yellow, Color(0x55FFEB3B)]
+                                    ],
+                                    durations: [35000, 19440, 10800, 6000],
+                                    heightPercentages: [0.20, 0.23, 0.25, 0.30],
+                                    blur: MaskFilter.blur(BlurStyle.outer, 10),
+                                    gradientBegin: Alignment.bottomLeft,
+                                    gradientEnd: Alignment.topRight,
+                                  ),
+                                  waveAmplitude: 8,
+                                  backgroundColor: Colors.white,
+                                  size: Size(double.infinity, double.infinity),
                                 ),
-                                waveAmplitude: 8,
-                                backgroundColor: Colors.white,
-                                size: Size(double.infinity, double.infinity),
                               ),
-                            ),
-                            Center(
-                              child: Text("I m safe now",
-                                  style: TextStyle(
-                                      color: Colors.pink.shade300,
-                                      fontSize: 30,
-                                      fontFamily: "Montserrat",
-                                      fontWeight: FontWeight.w400),
-                                  textAlign: TextAlign.center,
-                                  textScaleFactor: 2.0),
-                            ),
+                              Center(
+                                child: Text("I m safe now",
+                                    style: TextStyle(
+                                        color: Colors.pink.shade300,
+                                        fontSize: 13,
+                                        fontFamily: "Montserrat",
+                                        fontWeight: FontWeight.w400),
+                                    textAlign: TextAlign.center,
+                                    textScaleFactor: 2.0),
+                              ),
 
-                            /*Align(
+                              /*Align(
                             alignment: Alignment.center,
                             child: Container(),
                           ),*/
-                            /*new Container(
+                              /*new Container(
                             child: Text(
                               "Level 3",
                               textAlign: TextAlign.justify,
                               textScaleFactor: 2.0,
                             ),
                           )*/
-                          ],
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                    onTap: () {
-                      Firestore.instance
-                          .collection('girl_user')
-                          .document(user.uid)
-                          .collection('level_info')
-                          .document(user.uid)
-                          .setData({
-                        'level3': false,
-                        'level1': false,
-                        'level2': false
-                      }, merge: true);
-                      Firestore.instance
-                          .collection('girl_user')
-                          .document(user.uid)
-                          .collection('agreed_user')
-                          .getDocuments()
-                          .then((snapshot) {
-                        for (DocumentSnapshot ds in snapshot.documents) {
-                          ds.reference.delete();
-                        }
-                      });
-                      Firestore.instance
-                          .collection('girl_user')
-                          .document(user.uid)
-                          .collection('allowed_user')
-                          .getDocuments()
-                          .then((snapshot) {
-                        for (DocumentSnapshot ds in snapshot.documents) {
-                          Firestore.instance
-                              .collection('protector')
-                              .document(ds.documentID)
-                              .collection('helping_list')
-                              .document(user.uid)
-                              .delete();
-                          ds.reference.delete();
-                        }
-                      });
+                      onTap: () {
+                        Firestore.instance
+                            .collection('girl_user')
+                            .document(user.uid)
+                            .collection('level_info')
+                            .document(user.uid)
+                            .setData({
+                          'level3': false,
+                          'level1': false,
+                          'level2': false
+                        }, merge: true);
+                        Firestore.instance
+                            .collection('girl_user')
+                            .document(user.uid)
+                            .collection('agreed_user')
+                            .getDocuments()
+                            .then((snapshot) {
+                          for (DocumentSnapshot ds in snapshot.documents) {
+                            ds.reference.delete();
+                          }
+                        });
+                        Firestore.instance
+                            .collection('girl_user')
+                            .document(user.uid)
+                            .collection('allowed_user')
+                            .getDocuments()
+                            .then((snapshot) {
+                          for (DocumentSnapshot ds in snapshot.documents) {
+                            Firestore.instance
+                                .collection('protector')
+                                .document(ds.documentID)
+                                .collection('helping_list')
+                                .document(user.uid)
+                                .delete();
+                            ds.reference.delete();
+                          }
+                        });
 
-                      setState(() {
-                        level1 = false;
-                        level2 = false;
-                        level3 = false;
-                        print("level 3 pressed");
-                      });
-                    },
+                        setState(() {
+                          level1 = false;
+                          level2 = false;
+                          level3 = false;
+                          print("level 3 pressed");
+                        });
+                      },
+                    ),
                   ),
                 ],
               ),
@@ -687,15 +705,15 @@ class _girlHomeScreenState extends State<girlHomeScreen>
     //Future.delayed(Duration(minutes: 10),() { print("10 mins are done");});
   }
 
-  void updateBatteryperiodic()  {
+  void updateBatteryperiodic() {
     Battery().onBatteryStateChanged.listen((newstate) async {
       var current = await Battery().batteryLevel;
       Firestore.instance
           .collection('girl_user')
           .document(user.uid)
           .collection('user_info')
-          .document(user.uid).setData({'battery':'$current'},merge: true);
-
+          .document(user.uid)
+          .setData({'battery': '$current'}, merge: true);
     });
 
     /*while(isForegroundServiceOn) {
@@ -709,8 +727,9 @@ class _girlHomeScreenState extends State<girlHomeScreen>
   }
 
   void startLocationUpdate() {
-    location_plugin.Location().onLocationChanged().listen((loc){
-      Firestore.instance.collection("girl_user")
+    location_plugin.Location().onLocationChanged().listen((loc) {
+      Firestore.instance
+          .collection("girl_user")
           .document(user.uid)
           .collection("location_info")
           .document(user.uid)
@@ -719,8 +738,6 @@ class _girlHomeScreenState extends State<girlHomeScreen>
         "last_update": DateTime.now()
       });
     });
-
-
   }
 
 /*//Future.delayed(Duration(seconds: 10), (){
