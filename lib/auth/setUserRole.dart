@@ -150,6 +150,7 @@ class _setUserRoleState extends State<setUserRole> {
                               'surname': '',
                               'phone': 'girl_user',
                               'birth': '',
+                              'battery': 'NA Now'
                             });
                             Firestore.instance
                                 .collection('girl_user')
@@ -263,6 +264,7 @@ class _setUserRoleState extends State<setUserRole> {
                               'surname': '',
                               'phone': 'Protector',
                               'birth': '',
+                              'battery': 'NAN Now'
                             });
 
                             //TODO send on protector screen

@@ -110,7 +110,7 @@ class LoginScreenState extends State<LoginPage>
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setBool('Loggedin', true);
     print('passed the login shared preferencess ${currentUser.uid}');
-    bool girl , proteector;
+    bool girl, proteector;
 
     Firestore.instance
         .collection('girl_user')
