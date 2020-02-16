@@ -376,14 +376,24 @@ class _girlHomeScreenState extends State<girlHomeScreen>
                           ),
                         ),
                         onTap: () {
+                          print("making lvel 1 true in firestore");
                           Firestore.instance
                               .collection('girl_user')
                               .document(user.uid)
                               .collection('level_info')
                               .document(user.uid)
                               .setData({'level1': true}, merge: true);
-                          const platform =
-                              const MethodChannel('platformlocation');
+
+                          print("addinglocation info in firestor level ");
+                          Firestore.instance.collection("girl_user")
+                          .document(user.uid)
+                          .collection("location_info")
+                          .document(user.uid)
+                          .setData({
+                            "last_location": GeoPoint(lat, lng),
+                            "last_updated": DateTime.now()
+                          });
+                          const platform = const MethodChannel('platformlocation');
                           print("platform method channel ");
                           isForegroundServiceOn = true;
                           platform.invokeMethod("startForegroundService");
