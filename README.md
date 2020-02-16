@@ -4,7 +4,7 @@
   </p>
  
 
-SafeSenora is a cross platform app built on <a href="https://flutter.dev/docs">Flutter</a> from a single codebase.
+SafeSenora is a cross platform app built on <a href="https://flutter.dev/docs">Flutter</a> from a single dart codebase.
 
 SafeSenora means to Safe Women in case of doubtful or any emergency situation .
 
