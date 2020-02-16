@@ -8,7 +8,6 @@ import 'package:prototype/screens/settings.dart';
 import 'package:prototype/screens/trusted_member.dart';
 import 'package:prototype/util/oval_right_clipper.dart';
 
-
 class getDrawer {
   FirebaseUser user;
   String role;
@@ -157,12 +156,12 @@ class getDrawer {
                     ),
                   ),
                   SizedBox(height: 5.0),
-                  Text(
+                  /*Text(
                     userData != null
                         ? '${userData['name']} ${userData['surname']}'
                         : 'Heyaa...',
                     style: TextStyle(color: Colors.white, fontSize: 18.0),
-                  ),
+                  ),*/
                   SizedBox(height: 25.0),
                   GestureDetector(
                       child: Container(

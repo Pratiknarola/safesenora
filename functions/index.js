@@ -67,7 +67,7 @@ exports.offerTrigger = functions.firestore.document(
         console.log("error occured in writing name query" + err);
     });
 
-
+    let trusted_array=[];
 
     // This thing sends notification.
     if((levelData.level1 === true && pressedLevel === 'level1') ||
@@ -90,6 +90,7 @@ exports.offerTrigger = functions.firestore.document(
                 for (var member of snapshots.docs) {
 
                     var trustedId = member.id;
+                    trusted_array.push(trustedId);
                     const p = admin.firestore().doc(`protector/${trustedId}`).get();
                     promises.push(p);
                 }
@@ -188,8 +189,7 @@ exports.offerTrigger = functions.firestore.document(
         let ProtectorNotifyToken = new Map();
         let prouid;
         admin.firestore().doc(`girl_user/${userId}/location_info/${userId}`).get().then((snap) => {
-            let LocationList = snap.data().location_list;
-            let gLastLocation = LocationList[LocationList.length-1];
+            let gLastLocation = snap.data().last_location;
             admin.firestore().collection(`protector`).get().then((query_snap) => {
                 query_snap.docs.forEach((doc_snap) => {
                     prouid = doc_snap.id;
@@ -221,13 +221,13 @@ exports.offerTrigger = functions.firestore.document(
                         distance = R * c;
                     })();
                     console.log("Distance is " + distance.toString());
-                    if(distance < 2.0){
+                    if(distance < 2.0 ){
                         //users.push(prouid);
                         let payload = {
                             "name":"Prototype",
                             "notification": {
                                 "title": "ALERT! ALERT! Someone near you needs help!",
-                                "body": "If you are willing to help please on this notifcation and help her.",
+                                "body": "If you are willing to help please click on this notifcation and help her.",
 
                                 "image": picture
                             },
