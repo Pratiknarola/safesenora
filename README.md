@@ -1,17 +1,17 @@
 <h1 align="center">SafeSenora</h1>
 <p align="center">
 <img src="assets/images/image.png" width="170" height="180"/>
-  </p>
+</p>
  
 
-SafeSenora is a cross platform app built on <a href="https://flutter.dev/docs">Flutter</a> from a single dart codebase.
+SafeSenora is a cross platform app built on <a href="https://flutter.dev/docs">Flutter</a> which is based on single dart codebase and allows to run on both android and ios.
 
-SafeSenora means to Safe Women in case of doubtful or any emergency situation .
+SafeSenora is a try by us to help ensure women safety in case of doubtful or any emergency situation.
 
-We BugHunters would like to say something: As we all know that Women safety is one of the major issues coming from the past, becuase all has the chance to live with freedom.
+We members of tesm BugHunters would like to say something : As we all know that Women safety is one of the major issues coming from the past, becuase all has the chance to live with freedom.
 
-As Computer Science Students we have tried our best to make something for the society.
-We believe in the Idea of Community concern i.e. helping one person might not change the whole world, but it could change the world for one person. Helping a person at the right time and at the correct place would be the best help that one can provide to anyone.
+As students of computer science we have tried our best to make something for the benefit of society.
+We believe in the idea of community concern i.e. helping one person might not change the whole world, but it can change the world for one person. Helping a person at the right time and at the correct place is the best help that one can provide to anyone.
 
 
 
