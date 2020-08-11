@@ -4,16 +4,17 @@
 </p>
  
 
-SafeSenora is a cross platform app built on <a href="https://flutter.dev/docs">Flutter</a> which is based on single dart codebase and allows to run on both android and ios.
+SafeSenora is a cross platform app built on <a href="https://flutter.dev/docs">Flutter</a> which is based on single dart codebase and allows to run on both android and ios platforms .
 
-SafeSenora is a try by us to help ensure women safety in case of doubtful or any emergency situation.
+This app is a try by us to ensure and increase women safety/protection in case of doubtful or any emergency situation .
 
-We members of tesm BugHunters would like to say something : As we all know that Women safety is one of the major issues coming from the past, becuase all has the chance to live with freedom.
+Since Women safety is one of the major issues coming from the past and everyone has a chance to live with freedom , so this app is a contribution by us to the nation .
+
+We have gone through some articles about how this problem is created or happening in the society . After analysing those articles we came up with some hybrid concepts involving old and new methods to increase more safety . 
+
+Idea of community concern is the major concept used , while building this app . Helping a person at the right time and at the correct place is the best help that one can provide to anyone.
 
 As students of computer science we have tried our best to make something for the benefit of society.
-We believe in the idea of community concern i.e. helping one person might not change the whole world, but it can change the world for one person. Helping a person at the right time and at the correct place is the best help that one can provide to anyone.
-
-
 
 # Features to Scroll!
  
@@ -70,7 +71,7 @@ For more Reference :refer [User Mannual](https://github.com/Pratiknarola/safesen
 Want to contribute? Great!
 Develop Something to contribute with us on this project and become the part of our community.
 
-If you want to contribute to a project and make it better, your help is very welcome. Contributing is also a great way to learn more about social coding on Github, new technologies and and their ecosystems and how to make constructive, helpful bug reports, feature requests and the noblest of all contributions: a good, clean pull request.
+If you want to contribute to this project and make it better, your heartily welcomed. Contributing is a great way to learn more about social coding on Github, developing new technologies and their ecosystems , helpful bug reports, feature requests and the noblest of all contributions : a good, clean pull request.
 How to make a clean pull request
 <a href="https://github.com/firstcontributions/first-contributions">Click Here to know more</a>
 
